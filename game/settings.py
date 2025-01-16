@@ -11,7 +11,7 @@ ALLOWED_HOSTS = [
     # 'mayabet.com.et', 
     'localhost', 
     '127.0.0.1', 
-    'ahadu.up.railway.app',
+    'ahadu-bingo.up.railway.app',
     ]
 
 MESSAGE_TAGS = {
@@ -129,7 +129,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 24 * 3600
 CSRF_TRUSTED_ORIGINS = [
-    'https://ahadu.up.railway.app',
+    'https://ahadu-bingo.up.railway.app',
 ]
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
