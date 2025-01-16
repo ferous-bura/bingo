@@ -1,0 +1,529 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahadu Bingo Game</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css" rel="stylesheet" /> <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'bingo_static/css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'bingo_static/css/select_cartella.css' %}">
+  <link rel="stylesheet" href="{% static 'bingo_static/css/sidebar_toggle.css' %}">
+  <link rel="stylesheet" href="{% static 'bingo_static/css/nav.css' %}">
+  <!-- report  -->
+
+  <style>
+    .reportModal {
+      background-color: rgb(223, 223, 223) !important;
+    }
+
+    #dateSearchModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+
+
+  <style>
+    #toggleFullscreen {
+      padding: 10px 20px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: rgb(214, 214, 214);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #toggleFullscreen:hover {
+      background-color: rgb(179, 179, 179);
+    }
+
+    i {
+      font-size: 20px;
+    }
+
+    /* nav styles for user */
+    nav {
+      /* color: white; */
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    nav .user-info span {
+      font-size: 14px;
+    }
+
+    nav .logout {
+      text-decoration: none;
+      color: #d63031;
+      background-color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    nav .logout:hover {
+      background-color: #d63031;
+      color: white;
+    }
+
+    #slider {
+      width: 300px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+
+    <!-- Side-Nav -->
+    <div class="side-navbar active-nav d-flex justify-content-between flex-wrap flex-column" id="sidebar">
+      <ul class="nav flex-column text-white w-100">
+        <a href="/" class="nav-link h2 text-black my-2">
+          Maya </br>Games
+        </a>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#dashboardMenu" aria-expanded="false">
+            <i class="bx bxs-dashboard"></i>
+            <span class="mx-2">Dashboard</span>
+          </a>
+          <div class="expand" id="dashboardMenu">
+            <ul class="nav flex-column ms-3">
+              <li><a href="#" class="nav-link">Balance</a></li>
+              <li><a href="#" class="nav-link">Credit</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" id="openDateSearchModal">
+            <i class="bx bx-bar-chart"></i>
+            <span class="mx-2">Sales Report</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <div class="form-group mb-3">
+            
+            <label class="mx-2 text-black" for="gamePattern"><i class="bx bx-grid"></i>  Select Game Pattern</label>
+            <select id="gamePattern" class="form-control" name="game_pattern">
+              {% for pattern in game_pattern_list %}
+              <option value="{{ pattern }}" {% if pattern == game_pattern %}selected{% endif %}>
+                {{ pattern|capfirst }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#voiceMenu" aria-expanded="false">
+            <i class="bx bx-microphone"></i>
+            <span class="mx-2">Voice</span>
+          </a>
+          <div class="collapse" id="voiceMenu">
+            <ul class="nav flex-column ms-3">
+              <li><a href="#" class="nav-link" id="maleVoice">Male Voice</a></li>
+              <li><a href="#" class="nav-link" id="femaleVoice">Female Voice</a></li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <!-- <i class="bx bx-log-out"></i> -->
+            <form method="post" action="/logout/">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-light d-flex align-items-center">
+                <i class="bx bx-log-out mx-1"></i>
+                Logout
+              </button>
+            </form>
+          </a>
+        </li>
+      </ul>
+
+      <span class="nav-link h4 w-100 mb-5">
+        <a href=""><i class="bx bxl-instagram-alt text-white"></i></a>
+        <a href=""><i class="bx bxl-twitter px-2 text-white"></i></a>
+        <a href=""><i class="bx bxl-facebook text-white"></i></a>
+      </span>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="p-1 my-container active-cont">
+      <!-- Top Nav -->
+      <nav class="navbar top-navbar navbar-light px-5">
+        <a class="btn border-0" id="menu-btn"><i class="bx bx-menu"></i></a>
+
+        <!-- <div class="header d-flex justify-content-between align-items-center px-4 py-2"> -->
+        <h4 class="brand-name">Maya</h4>
+
+        <div class="winnings-section text-center mt-4">
+          <h4>Total Winnings</h4>
+
+          <h2>
+            <span id="navTotalPayable">0.00 Birr</span>
+          </h2>
+        </div>
+
+        <div class="cartella-info">
+          <span id="navCartellaCount">0</span> Cartellas Selected |
+        </div>
+
+        <button id="toggleFullscreen">
+          <i class="bx bx-fullscreen" id="fullscreenIcon"></i>
+          Toggle Fullscreen
+        </button>
+
+        <div class="header-icons d-flex align-items-center">
+          <div class="notification-dropdown">
+            <button id="notificationBtn" class="btn btn-sm btn-outline-secondary">🔔</button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#">Notification 1</a>
+              <a class="dropdown-item" href="#">Notification 2</a>
+            </div>
+          </div>
+        </div>
+        <!-- </div> -->
+        <div class="logo">Bingo Game</div>
+        <div class="user-info">
+          <span>Welcome, {{ username }}</span>
+          <a href="{% url 'logout' %}" class="logout">Logout</a>
+        </div>
+      </nav>
+      <!--End Top Nav -->
+
+      <!-- Main Content -->
+      <div id="main-content" class="col-md-12">
+
+        <!-- Game Area -->
+        <div class="row">
+          <div class="col-10">
+
+            <div class="game-area text-center py-4">
+              <!-- Bingo Grid Placeholder -->
+              <div class="bingo-grid">
+                <table class="table table-borderless table-sm">
+                  <tbody>
+                    <tr>
+                      <td class="number-box"><span class="bingo-letter">B</span></td>
+                      <td class="number-box">1</td>
+                      <td class="number-box">2</td>
+                      <td class="number-box">3</td>
+                      <td class="number-box">4</td>
+                      <td class="number-box">5</td>
+                      <td class="number-box">6</td>
+                      <td class="number-box">7</td>
+                      <td class="number-box">8</td>
+                      <td class="number-box">9</td>
+                      <td class="number-box">10</td>
+                      <td class="number-box">11</td>
+                      <td class="number-box">12</td>
+                      <td class="number-box">13</td>
+                      <td class="number-box">14</td>
+                      <td class="number-box">15</td>
+                    </tr>
+                    <tr>
+                      <td class="number-box"><span class="bingo-letter">I</span></td>
+                      <td class="number-box">16</td>
+                      <td class="number-box">17</td>
+                      <td class="number-box">18</td>
+                      <td class="number-box">19</td>
+                      <td class="number-box">20</td>
+                      <td class="number-box">21</td>
+                      <td class="number-box">22</td>
+                      <td class="number-box">23</td>
+                      <td class="number-box">24</td>
+                      <td class="number-box">25</td>
+                      <td class="number-box">26</td>
+                      <td class="number-box">27</td>
+                      <td class="number-box">28</td>
+                      <td class="number-box">29</td>
+                      <td class="number-box">30</td>
+                    </tr>
+                    <tr>
+                      <td class="number-box"><span class="bingo-letter">N</span></td>
+                      <td class="number-box">31</td>
+                      <td class="number-box">32</td>
+                      <td class="number-box">33</td>
+                      <td class="number-box">34</td>
+                      <td class="number-box">35</td>
+                      <td class="number-box">36</td>
+                      <td class="number-box">37</td>
+                      <td class="number-box">38</td>
+                      <td class="number-box">39</td>
+                      <td class="number-box">40</td>
+                      <td class="number-box">41</td>
+                      <td class="number-box">42</td>
+                      <td class="number-box">43</td>
+                      <td class="number-box">44</td>
+                      <td class="number-box">45</td>
+                    </tr>
+                    <tr>
+                      <td class="number-box"><span class="bingo-letter">G</span></td>
+                      <td class="number-box">46</td>
+                      <td class="number-box">47</td>
+                      <td class="number-box">48</td>
+                      <td class="number-box">49</td>
+                      <td class="number-box">50</td>
+                      <td class="number-box">51</td>
+                      <td class="number-box">52</td>
+                      <td class="number-box">53</td>
+                      <td class="number-box">54</td>
+                      <td class="number-box">55</td>
+                      <td class="number-box">56</td>
+                      <td class="number-box">57</td>
+                      <td class="number-box">58</td>
+                      <td class="number-box">59</td>
+                      <td class="number-box">60</td>
+                    </tr>
+                    <tr>
+                      <td class="number-box"><span class="bingo-letter">O</span></td>
+                      <td class="number-box">61</td>
+                      <td class="number-box">62</td>
+                      <td class="number-box">63</td>
+                      <td class="number-box">64</td>
+                      <td class="number-box">65</td>
+                      <td class="number-box">66</td>
+                      <td class="number-box">67</td>
+                      <td class="number-box">68</td>
+                      <td class="number-box">69</td>
+                      <td class="number-box">70</td>
+                      <td class="number-box">71</td>
+                      <td class="number-box">72</td>
+                      <td class="number-box">73</td>
+                      <td class="number-box">74</td>
+                      <td class="number-box">75</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+
+              <div class="control-panel">
+                <div class="btn-group">
+
+                  <button id="selectCartella" class="btn btn-primary">Select Cartella</button>
+                  <button id="startGame" class="btn btn-success">Start Game</button>
+                  <button id="pauseGame" class="btn btn-warning">Pause Game</button>
+                  <button id="resetGame" class="btn btn-danger">Reset Game</button>
+
+                  <form method="POST" action=".">
+                    {% csrf_token %}
+                    <!-- Your form fields here -->
+                    <input type="hidden">
+                    <input type="hidden" value="{{ unfinished_transaction_id }}" name="unfinished_transaction_id">
+                  </form>
+
+                  <label for="speed">Game Speed: <span id="speedValue">3000</span> ms</label>
+                  <div id="slider"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-2">
+            {% include 'bingo/calls.html' %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  {% include "bingo/report.html" %}
+  {% include "bingo/check_winner.html" %}
+  {% include "bingo/reset_modal.html" %}
+  <!-- Modal for Cartella Selection -->
+  <div id="cartellaModal" class="modal" aria-labelledby="cartellaModalLabel" aria-hidden="true">
+    <div class="modal-content">
+      <!-- Close Button (X) -->
+      <button id="closeModal" class="close-btn">&times;</button>
+      <h2 id="cartellaModalLabel" class="text-center">Select Cartella</h2>
+
+      <!-- Top row with Game Type, Bet, Add Cartella, and Action Buttons -->
+      <div class="top-row">
+        <div class="game-type boxed">
+          <label for="bet" class="form-label">Bet Amount</label>
+          <div class="bet-controls">
+            <button id="decreaseBet" class="btn btn-danger">-</button>
+            <input type="number" id="bet" class="form-control text-center" value="20" min="5" />
+            <button id="increaseBet" class="btn btn-success">+</button>
+          </div>
+        </div>
+        <div class="add-cartella-input boxed">
+          <label for="cartellaInput" class="form-label">Add Cartella</label>
+          <div class="input-group">
+            <input type="number" id="cartellaInput" placeholder="Add Cartella" class="form-control" />
+            <button id="addCartellaBtn" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+        <div class="add-cartella-input boxed">
+          <div class="payable-display">Payable</div>
+          <div id="totalPayable" class="payable-display">$0</div>
+        </div>
+        <div class="add-cartella-input boxed">
+          <div class="payable-display">Cartella</div>
+          <div id="totalSelectable" class="payable-display">0</div>
+        </div>
+        <!-- Save and Clear Buttons -->
+        <div class="action-buttons">
+          <button id="clearSelection" class="btn btn-warning">Clear</button>
+          <button id="saveSelection" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+
+      <!-- Grid of numbers 1-100 -->
+      <div id="cartellaGrid" class="cartella-grid"></div>
+    </div>
+  </div>
+  <div class="cartellas_list" style="display: none;">{{ cartellas }}</div>
+  <div class="game_pattern_list" style="display: none;">{{ game_pattern_list }}</div>
+  <footer>
+    © 2025 My Website
+  </footer>
+  <style>
+    .table {
+      background-color: transparent !important;
+    }
+  </style>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{% static 'bingo_static/js/main.js' %}"></script>
+  <script src="{% static 'bingo_static/js/select_cartella.js' %}"></script>
+  <script src="{% static 'bingo_static/js/sidebar_toggle.js' %}"></script>
+
+  <!-- report modal -->
+  <script>
+    $(document).ready(function () {
+      // Show the modal
+      $("#openDateSearchModal").on("click", function () {
+        $("#dateSearchModal").show();
+      });
+
+      // Hide the modal
+      $("#closeReportModal").on("click", function () {
+        $("#dateSearchModal").hide();
+      });
+
+      // Handle the date search form submission
+      $("#dateSearchForm").on("submit", function (e) {
+        e.preventDefault();
+        const startDate = $("#startDate").val();
+        // const endDate = $("#endDate").val();
+        fetchReports(startDate);
+        // fetchReports(startDate, endDate);
+      });
+
+      function fetchReports(startDate = "", endDate = "") {
+        $.ajax({
+          url: "/reports/",
+          method: "GET",
+          data: {
+            start_date: startDate,
+            // end_date: endDate,
+          },
+          success: function (response) {
+            const tableBody = $("#reportsTable tbody");
+            tableBody.empty(); // Clear previous data
+
+            // Update header with totals
+            const modalHeader = $(".report-header");
+            const totalBalance = parseFloat(response.total_balance) || 0;
+            const totalTransactions = response.total_transactions || 0;
+            const totalWinning = parseFloat(response.total_winning) || 0;
+
+            // Update header with totals and apply styles
+            modalHeader.find("h3").html(`
+                <span style="font-size: 24px; color: black;">Total Balance: ${totalBalance.toFixed(2)}</span>
+                <br>
+                <span style="font-size: 16px; color: black;">Total Transactions: ${totalTransactions}</span>
+                <br>
+                <span style="font-size: 16px; color: black;">Total Winning: ${totalWinning.toFixed(2)}</span>
+            `);
+            if (response.data.length === 0) {
+              tableBody.append("<tr><td colspan='12'>No data available</td></tr>");
+            } else {
+              response.data.forEach((row) => {
+                tableBody.append(`
+                        <tr>
+                            <td>${row.date}</td>
+                            <td>${row.time}</td>
+                            <td>${row.bet}</td>
+                            <td>${row.player_number}</td>
+                            <td>${row.total_won}</td>
+                            <td>${row.cut}</td>
+                            <td>${row.won}</td>
+                            <td>${row.call_number}</td>
+                            <td>${row.winners}</td>
+                            <td>${row.branch}</td>
+                            <td>${row.cashier}</td>
+                            <td>${row.balance}</td>
+                        </tr>
+                    `);
+              });
+            }
+          },
+          error: function () {
+            alert("Failed to fetch reports. Please try again.");
+          },
+        });
+      }
+
+
+    });
+  </script>
+
+  <!-- fullscreen  -->
+  <script>
+    const toggleButton = document.getElementById('toggleFullscreen');
+    const fullscreenIcon = document.getElementById('fullscreenIcon');
+
+    toggleButton.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+        });
+        fullscreenIcon.classList.replace('bx-fullscreen', 'bx-exit-fullscreen');
+      } else {
+        document.exitFullscreen();
+        fullscreenIcon.classList.replace('bx-exit-fullscreen', 'bx-fullscreen');
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        fullscreenIcon.classList.replace('bx-exit-fullscreen', 'bx-fullscreen');
+      }
+    });
+  </script>
+
+</body>
+
+</html>

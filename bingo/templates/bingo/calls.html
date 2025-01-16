@@ -1,0 +1,123 @@
+{% load static %}
+<div class="bingo-circle">
+    <div class="circle-inner" id="bingoCircleInner">
+        <div class="bingo-circle">
+            <span id="bingoText">Let's Play BINGO!</span>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+    <div class="info-item" style="margin-right: 20px;">
+        <strong>Total Calls:</strong> <span id="totalCalls" style="font-weight: normal;">0</span>
+    </div>
+    <div class="info-item">
+        <strong>Previous Call:</strong> <span id="previousCall" style="font-weight: normal;">0</span>
+    </div>
+</div>
+
+<div class="form-control" style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+    <input id="checkCartella" type="text" placeholder="Cartella Number" class="form-control" style="flex: 1; padding: 10px; font-size: 16px;">
+    <button id="check-winner-btn" class="btn btn-primary" type="submit" style="padding: 10px 20px; font-size: 16px;">Check</button>
+</div>
+
+<input type="hidden" id="check_csrf" value="{{ csrf_token }}">
+
+<style>
+    .bingo-circle {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        /* Makes the outer circle round */
+        background-color: white;
+        /* Outer circle stays white */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        /* Adds subtle shadow for depth */
+        border: 5px solid white;
+        /* Outer border */
+    }
+
+    .circle-inner {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        /* Makes the inner circle round */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        /* Default color for the inner circle */
+        color: black;
+        /* Default text color */
+        font-size: 20px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        /* Smooth color transition */
+    }
+
+    .bingo-circle:before {
+        content: "";
+        width: 180px;
+        /* Inner red border size */
+        height: 180px;
+        border: 2px solid red;
+        border-radius: 50%;
+        position: absolute;
+    }
+
+    .bingo-circle:hover {
+        transform: scale(1.1);
+    }
+
+    #bingoText {
+        font-family: "Arial", sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        color: #000;
+        /* Black text */
+        z-index: 1;
+        /* Ensures text is above the circle */
+    }
+
+    .bingo-info {
+        background-color: #e20303;
+        display: flex;
+        /* Align items side by side */
+        justify-content: space-around;
+        /* Add space between items */
+        align-items: center;
+        /* Center items vertically */
+        margin-top: 20px;
+        font-size: 24px;
+        /* Make the text larger */
+        font-weight: bold;
+        /* Make the text bold */
+        color: #ffffff;
+        /* Set text color to white */
+    }
+
+    .info-item {
+        /* Add a dark background to highlight the text */
+        padding: 10px 20px;
+        /* Add padding for better visibility */
+        border-radius: 8px;
+        /* Round the corners */
+        text-align: center;
+        /* Center-align text within each box */
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        /* Add subtle shadow for a 3D effect */
+        transition: transform 0.2s ease, background-color 0.2s ease;
+        /* Smooth hover effect */
+    }
+
+    .info-item:hover {
+        transform: scale(1.1);
+        /* Slightly enlarge on hover */
+        background-color: #6e1c1c;
+        /* Change background color on hover */
+    }
+</style>

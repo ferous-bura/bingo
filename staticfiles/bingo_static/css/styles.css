@@ -1,0 +1,196 @@
+.bingo {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+/* Active Number */
+.active {
+  background-color: #28a745;
+  /* Green for active numbers */
+  color: white;
+  animation: zoomInOutRotate 2s ease-in-out;
+}
+
+/* Animated Number */
+.animated {
+  background-color: #ffc107;
+  /* Yellow for animated numbers */
+  color: white;
+  animation: zoomInOutRotate 2s ease-in-out;
+}
+
+/* Default Number */
+.default {
+  background-color: #f8f9fa;
+  color: black;
+}
+
+
+/* Animation */
+@keyframes zoomInOutRotate {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    transform: scale(1.2) rotate(180deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Header Styles */
+.header {
+  background-color: #b3b3b3;
+  color: white;
+  padding: 10px 20px !important;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  height: 10vh;
+}
+
+.header .brand-name {
+  margin: 0;
+}
+
+.header .header-icons button {
+  margin-left: 10px;
+}
+
+.bingo-grid {
+  height: 70vh;
+}
+
+/* Game Area Styles */
+.game-area {
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.current-number {
+  font-size: 3rem;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.control-panel button {
+  margin: 0 30px;
+}
+
+/* Winnings Section Styles */
+.winnings-section h4 {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.winnings-section h2 {
+  font-size: 2.5rem;
+  /* color: #28a745; */
+}
+
+/* Modal Grid for Cartella */
+#cartellaGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+#cartellaGrid div {
+  background-color: #f8f9fa;
+  padding: 20px;
+  text-align: center;
+  font-size: 1.2em;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+#cartellaGrid div:hover {
+  background-color: #e9ecef;
+}
+
+
+/* Basic animation for active number */
+.number-box.active {
+  animation: bounce 1s ease-in-out;
+  /* Example animation */
+  color: white;
+  background-color: black !important;
+}
+
+/* Optional: You can use animate.css if you prefer */
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Reset style after animation */
+.number-box.animated {
+  background-color: #f8f9fa;
+}
+
+/* Style for the number-box */
+.table > :not(caption) > * > * {
+  background-color: transparent !important;
+  border: 6px solid transparent !important;
+}
+.number-box {
+  border-radius: 50%;
+  width: 10vh;
+  height: 10vh;
+  align-items: center;
+  justify-content: center;
+  font-family: "ZCOOL QingKe HuangYou","Roboto Condensed","Helvetica",cursive;
+  font-optical-sizing: auto;
+  font-style:normal;
+  font-variation-settings:
+    "wdth" 75;  
+
+  font-size: 3em;
+  font-weight: bolder;
+  transition: background-color 0.3s;
+}
+
+/* Make the table borderless */
+.table-borderless {
+  border: none;
+  /* Remove the borders */
+}
+
+/* Style for the first letters (B, I, N, G, O) */
+.bingo-letter {
+  color: red;
+  /* Change this to your desired color */
+}
+
+.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+  padding: 0;background-color: white !important;
+}

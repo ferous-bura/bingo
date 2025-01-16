@@ -1,0 +1,68 @@
+{% load static %}
+<!-- Bingo Result Modal -->
+<div class="modal fade" id="bingoResultModal" tabindex="-1" aria-labelledby="bingoResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bingoResultModalLabel">Bingo Result</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Message will be dynamically inserted -->
+                <div id="bingoMessage" class="mb-3"></div>
+
+                <!-- Cartella Results -->
+                <div id="cartellaResult" class="d-flex flex-wrap"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="continueGameBtn" class="btn btn-success" data-bs-dismiss="modal">pass</button>
+                <button id="endGameBtn" class="btn btn-danger" disabled>End Game</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.check-cartella-grid {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 10px;
+	margin-top: 20px;
+	width: 50% !important;
+	height: 90% !important;
+}
+
+    .cartella-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #ddd;
+        background-color: #f9f9f9 !important;
+        color: #000;
+        padding: 10px;
+        font-weight: bold;
+        border-radius: 5px;
+        font-size: 2rem;
+    }
+
+    .cartella-cell.matched {
+        background-color: #11c517 !important;
+    }
+
+    .cartella-item {
+        color: white;
+        font-size: 8rem;
+    }
+
+    .cartella-cell.unmatched {
+        background-color: #d60116 !important;
+    }
+
+    /* For the modal, ensure the grid aligns to the right */
+    #cartellaResult {
+        flex-grow: 1;
+        display: flex;
+        justify-content: flex-end;
+        height: 100% !important;
+    }
+</style>

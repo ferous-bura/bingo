@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Game</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Welcome to Bingo!</h1>
+        <div id="game-info" class="alert alert-info d-none">
+            <p><strong>Unfinished Game Detected!</strong></p>
+            <p>Transaction ID: <span id="unfinished-transaction"></span></p>
+            <button id="resume-game-btn" class="btn btn-primary">Resume Game</button>
+        </div>
+        
+        <div id="start-game-section">
+            <h2>Start a New Game</h2>
+            <form id="start-game-form">
+                <div class="mb-3">
+                    <label for="cartellas" class="form-label">Selected Cartellas (comma-separated)</label>
+                    <input type="text" class="form-control" id="cartellas" placeholder="e.g., 12,21,35,56">
+                </div>
+                <div class="mb-3">
+                    <label for="bet-amount" class="form-label">Bet Amount</label>
+                    <input type="number" class="form-control" id="bet-amount" placeholder="Enter your bet amount">
+                </div>
+                <div class="mb-3">
+                    <label for="game-type" class="form-label">Game Type</label>
+                    <select class="form-control" id="game-type">
+                        <option value="1">Type 1</option>
+                        <option value="2">Type 2</option>
+                        <option value="3">Type 3</option>
+                    </select>
+                </div>
+                <button type="button" id="start-game-btn" class="btn btn-success">Start Game</button>
+            </form>
+        </div>
+
+        <div id="game-result-section" class="mt-5 d-none">
+            <h2>Game Result</h2>
+            <p><strong>Result:</strong> <span id="game-result"></span></p>
+            <p><strong>New Balance:</strong> <span id="new-balance"></span></p>
+            <p><strong>Agent Cut:</strong> <span id="cut"></span></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+</body>
+</html>
+<script>
+    
+$(document).ready(function () {
+    // Check for unfinished game
+    const unfinishedGame = "{{ unfinished_game }}" === "true"; // Replace with backend context
+
+    if (unfinishedGame) {
+        $("#game-info").removeClass("d-none");
+        $("#unfinished-transaction").text("{{ transaction_id }}"); // Replace with backend context
+    }
+
+    // Resume unfinished game
+    $("#resume-game-btn").click(function () {
+        // Logic for resuming the game
+        alert("Resuming game...");
+        // Fetch and display game details (AJAX call if needed)
+    });
+
+    // Start new game
+    $("#start-game-btn").click(function () {
+        const cartellas = $("#cartellas").val().split(",").map(Number);
+        const betAmount = parseFloat($("#bet-amount").val());
+        const gameType = $("#game-type").val();
+
+        if (cartellas.length === 0 || isNaN(betAmount) || !gameType) {
+            alert("Please fill out all fields correctly.");
+            return;
+        }
+
+        $.ajax({
+            url: "/start_bingo/", // Adjust URL as per your backend route
+            method: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" }, // Add CSRF token
+            data: JSON.stringify({
+                cartellas: cartellas,
+                bet_amount: betAmount,
+                game_type: gameType
+            }),
+            contentType: "application/json",
+            success: function (response) {
+                if (response.status === "success") {
+                    $("#game-result-section").removeClass("d-none");
+                    $("#game-result").text(response.result.join(", "));
+                    $("#new-balance").text(response.new_balance);
+                    $("#cut").text(response.cut);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr) {
+                alert(`Error: ${xhr.responseJSON.message}`);
+            }
+        });
+    });
+});
+
+</script>
+
+<div id="check-cartella-section" class="mt-5">
+    <h2>Check Cartella</h2>
+    <div class="mb-3">
+        <label for="cartella-index" class="form-label">Enter Cartella Index</label>
+        <input type="number" class="form-control" id="cartella-index" placeholder="Enter index of cartella">
+    </div>
+    <button type="button" id="check-cartella-btn" class="btn btn-primary">Check Cartella</button>
+    <div id="cartella-display" class="mt-4 d-none">
+        <h3>Generated Cartella</h3>
+        <table class="table table-bordered text-center" id="cartella-table"></table>
+        <h3 class="mt-4" id="check-result"></h3>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+    // Example ahadu_bingo for testing (replace with backend data)
+    const ahadu_bingo = [
+        [12, 21, 35, 56, 63, 2, 19, 44, 48, 62, 4, 25, 0, 52, 72, 9, 18, 34, 55, 69, 15, 28, 40, 53, 70],
+        // Add more cartellas here...
+    ];
+    const revealedNumbers = []; // Track revealed numbers
+
+    // Function to construct a Bingo Cartella
+    function constructCartella(numbers) {
+        let cartella = [];
+        let index = 0;
+
+        for (let row = 0; row < 5; row++) {
+            let cartellaRow = [];
+            for (let col = 0; col < 5; col++) {
+                if (row === 2 && col === 2) {
+                    cartellaRow.push(0); // Free space in the center
+                } else {
+                    cartellaRow.push(numbers[index]);
+                    index++;
+                }
+            }
+            cartella.push(cartellaRow);
+        }
+        return cartella;
+    }
+
+    // Function to display cartella in table format
+    function displayCartella(cartella) {
+        const $table = $("#cartella-table");
+        $table.empty();
+
+        cartella.forEach(row => {
+            const $tr = $("<tr></tr>");
+            row.forEach(num => {
+                const isRevealed = revealedNumbers.includes(num) || num === 0;
+                const $td = $("<td></td>")
+                    .text(num === 0 ? "Free" : num)
+                    .addClass(isRevealed ? "bg-success text-white" : "bg-light");
+                $tr.append($td);
+            });
+            $table.append($tr);
+        });
+    }
+
+    // Function to check for allowed patterns
+    function checkPatterns(cartella) {
+        const patterns = {
+            straight: [],
+            inclined: [],
+            corners: [[0, 0], [0, 4], [4, 0], [4, 4]],
+        };
+
+        // Add straight lines (rows and columns)
+        for (let i = 0; i < 5; i++) {
+            patterns.straight.push([...Array(5).keys()].map(j => [i, j])); // Rows
+            patterns.straight.push([...Array(5).keys()].map(j => [j, i])); // Columns
+        }
+
+        // Add inclined lines (diagonals)
+        patterns.inclined.push([...Array(5).keys()].map(i => [i, i])); // Top-left to bottom-right
+        patterns.inclined.push([...Array(5).keys()].map(i => [i, 4 - i])); // Top-right to bottom-left
+
+        // Check each pattern
+        const checkPattern = pattern => pattern.every(([r, c]) => revealedNumbers.includes(cartella[r][c]) || cartella[r][c] === 0);
+
+        for (const [name, patternList] of Object.entries(patterns)) {
+            if (patternList.some(checkPattern)) {
+                return name; // Return the first matching pattern
+            }
+        }
+
+        return null; // No patterns matched
+    }
+
+    // Check Cartella Button Click
+    $("#check-cartella-btn").click(function () {
+        const cartellaIndex = parseInt($("#cartella-index").val(), 10);
+
+        if (isNaN(cartellaIndex) || cartellaIndex < 0 || cartellaIndex >= ahadu_bingo.length) {
+            alert("Invalid cartella index.");
+            return;
+        }
+
+        const selectedCartella = ahadu_bingo[cartellaIndex];
+        const cartella = constructCartella(selectedCartella);
+
+        // Display cartella
+        displayCartella(cartella);
+        $("#cartella-display").removeClass("d-none");
+
+        // Check patterns
+        const result = checkPatterns(cartella);
+        const $result = $("#check-result");
+
+        if (result) {
+            $result.text(`Winner! Pattern: ${result}`).addClass("text-success");
+        } else {
+            $result.text("No winning patterns found.").addClass("text-danger");
+        }
+    });
+
+    // Example: Revealing numbers for testing
+    revealedNumbers.push(...[12, 21, 35, 56, 63, 2, 19, 44, 48, 62]); // Mock revealed numbers
+});
+
+</script>

@@ -1,0 +1,195 @@
+/* General Modal Styles */
+/* Close button style */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: transparent;
+  color: white;
+  border-radius: 50%; /* Makes the button circular */
+  width: 50px; /* Adjust width to make it round */
+  height: 50px; /* Adjust height to make it round */
+  font-size: 50px; /* Adjust font size */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0; /* Remove any padding */
+}
+
+.close-btn:hover {
+  background-color: red;
+  /* background-color: white; */
+  color: white; /* Change text color to red */
+  border: 2px solid red; /* Circular border */
+  border-color: rgb(51, 11, 11); /* Ensure border stays red on hover */
+  padding: 10px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+close-report {
+  background-color: #001 !important;
+  
+}
+
+
+.modal-content {
+  max-width: 100%;
+  margin: 0 auto;
+  background: #1c1c1c;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  font-family: Arial, sans-serif;
+  color: #ffffff;
+  position: relative;
+}
+
+
+/* Top Row Sticky */
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  position: sticky;  /* Makes the top row sticky */
+  top: 0;  /* Sticks it to the top */
+  z-index: 10;  /* Ensures it stays above other content when scrolling */
+  padding-top: 20px;
+}
+
+/* Fixing the sticky effect */
+.top-row > div {
+  flex: 1;
+  margin-right: 10px;
+}
+
+/* Cartella Grid */
+.cartella-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: scroll; /* Adds scroll for grid */
+}
+
+/* Modal Scroll Adjustment */
+#cartellaModal .modal-content {
+  max-height: 100vh; /* Limits the modal's height */
+  overflow-y: auto; /* Adds scroll to modal content */
+}
+
+/* Modal Heading */
+#cartellaModalLabel {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* Top Row Alignment */
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+/* Boxed Format */
+.boxed {
+  padding: 15px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #2a2a2a;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Bet Controls */
+.bet-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bet-controls input {
+  max-width: 100px;
+  margin: 0 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+/* Add Cartella Input */
+.add-cartella-input input {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+/* Totals */
+.payable-display {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Cartella Grid */
+.cartella-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #2a2a2a;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.cartella-grid .card-box {
+  background-color: #444;
+  color: #000;
+  padding: 20px;
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cartella-grid .card-box:hover {
+  transform: scale(1.1);
+  background-color: #007bff !important;
+  color: white;
+}
+
+.cartella-grid .card-box.selected {
+  background-color: #007bff !important;
+  color: white;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.action-buttons button {
+  font-size: 1rem;
+  padding: 10px 15px;
+}
