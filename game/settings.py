@@ -131,7 +131,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SESSION_COOKIE_AGE = 24 * 3600
 CSRF_TRUSTED_ORIGINS = [
     'https://bingolottery.onrender.com',
-    'lotterybingo.pythonanywhere.com',
+    'https://lotterybingo.pythonanywhere.com',
 ]
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
