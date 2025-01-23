@@ -51,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+LOGIN_URL = '/login/'  # Adjust this path to your login page
+
 LOGIN_REDIRECT_URL = '/'  # Set this to the desired redirect URL after login
 LOGOUT_REDIRECT_URL = '/users/login/'  # Set this to the desired redirect URL after logout
 ROOT_URLCONF = 'game.urls'
@@ -126,7 +128,7 @@ EMAIL_HOST = 'smtp-mail.outlook.com'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 24 * 3600
 CSRF_TRUSTED_ORIGINS = [
     'https://ahadu-bingo.up.railway.app',

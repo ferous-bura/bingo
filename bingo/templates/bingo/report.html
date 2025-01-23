@@ -6,14 +6,19 @@
 
         <div class="modal-content reportModal">
             <div class="modal-header report-header">
-                <h3 class="px-5">Reports</h3>
+                <div class="report-middle">
+                    <h3 class="px-5">Reports</h3>
+                </div>
+                <div class="report-right">
+                </div>
+                <div class="report-left"></div>
                 <button type="button" id="closeReportModal" class="close-btn close-report">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="dateSearchForm">
                     <label for="startDate">Start Date:</label>
                     <input type="date" id="startDate" name="start_date">
-    <!--                 
+                    <!--
                     <label for="endDate">End Date:</label>
                     <input type="date" id="endDate" name="end_date">
                     -->
@@ -34,7 +39,7 @@
                                 <th>Winners</th>
                                 <th>Branch</th>
                                 <th>Cashier</th>
-                                <th>Balance</th>
+                                <!-- <th>Balance</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -42,8 +47,48 @@
                         </tbody>
                     </table>
                 </div>
-                
+
             </div>
         </div>
     </div>
 </div>
+
+
+<style>
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .report-left,
+    .report-middle,
+    .report-right {
+        flex: 1;
+        /* Equal space for each section */
+        text-align: center;
+    }
+
+    .report-left {
+        text-align: left;
+    }
+
+    .report-middle {
+        text-align: right;
+    }
+
+    .report-item {
+        font-size: 1rem;
+    }
+
+    .report-item span {
+        font-weight: bold;
+    }
+
+    .report-middle .report-item {
+        color: red;
+        /* Style for total balance */
+        font-size: 1.2rem;
+        /* Slightly larger font for emphasis */
+    }
+</style>

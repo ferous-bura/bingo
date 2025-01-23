@@ -1,0 +1,110 @@
+<style>
+    /* Styling for the bingo grid */
+    .pattern-bingo-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 50px);
+        grid-gap: 5px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pattern-bingo-cell {
+        width: 50px;
+        height: 50px;
+        background-color: white;
+        border: 1px solid #000;
+        text-align: center;
+        line-height: 50px;
+        font-size: 18px;
+    }
+
+    .pattern-bingo-cell.active {
+        background-color: navy;
+        color: white;
+    }
+
+    .pattern-form-control {
+        width: 200px;
+        margin: 20px auto;
+    }
+
+    .pattern-clear-btn {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: navy;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+/* 
+    #bingoContainer {
+        display: none;
+    } */
+</style>
+
+<!-- Modal Structure -->
+<div class="modal fade" id="bingoPatternModal" tabindex="-1" aria-labelledby="bingoPatternModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bingoPatternModalLabel">Bingo Pattern Selection</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div>
+
+            <div class="form-group select-pattern">
+                <select id="gamePattern" name="game_pattern" class="form-control">
+{{game_pattern}}
+                  {% for key, value in game_pattern_list.items %}
+                  <option value="{{ key }}" {% if forloop.first %}selected{% endif %}>
+                    {{ value }}
+                  </option>
+                  {% endfor %}
+
+                </select>
+              </div>
+
+            <button class="pattern-clear-btn" id="clearPatterns">Clear Patterns</button>
+          </div>
+  
+          <div id="bingoContainer">
+            <div class="pattern-bingo-grid" id="patternBingoGrid">
+              <!-- Grid cells -->
+              <div class="pattern-bingo-cell" data-index="1"></div>
+              <div class="pattern-bingo-cell" data-index="2"></div>
+              <div class="pattern-bingo-cell" data-index="3"></div>
+              <div class="pattern-bingo-cell" data-index="4"></div>
+              <div class="pattern-bingo-cell" data-index="5"></div>
+              <div class="pattern-bingo-cell" data-index="6"></div>
+              <div class="pattern-bingo-cell" data-index="7"></div>
+              <div class="pattern-bingo-cell" data-index="8"></div>
+              <div class="pattern-bingo-cell" data-index="9"></div>
+              <div class="pattern-bingo-cell" data-index="10"></div>
+              <div class="pattern-bingo-cell" data-index="11"></div>
+              <div class="pattern-bingo-cell" data-index="12"></div>
+              <div class="pattern-bingo-cell" data-index="13"></div>
+              <div class="pattern-bingo-cell" data-index="14"></div>
+              <div class="pattern-bingo-cell" data-index="15"></div>
+              <div class="pattern-bingo-cell" data-index="16"></div>
+              <div class="pattern-bingo-cell" data-index="17"></div>
+              <div class="pattern-bingo-cell" data-index="18"></div>
+              <div class="pattern-bingo-cell" data-index="19"></div>
+              <div class="pattern-bingo-cell" data-index="20"></div>
+              <div class="pattern-bingo-cell" data-index="21"></div>
+              <div class="pattern-bingo-cell" data-index="22"></div>
+              <div class="pattern-bingo-cell" data-index="23"></div>
+              <div class="pattern-bingo-cell" data-index="24"></div>
+              <div class="pattern-bingo-cell" data-index="25"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <!-- <button type="button" class="btn btn-primary">Save Pattern</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+    

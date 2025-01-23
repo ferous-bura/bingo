@@ -1,5 +1,10 @@
 from django.urls import path
-from .views import main, logout_view, login_view, fetch_reports, start_bingo, check_winner, close_game
+from .views.bingo import main
+from .views.start import start_bingo
+from .views.auth import CustomPasswordChangeView, logout_view, login_view
+from .views.report import fetch_reports
+from .views.check_winner import check_winner 
+from .views.manage_bingo import refund_bingo, close_game
 
 urlpatterns = [
     path('', main, name='bingo'),
@@ -8,6 +13,7 @@ urlpatterns = [
     path("login/", login_view, name="login"),
     path("start-bingo/", start_bingo, name="start"),
     path("check-bingo-winner/", check_winner, name="check"),
-    path("close_bingo/", close_game, name="close"),
-
+    path("close-bingo/", close_game, name="close"),
+    path("refund-bingo/", refund_bingo, name="refund"),
+    path('change-password/', CustomPasswordChangeView.as_view(), name='change_password'),
 ]

@@ -11,4 +11,4 @@ class BingoDailyRecordAdmin(admin.ModelAdmin):
 
 @admin.register(BingoTransaction)
 class BingoTransactionAdmin(admin.ModelAdmin):
-    list_display = ("time", "bet", "player_number", "total_won", "cut", "won","game_type")
+    list_display = ("time", "bet", "player_number", "total_won", "cut", "won","game_type", "winners", "submitted_cartella", "started", "ended")

@@ -17,15 +17,15 @@ $(document).ready(function () {
             headers: { "X-CSRFToken": getCSRFToken() }, // CSRF Token
             success: function (response) {
                 if (response.status === "success") {
-                    alert(response.message);
+                    showModalAlert(response.message);
                     updateLocalStorage(response);
                     updateUI(response.new_balance);
                 } else {
-                    alert(response.message);
+                    showModalAlert(response.message);
                 }
             },
             error: function (xhr) {
-                alert(`Error: ${xhr.responseJSON.message}`);
+                showModalAlert(`Error: ${xhr.responseJSON.message}`);
             },
         });
     }

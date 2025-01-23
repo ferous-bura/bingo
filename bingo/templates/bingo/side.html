@@ -1,0 +1,217 @@
+{% load static %}
+<input type="hidden" id="check_csrf" value="{{ csrf_token }}">
+
+<div class="form-control" style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+    <input id="checkCartella" type="text" placeholder="Cartella Number" class="form-control"
+        style="flex: 1; padding: 10px; font-size: 16px;">
+    <button id="check-winner-btn" class="btn btn-primary" type="submit"
+        style="padding: 10px 20px; font-size: 16px;">Check</button>
+</div>
+
+<div class="row shadow-sm p-1 mb-2">
+
+    <div class="col-4">
+        <!-- <label for="speed">Speed: <span id="speedValue">3</span> s</label> -->
+        <div id="slider"></div>
+    </div>
+    <div class="col-4">
+
+        <!-- <label for="voiceSelect" class="form-label">Change Voice</label> -->
+        <select id="voiceSelect" class="form-select">
+            <option value="male" id="maleVoice">Male Voice</option>
+            <option value="female" id="femaleVoice">Female Voice</option>
+        </select>
+
+    </div>
+    <div class="col-4">
+        <div class="nav-item shadow-effect title-box">
+            <a href="#" class="nav-link text-black text-center w-100" id="toggleFullscreen">
+                <i class="bx bx-fullscreen" id="fullscreenIcon"></i>
+                <!-- Fullscreen -->
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="bingo-circle">
+    <div class="circle-inner" id="bingoCircleInner">
+        <div id="bingo-2nd-circle">
+            <div id="bingoContainer" class="d-flex flex-column align-items-center">
+                <p id="bingoLetterText">BINGO</p>
+                <br>
+                <p id="bingoText"></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="last-five-container">
+    <p style="color: grey; font-size: 20px;">Last 5 Calls</p>
+    <div id="last-five-calls" class="d-flex gap-2"></div>
+</div>
+
+<button type="button" class="btn btn-light mt-2 w-100" data-bs-toggle="modal" data-bs-target="#bingoHistoryModal">
+    Call History
+</button>
+
+<div class="mt-4" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div class="info-item w-100" style="margin-right: 10px;">
+        <span id="totalCalls" style="font-weight: normal;">0</span>
+    </div>
+    <div class="info-item w-100">
+        <span id="previousCall" style="font-weight: normal;">0</span>
+    </div>
+</div>
+
+<style>
+    .spherical {
+    width: 100px; /* Adjust size as needed */
+    height: 100px; /* Make width and height equal */
+    border-radius: 50%; /* Makes the element a perfect circle */
+    background: radial-gradient(circle at 30% 30%, #ffffff, #4caf50); /* Creates a gradient */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Adds depth with a shadow */
+    display: flex; /* Center content if needed */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    color: white; /* Text color */
+    font-size: 1rem; /* Adjust text size */
+    font-weight: bold; /* Bold text */
+    text-align: center; /* Center text */
+}
+
+    .bingo-circle {
+        aspect-ratio: 1;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .circle-inner {
+        width: 100%;
+        height: 100%;
+        border: 50px solid black;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 10px;
+    }
+
+    #bingo-2nd-circle {
+        border: 10px solid black;
+        /* Default border color */
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+        /* Inner white circle */
+    }
+
+    #bingoContainer {
+        line-height: initial;
+        margin: 0;
+    }
+
+    #bingoText {
+        font-family: "Arial", sans-serif;
+        font-size: 9rem;
+        font-weight: bold;
+        text-align: center;
+        color: black;
+    }
+
+    #bingoLetterText {
+        font-size: 4rem;
+        margin: 0;
+    }
+
+    .bingo-info {
+        background-color: #e20303;
+        display: flex;
+        /* Align items side by side */
+        justify-content: space-around;
+        /* Add space between items */
+        align-items: center;
+        /* Center items vertically */
+        margin-top: 20px;
+        font-size: 24px;
+        /* Make the text larger */
+        font-weight: bold;
+        /* Make the text bold */
+        color: #ffffff;
+        /* Set text color to white */
+    }
+
+    .info-item {
+        padding: 10px;
+        border-radius: 40px;
+        text-align: center;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, background-color 0.2s ease;
+        background-color: #0000001f;
+        color: black;
+        font-size: 5rem;
+        font-weight: bolder;
+    }
+
+
+
+    .roll-number {
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .history-number-circle {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .history-number-circle.green {
+        background-color: #4caf50;
+    }
+
+    /* Green for B */
+    .history-number-circle.orange {
+        background-color: #ff9800;
+    }
+
+    /* Orange for I */
+    .history-number-circle.purple {
+        background-color: #9c27b0;
+    }
+
+    /* Purple for N */
+    .history-number-circle.blue {
+        background-color: #2196f3;
+    }
+
+    /* Blue for G */
+    .history-number-circle.red {
+        background-color: #f44336;
+    }
+
+    /* Red for O */
+
+    #last-five-calls {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        justify-content: center;
+    }
+</style>

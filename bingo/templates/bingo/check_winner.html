@@ -36,9 +36,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        border: 1px solid #ddd;
-        background-color: #f9f9f9 !important;
-        color: #000;
+        border: 1px solid #3d3d3d;
         padding: 10px;
         font-weight: bold;
         border-radius: 5px;
@@ -47,6 +45,7 @@
 
     .cartella-cell.matched {
         background-color: #11c517 !important;
+        border: 3px solid #ddd;
     }
 
     .cartella-item {
@@ -55,7 +54,9 @@
     }
 
     .cartella-cell.unmatched {
-        background-color: #d60116 !important;
+        background-color: #6c4444 !important;
+        border: 3px solid #423939;
+        color: #000;
     }
 
     /* For the modal, ensure the grid aligns to the right */
@@ -64,5 +65,11 @@
         display: flex;
         justify-content: flex-end;
         height: 100% !important;
+    }
+
+    .freeMatch {
+    background-color: #fff !important;
+    color: #ac0000;
+    border: 3px solid #423939;
     }
 </style>

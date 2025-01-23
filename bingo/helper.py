@@ -24,11 +24,15 @@ def validate_cartellas(cartella_list, valid_range):
     return all(c in valid_range for c in cartella_list)
 # Set up logger
 
-def process_bingo_transaction(user, cartella_list, bet_amount, game_type):
+def process_bingo_transaction(user, cartella_list, bet_amount, game_type, game_pattern, transaction_id):
     """Process a bingo transaction including balance updates and validation."""
     try:
-        # Fetch user information
-        bingo_user = BingoUser.objects.get(owner=user)
+        # Retrieve BingoUser instance for the current user
+        try:
+            bingo_user = BingoUser.objects.get(owner=user)
+        except BingoUser.DoesNotExist:
+            raise ValueError("BingoUser for the current user does not exist.")
+
         bet_amount = Decimal(bet_amount)  # Ensure bet_amount is a Decimal
         
         win = bet_amount * Decimal(len(cartella_list))
@@ -54,12 +58,6 @@ def process_bingo_transaction(user, cartella_list, bet_amount, game_type):
         # Update or create the daily record
         today = now().date()
 
-        # Retrieve BingoUser instance for the current user
-        try:
-            bingo_user = BingoUser.objects.get(owner=user)
-        except BingoUser.DoesNotExist:
-            raise ValueError("BingoUser for the current user does not exist.")
-
         # Now use the BingoUser instance for get_or_create
         daily_record, created = BingoDailyRecord.objects.get_or_create(user=bingo_user, date=today)
 
@@ -70,24 +68,56 @@ def process_bingo_transaction(user, cartella_list, bet_amount, game_type):
 
         # Generate result and create transaction
         result = generate_result()
-        transaction = BingoTransaction.objects.create(
-            started=True,
-            daily_record=daily_record,
-            game_type=game_type,
-            result=result,
-            bet=bet_amount,
-            player_number=len(cartella_list),
-            total_won=Decimal(0),
-            cut=agent_cut,
-            won=player_win,
-            call_number=0,
-            winners=0
-        )
-        
-        print(f'Transaction created successfully: {transaction}')
+        submitted_cartella = []
+        submitted_cartella.append(str(cartella_list))
+
+        # transaction_id = daily_record.total_transactions
+        # transaction, created = BingoTransaction.objects.get_or_create(
+        #     started=True,
+        #     game_pattern=game_pattern,
+        #     daily_record=daily_record,
+        #     game_type=game_type,
+        #     result=result,
+        #     bet=bet_amount,
+        #     player_number=len(cartella_list),
+        #     submitted_cartella=",".join(submitted_cartella),
+        #     total_won=win,
+        #     cut=agent_cut,
+        #     won=player_win,
+        #     call_number=0,
+        #     transaction_id=transaction_id
+        # )
+
+        # Prepare default values for the transaction
+        defaults = {
+            'started': True,
+            'game_pattern': game_pattern,
+            'daily_record': daily_record,
+            'game_type': game_type,
+            'result': result,
+            'bet': bet_amount,
+            'player_number': len(cartella_list),
+            'submitted_cartella': ",".join(submitted_cartella),
+            'total_won': win,
+            'cut': agent_cut,
+            'won': player_win,
+            'call_number': 0,
+        }
+
+        if transaction_id:
+            BingoTransaction.objects.filter(transaction_id=transaction_id).update(**defaults)
+            transaction = BingoTransaction.objects.get(transaction_id=transaction_id)
+            print(f'Transaction updated successfully: {transaction}')
+        else:
+            transaction_id = daily_record.total_transactions
+            transaction = BingoTransaction.objects.create(
+                transaction_id=transaction_id,
+                **defaults
+            )
+            print(f'Transaction created successfully: {transaction}')
 
         return transaction, result, bingo_user.balance
-    
+
     except ObjectDoesNotExist as e:
         logger.error(f"Object does not exist: {e}")
         raise ValueError(f"Error processing the transaction: {e}")
@@ -100,89 +130,35 @@ def process_bingo_transaction(user, cartella_list, bet_amount, game_type):
         logger.exception(f"Unexpected error occurred: {e}")
         raise ValueError("An unexpected error occurred while processing the transaction.")
 
-def check_bingo(transaction, submitted_cartella, call_number, game_pattern):
-    print('checking winner')
-
-    """
-    Check if the submitted cartella is a winner based on the game pattern and result.
-    """
+def refund_bingo_transaction(user, transaction_id):
+    """Process a bingo transaction including balance updates and validation."""
     try:
-        print(f"Checking bingo winner: transaction={transaction.id}, submitted_cartella={submitted_cartella}, call_number={call_number}")
+        # Retrieve BingoUser instance for the current user
+        try:
+            bingo_user = BingoUser.objects.get(owner=user)
+        except BingoUser.DoesNotExist:
+            raise ValueError("BingoUser for the current user does not exist.")
         
-        # Retrieve the relevant cartella
-        if transaction.daily_record.user.branch == 'ahadu_bingo':
-            try:
-                cartella = ahadu_bingo[int(submitted_cartella) - 1]
-                print(f"Retrieved cartella for 'ahadu_bingo': {cartella}")
-            except IndexError as e:
-                print(f"Error retrieving cartella for 'ahadu_bingo': {e}")
-                return False
-        else:
-            cartella = submitted_cartella
-            print(f"Retrieved cartella for other branch: {cartella}")
-        
-        # Ensure call number is enough to check
-        if call_number < 5:
-            print("Failed: call number is not enough for validation")
-            return False
+        transaction = BingoTransaction.objects.get(transaction_id=transaction_id, daily_record__user__owner=user)
+        result = generate_result()
+        transaction.result = result
+        transaction.call_number = 0
+        transaction.winners = ''
+        transaction.ended = False
+        transaction.refunded = True
+        transaction.save()
 
-        # Slice result to the current call number
-        current_result = transaction.result[:call_number]
-        print(f"Current result (up to call number): {current_result}")
+        print(f'Transaction created successfully: {transaction}')
+        return transaction, result, bingo_user.balance
 
-        # Match game pattern to the respective function
-        pattern_checkers = {
-            'full_house': is_full_house,
-            'two_line': is_two_lines,
-            'one_line': is_one_line,
-            'corners': is_corners,
-        }
-        pattern_checker = pattern_checkers.get(transaction.game_pattern, is_full_house)
-        print(f"Selected pattern checker: {transaction.game_pattern}")
-
-        # Check the cartella against the pattern
-        is_winner = pattern_checker(cartella, current_result)
-        print(f"Pattern evaluation result: {is_winner}")
-        return is_winner
+    except ObjectDoesNotExist as e:
+        logger.error(f"Object does not exist: {e}")
+        raise ValueError(f"Error processing the transaction: {e}")
+    
+    except ValueError as e:
+        logger.error(f"Value error: {e}")
+        raise ValueError(f"Error processing the transaction: {e}")
+    
     except Exception as e:
-        print(f"Error in check_bingo_winner: {e}")
-        return False
-
-def is_full_house(cartella, result):
-    """Check if all numbers in the cartella are in the result."""
-    try:
-        print(f"Checking Full House for cartella: {cartella}, result: {result}")
-        return all(num in result for num in cartella)
-    except Exception as e:
-        print(f"Error in is_full_house: {e}")
-        return False
-
-def is_two_lines(cartella, result):
-    """Check if two complete lines (rows) in the cartella are in the result."""
-    try:
-        rows = [cartella[i:i + 5] for i in range(0, len(cartella), 5)]
-        print(f"Checking Two Lines for cartella rows: {rows}, result: {result}")
-        return sum(all(num in result for num in row) for row in rows) >= 2
-    except Exception as e:
-        print(f"Error in is_two_lines: {e}")
-        return False
-
-def is_one_line(cartella, result):
-    """Check if at least one complete line (row) in the cartella is in the result."""
-    try:
-        rows = [cartella[i:i + 5] for i in range(0, len(cartella), 5)]
-        print(f"Checking One Line for cartella rows: {rows}, result: {result}")
-        return any(all(num in result for num in row) for row in rows)
-    except Exception as e:
-        print(f"Error in is_one_line: {e}")
-        return False
-
-def is_corners(cartella, result):
-    """Check if the four corners of the cartella are in the result."""
-    try:
-        corners = [cartella[0], cartella[4], cartella[20], cartella[24]]
-        print(f"Checking Corners for cartella corners: {corners}, result: {result}")
-        return all(num in result for num in corners)
-    except Exception as e:
-        print(f"Error in is_corners: {e}")
-        return False
+        logger.exception(f"Unexpected error occurred: {e}")
+        raise ValueError("An unexpected error occurred while processing the transaction.")
