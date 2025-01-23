@@ -12,7 +12,7 @@ ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
     'bingolottery.onrender.com',
-    
+    'lotterybingo.pythonanywhere.com',
     ]
 
 MESSAGE_TAGS = {
@@ -131,6 +131,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SESSION_COOKIE_AGE = 24 * 3600
 CSRF_TRUSTED_ORIGINS = [
     'https://bingolottery.onrender.com',
+    'lotterybingo.pythonanywhere.com',
 ]
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
