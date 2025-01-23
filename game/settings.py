@@ -31,8 +31,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'apscheduler',
-    'rest_framework',
     'bingo',
 ]
 
