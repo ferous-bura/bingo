@@ -1,4 +1,7 @@
-/* General Modal Styles */
+@font-face {
+  font-family: 'digital-7';
+  src: url('/static/fonts/digital-7.ttf') format('truetype');
+}
 /* Close button style */
 .close-btn {
   position: absolute;
@@ -74,7 +77,6 @@ close-report {
   border-radius: 5px;
   background: #ffffff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  max-height: 400px;
   overflow-y: scroll; /* Adds scroll for grid */
 }
 
@@ -175,11 +177,15 @@ close-report {
   transform: scale(1.1);
   background-color: #007bff !important;
   color: white;
+  border-radius: 30px;
+  border: 10px solid #fff;
 }
 
 .cartella-grid .card-box.selected {
   background-color: #007bff !important;
   color: white;
+  border-radius: 30px;
+  border: 10px solid #fff !important;
 }
 
 /* Action Buttons */
@@ -190,6 +196,160 @@ close-report {
 }
 
 .action-buttons button {
-  font-size: 1rem;
-  padding: 10px 15px;
+  font-size: 2rem;
+  padding: 20px 50px;
+  color: #fff;
+}
+
+
+/* Modal Grid for Cartella */
+#cartellaGrid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+}
+
+#cartellaGrid div {
+  background-color: #f8f9fa;
+  padding: 10px;
+  text-align: center;
+  font-size: 3rem;
+  border-radius: 30px;
+  border: 10px solid #000;
+  cursor: pointer;
+}
+
+#cartellaGrid div:hover {
+  background-color: #e9ecef;
+}
+
+
+/* Reset style after animation */
+.number-box.animated {
+  background-color: #f8f9fa;
+}
+
+.number-box {
+  /* border-radius: 50%; */
+  width: 10vh;
+  height: 10vh;
+  align-items: center;
+  justify-content: center;
+  /* font-family: "ZCOOL QingKe HuangYou","Roboto Condensed","Helvetica",cursive; */
+  font-family: 'digital-7', sans-serif;
+  font-optical-sizing: auto;
+  font-style:normal;
+  font-variation-settings:
+    "wdth" 75;  
+
+  font-size: 3em;
+  transition: background-color 0.3s;
+  padding: 0px !important;
+  /* margin: 5px;  */ 
+   /* display: inline-flex; */
+}
+.number-box > .bingo-letter {
+  font-family: "ZCOOL QingKe HuangYou","Roboto Condensed","Helvetica",cursive !important;
+
+}
+
+
+/* 
+.number-box.active {
+  animation: bounce 1s ease-in-out;
+  color: white;
+  background-color: black !important;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+} */
+
+
+/* Basic bounce animation (already in your code) */
+.number-box.active {
+  animation: bounce 0.3s ease-in-out, pulse 0.5s, shake 0.3s ease-in-out, rotate 0.3s linear, flash 0.5s ease-in-out;
+  color: white;
+  background-color: black !important;
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Shake animation */
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Rotate animation */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Flash animation */
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+tbody, td, tfoot, th, thead, tr {
+  border: 10px solid rgb(207, 207, 207);
+  padding : 10px 0 !important;
 }

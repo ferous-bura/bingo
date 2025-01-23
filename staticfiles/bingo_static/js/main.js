@@ -1,8 +1,16 @@
 // import { clearCartellaSelection } from './cartella.js';
 
 // clearCartellaSelection();
+// import { initializeGameState } from './gameState.js';
+// import { attachEventHandlers } from './eventHandlers.js';
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     initializeGameState();
+//     attachEventHandlers();
+// });
 
 $(document).ready(function () {
+    // Other logic
     const columns = {
         B: Array.from({ length: 15 }, (_, i) => i + 1),
         I: Array.from({ length: 15 }, (_, i) => i + 16),
@@ -11,53 +19,72 @@ $(document).ready(function () {
         O: Array.from({ length: 15 }, (_, i) => i + 61)
     };
 
-    let gameSpeed = parseInt(localStorage.getItem('gameSpeed')) || 3000; // Default to 3000ms
+    // Call the function once to check and set value
+    const unfinishedTransactionId = null;
+    const gameStateUrl = '127.0.0.1:8000'; // Adjust the URL path as needed
+    const currentDate = new Date();
+    let gameSpeed = parseInt(localStorage.getItem('gameSpeed'), 10) || 3000; // Default to 3000ms
     let gameInterval;
     let isGameRunning = false;
-    let transactionId = null;
+    let refund = localStorage.getItem('refund') === 'true';
+    let storedDate = getDateFromLocalStorage();
+
+    let transactionId = localStorage.getItem('transactionId') || null;
+    // let transactionId = null;
+
+    let resultIndex = parseInt(localStorage.getItem('resultIndex'), 10) || 0;
+    let balance = parseInt(localStorage.getItem('balance'), 10) || 0;
+    // let resultIndex = 0; // Used for tracking the current number in the result sequence
+
+    // let resultNumbers = localStorage.getItem('resultNumbers') || null;
+    let resultNumbers = localStorage.getItem('resultNumbers');
+    resultNumbers = resultNumbers ? JSON.parse(resultNumbers) : null;
+
+    // let resultNumbers = null;
+
     let isGamePaused = false;
-    let resultIndex = 0; // Used for tracking the current number in the predefined sequence
     // Default settings if nothing is stored
     let voiceChoice = localStorage.getItem('voiceChoice') || 'female'; // Default to female
-    let totalCalls = 0; // To track the total number of calls
-    let previousCall = 0; // To store the last called number
+    let totalCalls = parseInt(localStorage.getItem('totalCalls'), 10) || 0;
+    console.log('local storage totalCalls:', totalCalls);
+    // let totalCalls = 0; // To track the total number of calls
+    let previousCall = parseInt(localStorage.getItem('previousCall'), 10) || 0;
+    // let previousCall = 0; // To store the last called number
     // selected cartella states
-    let resultNumbers = null;
 
-    // // Helper to get CSRF token and check unfinished transaction id
-    // function checkUnfinishedTransactionId() {
-    //     const unfinishedTransactionId = document.querySelector("[name=unfinished_transaction_id]").value;
-    //     console.log('unfinishedTransactionId', unfinishedTransactionId);
+    // Initialize gamePattern with the current value
+    let gamePattern = localStorage.getItem('gamePattern') || 'default';
+    function getDateFromLocalStorage() {
+        const storedDate = localStorage.getItem('storedDate');
+        return storedDate ? new Date(storedDate) : null; // Convert back to Date object if exists
+    }
+    // Attach a change event listener to update gamePattern dynamically
+    $("#gamePattern").on("change", function () {
+        gamePattern = $(this).val() || 'default';
+        localStorage.setItem('gamePattern', gamePattern);
+        console.log("Game pattern updated:", gamePattern);
+    });
 
-    //     if (unfinishedTransactionId) {
-    //         document.querySelector("[name=unfinished_transaction_id]").value = '';
-    //         return unfinishedTransactionId;
-    //     } else {
-    //         return null;
-    //     }
-    // }
+    $("#speedValue").text(gameSpeed / 1000);
+    $('#refundGame').addClass("d-none");
+    $("#pauseGame").prop("disabled", true);
 
-    // // Call the function once to check and set value
-    // const transactionId = checkUnfinishedTransactionId();
-    // if (transactionId != null) {
-    //     console.log('transactionId', transactionId);
-    //     isGameRunning = true;
-    //     isGamePaused = false;
-    // }
+    $('#logout').on('click', function () {
+        localStorage.clear();
+    });
 
     // Function to play audio based on the selected voice
     function playAudio(fileName) {
-        const male_audio = new Audio(`/static/bingo_static/audio/amharic/male/${fileName}`);
-        const female_audio = new Audio(`/static/bingo_static/audio/amharic/female/${fileName}`);
-
         // Play the selected voice
         if (voiceChoice === 'female') {
+            const female_audio = new Audio(`/static/bingo_static/audio/amharic/female/${fileName}`);
             female_audio.play().catch(error => {
-                console.error(`Audio file not found: ${fileName}`, error);
+                console.log(`Audio file not found: ${fileName}`, error);
             });
         } else {
+            const male_audio = new Audio(`/static/bingo_static/audio/amharic/male/${fileName}`);
             male_audio.play().catch(error => {
-                console.error(`Audio file not found: ${fileName}`, error);
+                console.log(`Audio file not found: ${fileName}`, error);
             });
         }
     }
@@ -75,13 +102,13 @@ $(document).ready(function () {
 
     // Initialize the slider for game speed
     $("#slider").slider({
-        min: 1000, // Minimum speed (faster)
+        min: 3000, // Minimum speed (faster)
         max: 10000, // Maximum speed (slower)
         value: gameSpeed, // Set the slider to saved game speed
         step: 500, // Increment steps
         slide: function (event, ui) {
             gameSpeed = ui.value; // Update game speed
-            $("#speedValue").text(gameSpeed); // Display updated speed
+            $("#speedValue").text(gameSpeed / 1000); // Display updated speed
             localStorage.setItem('gameSpeed', gameSpeed); // Save game speed to localStorage
             console.log('Game speed is', gameSpeed);
         },
@@ -97,72 +124,219 @@ $(document).ready(function () {
     // Function to play audio
     function playSpecialAudio(fileName) {
         const audio = new Audio(`/static/bingo_static/audio/special/${fileName}`);
+        console.log('Audio file found: ${fileName}');
 
         audio.play().catch(error => {
-            console.error(`Audio file not found: ${fileName}`, error);
+            console.log(`Audio file not found: ${fileName}`, error);
         });
     }
 
     // Function to start the game with predefined numbers
-    function startGameWithPredefinedNumbers() {
+    function playGame() {
         gameInterval = setInterval(function () {
+            console.log('resultIndex < resultNumbers.length');
+            console.log('resultNumbers length', resultNumbers.length);
+            console.log('resultIndex', resultIndex);
+            console.log('totalCalls', totalCalls);
+            
             if (resultIndex < resultNumbers.length) {
                 const number = resultNumbers[resultIndex];
+                localStorage.setItem('resultIndex', resultIndex);
                 audioFunction(number);
                 animateNumber(number);
                 updateBingoCircleText(number);
                 resultIndex++;
+                totalCalls++;
+
+                // Update total calls and previous call
+                // if (!closedBefore) {
+                //     totalCalls++;
+                // }
+                localStorage.setItem('totalCalls', totalCalls);
+                setTimeout(() => {
+                    addNumber(number);
+                }, 1000);
             } else {
+                localStorage.setItem('resultIndex', 0);
+                localStorage.setItem('totalCalls', 0);
+                localStorage.setItem('transactionId', 0);
                 clearInterval(gameInterval);
                 isGameRunning = false;
                 $("#startGame").prop("disabled", false);
                 $("#pauseGame").prop("disabled", true);
                 $("#resetGame").prop("disabled", false);
-                updateBingoCircleText("Game Over!");
+                resetGameConfirmed(); // check by uncommenting these bye
+                console.log('reset called from playGame');
+
+                updateBingoCircleText("Over!");
             }
 
         }, gameSpeed);
     }
 
-    function pauseGame(params) {
+    function pauseGame() {
         if (isGameRunning && !isGamePaused) {
             // Pause the game
             clearInterval(gameInterval);
             isGamePaused = true;
-            $("#pauseGame").text("Continue");
+            pauseIconToggle();
         }
     }
+
+    // Toggle between pause and play icons
+    function pauseIconToggle() {
+        var icon = $("#pauseGame").find("i");
+
+        if (icon.hasClass("fa-pause")) {
+            icon.removeClass("fa-pause").addClass("fa-play-circle");
+        } else {
+            icon.removeClass("fa-play-circle").addClass("fa-pause");
+        }
+    };
 
     // Method to toggle game pause and continue
     function togglePauseGame() {
+
         if (isGameRunning && !isGamePaused) {
             // Pause the game
             clearInterval(gameInterval);
             isGamePaused = true;
-            $("#pauseGame").text("Continue");
+            pauseIconToggle();
         } else if (isGamePaused) {
             // Continue the game
             isGamePaused = false;
-            startGameWithPredefinedNumbers();
-            $("#pauseGame").text("Pause");
+            playGame();
+            pauseIconToggle();
         }
     }
 
+    // Method to update the UI after resetting
+    function updateGameUIAfterReset() {
+        $("#startGame").prop("disabled", true);
+        $("#selectCartella").prop("disabled", false); // Enable "Select Cartella"
+        $("#pauseGame").prop("disabled", true);
+        $("#resetGame").prop("disabled", true);
+        $('#refundGame').addClass("d-none");
+        document.getElementById('totalCalls').textContent = 0;
+
+        // Reset Bingo circle text
+        updateBingoCircleText("BINGO!");
+
+        // Reset number styles (remove animation and color changes)
+        $(".table .number-box").removeClass('active animated')
+            .css('color', '')
+            .css('background-color', '');
+        console.log('updateGameUIAfterReset');
+    }
+
     // Handle the reset confirmation
-    function resetGameConfirmed() {
+    function resetGameConfirmed(fund = false) {
+        clearNumberHistory();
+
         currentNumberIndex = 0;
         resultIndex = 0;
+        totalCalls = 0;
         previousCall = 0;
+        transactionId = 0;
 
+        refund = false;
+        localStorage.setItem('refund', 'false');
+        localStorage.setItem('transactionId', 0);
+        localStorage.setItem('resultIndex', 0);
+        localStorage.setItem('previousCall', 0);
+        localStorage.setItem('totalCalls', 0);
         // Clear interval and disable buttons
         clearInterval(gameInterval);
         isGameRunning = false;
         isGamePaused = false;
-        window.clearCartellaSelection();
         // Update UI elements
         updateGameUIAfterReset();
-        // Hide the modal
+        if (!fund) {
+            window.clearCartellaSelection();
+            // Hide the modal
+            closeGame();
+        } else {
+            $("#startGame").prop("disabled", false);
+        }
+        $("#pauseGame").prop("disabled", true);
+        var icon = $("#pauseGame").find("i");
+        if (icon.hasClass("fa-play-circle")) {
+            icon.removeClass("fa-play-circle").addClass("fa-pause");
+        }
+        $("#resetGame").prop("disabled", true);
+        console.log('reset is done ');
+        $('#checkCartella').attr('placeholder', 'Enter Cartella Number');    
     }
+
+    function closeGame() {
+        makeGetRequest(
+            "/close-bingo/",
+            function (response) {
+                console.log('Game state data:', response.data);
+                // Process the response data as needed
+            },
+            function (errorMessage) {
+                console.log('close game error:', errorMessage);
+                // alert(errorMessage || "Unable to fetch game state.");
+            }
+        );
+    }
+
+    function responseStartAction(response) {
+        balance = response.new_balance;
+        resultNumbers = response.result;
+        transactionId = response.transaction_id;
+
+        localStorage.setItem('balance', balance);
+        localStorage.setItem('resultNumbers', JSON.stringify(resultNumbers));
+        localStorage.setItem('transactionId', transactionId);
+        // localStorage.setItem('storedDate', currentDate);
+        localStorage.setItem('storedDate', currentDate.toISOString())
+        successStart(resultNumbers, transactionId, balance);
+
+        // Play start game audio
+        // playSpecialAudio("start_game.mp3");
+
+        // Start the game after a short delay to allow the start audio to finish
+        // setTimeout(() => playGame(), 1000);
+    }
+
+    function refundGame(transaction_id) {
+
+        const data = {
+            transaction_id: transaction_id
+        };
+
+        makePostRequest(
+            "/refund-bingo/",
+            data,
+            function (response) {
+                console.log('refund Server response:', response);
+                $('#refundGame').addClass("d-none");
+                refund = true;
+                localStorage.setItem('refund', refund.toString());
+                resetGameConfirmed(true);
+        console.log('reset called from refundGame()');
+
+                responseStartAction(response);
+            },
+            function (errorMessage) {
+                console.log('error', errorMessage)
+                // alert(errorMessage || "Unable to start the game.");
+            }
+        );
+    }
+
+    $("#refundGame").on("click", function () {
+        // Reset game state variables
+        if (!transactionId) {
+            $('#refundGame').addClass("d-none");
+            showModalAlert('Game Not Found Please Reset Game !!')
+            return;
+        }
+        refundGame(transactionId);
+
+    });
 
     $("#cancelReset").on("click", function () {
         $("#resetGameModal").modal("hide");
@@ -171,6 +345,8 @@ $(document).ready(function () {
     $("#confirmReset").on("click", function () {
         // Reset game state variables
         resetGameConfirmed();
+        console.log('reset called from confirm reset');
+
         $("#resetGameModal").modal("hide");
     });
 
@@ -179,27 +355,9 @@ $(document).ready(function () {
         $("#resetGameModal").modal("show");
     }
 
-    // Method to update the UI after resetting
-    function updateGameUIAfterReset() {
-        $("#startGame").prop("disabled", true);
-        $("#selectCartella").prop("disabled", false); // Enable "Select Cartella"
-        $("#pauseGame").prop("disabled", true);
-        $("#pauseGame").text("Pause");
-        $("#resetGame").prop("disabled", true);
-        document.getElementById('totalCalls').textContent = 0;
-
-        // Reset Bingo circle text
-        updateBingoCircleText("Let's Play BINGO!");
-
-        // Reset number styles (remove animation and color changes)
-        $(".table .number-box").removeClass('active animated')
-            .css('color', '')
-            .css('background-color', '');
-    }
-
     // Event handlers
     $("#pauseGame").on("click", togglePauseGame);
-    $("#resetGame").on("click", resetGame);
+    // $("#resetGame").on("click", resetGame);
 
     function audioFunction(number) {
         let prefix = '';
@@ -222,18 +380,26 @@ $(document).ready(function () {
                 return $(this).text() == number;
             });
 
+            const rotateDuration = gameSpeed - 500; // Set rotate animation duration based on gameSpeed
+
+            // Add 'active' class to trigger animation, then apply colors
             numberBox.addClass('active animated')
                 .css('color', 'white')
-                .css('background-color', 'black');
+                .css('background-color', 'black')
+                .css('animation-duration', `${rotateDuration}ms`);  // Set rotate duration dynamically
 
-            setTimeout(function () {
-                numberBox.removeClass('animated');
-            }, 1000);
-        }, 1000);
+            // Listen for when the animation ends
+            numberBox.on('animationend', function () {
+                // Remove 'animated' and 'active' classes after animation ends
+                numberBox.removeClass('animated active');
+            });
+
+        }, 1000); // Initial delay before animation starts (optional)
     }
 
+
     // Function to update the bingo circle text, total calls, and previous call
-    function updateBingoCircleText(number) {
+    function updateBingoCircleText(number, closedBefore = false) {
         let prefix = '';
 
         // Determine the prefix based on the number range
@@ -245,49 +411,65 @@ $(document).ready(function () {
 
         // Update the bingo text
         const bingoTextElement = document.getElementById('bingoText');
+        const bingoLetterTextElement = document.getElementById('bingoLetterText');
 
         // Change the background color based on the prefix
-        const bingoCircleInner = document.getElementById('bingoCircleInner');
-        // const bingoCircleElement = document.getElementById('bingoCircle');
+        const bingo2ndCircleElement = document.getElementById('bingo-2nd-circle');
+        const bingoCircleElement = document.getElementById('bingoCircleInner');
         let bgColor = '';
+        let blue = 'radial-gradient(circle at 30% 30%, #ffffff, #4caf50)';
+        let green = 'radial-gradient(circle at 30% 30%, #ffffff, #ff9800)';
+        let yellow = 'radial-gradient(circle at 30% 30%, #ffffff, #9c27b0)';
+        let red = 'radial-gradient(circle at 30% 30%, #ffffff, #2196f3)';
+        let magenta = 'radial-gradient(circle at 30% 30%, #ffffff, #f44336)';
         switch (prefix) {
             case 'B':
-                bgColor = 'lightblue';
+                bgColor = '#4caf50'; // Strong blue
                 break;
             case 'I':
-                bgColor = 'lightgreen';
+                bgColor = '#ff9800'; // Strong green
                 break;
             case 'N':
-                bgColor = 'lightyellow';
+                bgColor = '#9c27b0'; // Vivid yellow
                 break;
             case 'G':
-                bgColor = 'lightcoral';
+                bgColor = '#2196f3'; // Strong red
                 break;
             case 'O':
-                bgColor = 'lightpink';
+                bgColor = '#f44336'; // Bright magenta
                 break;
         }
+
 
         if (Number.isInteger(number)) {
 
             setTimeout(() => {
 
-                bingoTextElement.textContent = `${prefix}-${number}`;
-                bingoCircleInner.style.backgroundColor = bgColor;
+                bingoLetterTextElement.textContent = `${prefix}`;
+                bingoTextElement.textContent = `${number}`;
+                bingoCircleElement.style.borderColor = bgColor;
+                bingo2ndCircleElement.style.borderColor = bgColor;
 
-                // Update total calls and previous call
-                totalCalls++;
                 document.getElementById('totalCalls').textContent = totalCalls - 1;
                 document.getElementById('previousCall').textContent = previousCall || '0';
 
                 // Update previous call to the current number
                 previousCall = `${prefix}-${number}`;
+                localStorage.setItem('previousCall', previousCall);
             }, 1000);
 
         } else {
 
-            bingoTextElement.textContent = `Let's Play BINGO!`;
-            bingoCircleInner.style.backgroundColor = 'white';
+            bingoLetterTextElement.textContent = `BINGO!`;
+            bingoTextElement.textContent = ``;
+            bingoCircleElement.style.backgroundColor = 'white';
+            bingo2ndCircleElement.style.backgroundColor = 'white';
+            totalCalls = 0;
+            resultIndex = 0;
+
+            localStorage.setItem('totalCalls', 0);    
+            localStorage.setItem('resultIndex', 0);
+            localStorage.setItem('previousCall', 0);
 
             document.getElementById('totalCalls').textContent = '0';
             document.getElementById('previousCall').textContent = '0';
@@ -305,41 +487,64 @@ $(document).ready(function () {
         return document.querySelector("[name=csrfmiddlewaretoken]").value;
     }
 
-    function startBingo(cartellas, betAmount) {
-        var csrf_token = getCSRFToken();
-        console.log('bingo ', cartellas, betAmount, csrf_token);
-
-        $.ajax({
-            url: "/start-bingo/",
-            method: "POST",
-            headers: {
-                "X-CSRFToken": csrf_token // Pass CSRF token in the header
-            },
-            contentType: "application/json", // Send JSON data
-            data: JSON.stringify({
-                cartellas: cartellas,
-                bet_amount: betAmount
-            }),
-            success: function (response) {
-                console.log('server response: ', response);
-                if (response.status === "success") {
-                    updateBalance(response.new_balance);
-                    $("#game-numbers").text(response.result);
-                    resultNumbers = response.result;
-                    console.log("resultNumbers , ", resultNumbers);
-                    $("#start-game-section").addClass("d-none");
-                    $("#game-section").removeClass("d-none");
-                    transactionId = response.transaction_id;
-                } else {
-                    console.error("Error message from server:", response.message || "Unable to start the game.");
-                    alert(response.message || "Unable to start the game.");
-                }
-            },
-            error: function () {
-                alert("An error occurred while starting the game.");
-            }
-        });
+    function successStart(result, transaction_id, new_balance) {
+        updateBalance(new_balance);
+        $("#game-numbers").text(result);
+        resultNumbers = result;
+        $("#start-game-section").addClass("d-none");
+        $("#game-section").removeClass("d-none");
+        transactionId = transaction_id;
     }
+
+    function startBingo(cartellas, betAmount, gamePattern) {
+        $('#refundGame').addClass("d-none");
+        clearNumberHistory();
+        const data = {
+            cartellas: cartellas,
+            bet_amount: betAmount,
+            game_pattern: gamePattern
+        };
+
+        // Conditionally add transaction_id
+        console.log('refund in start', refund);
+        if (refund) {
+            data.transaction_id = transactionId;
+        }
+
+        makePostRequest(
+            "/start-bingo/",
+            data,
+            function (response) {
+                refund = false;
+
+                localStorage.setItem('refund', 'false');
+                balance = response.new_balance;
+                resultNumbers = response.result;
+                transactionId = response.transaction_id;
+
+                localStorage.setItem('totalCalls', totalCalls);
+                localStorage.setItem('balance', balance);
+                localStorage.setItem('resultNumbers', JSON.stringify(resultNumbers));
+                localStorage.setItem('transactionId', transactionId);
+                // localStorage.setItem('storedDate', currentDate);
+                localStorage.setItem('storedDate', currentDate.toISOString())
+                successStart(resultNumbers, transactionId, balance);
+
+                // Play start game audio
+                playSpecialAudio("start_game.mp3");
+
+                // Start the game after a short delay to allow the start audio to finish
+                setTimeout(() => playGame(), 1000);
+            },
+            function (errorMessage) {
+                resetGameConfirmed();
+                console.log('reset called from start');
+                showModalAlert(errorMessage || "Unable to start the game.");
+                // alert(errorMessage || "Unable to start the game.");
+            }
+        );
+    }
+
 
     // Usage inside another method
     function handleStartGameFormSubmit() {
@@ -349,68 +554,180 @@ $(document).ready(function () {
         });
     }
 
+    // Check if a given date matches the stored date
+    function isDateInLocalStorage() {
+        return storedDate && storedDate.getDate === currentDate.getDate; // Compare time values
+    }
+
+
+
+    // console.log('storedDate', storedDate);
+    // console.log('currentDate', currentDate);
+    if (isDateInLocalStorage()) {
+        checkForUnfinishedGame();
+        // console.log('storedDate', storedDate.getDate());
+        // console.log('currentDate', storedDate.getDate());
+    } else {
+        localStorage.clear()
+        // console.log('not storedDate', storedDate);
+        // console.log('not currentDate', currentDate);
+    }
+    // Assuming `resultNumbers` is an array of numbers
+    function animateNumbersSequentially(resultNumbers, resultIndex) {
+        let currentIndex = 0;
+
+        function processNumber() {
+            if (currentIndex <= resultIndex) {
+                const number = resultNumbers[currentIndex];
+
+                // Perform the desired actions
+                animateNumber(number);        // Function to animate the number
+                updateBingoCircleText(number, true); // Function to update the circle text
+                addNumber(number);            // Function to add the number to the board or list
+
+                currentIndex++; // Move to the next number
+
+                // Continue to the next number after the specified delay
+                setTimeout(processNumber, 10);
+            }
+        }
+
+        processNumber(); // Start the process
+    }
+
+
+
+    function checkForUnfinishedGame() {
+        // let transactionId = localStorage.getItem('transactionId') || '0';
+
+        console.log('result index', resultIndex);
+        console.log('result number', resultNumbers);
+        // let resultIndex = localStorage.getItem('resultIndex') || '0';
+        if (resultNumbers && resultIndex > 0 && resultIndex < 75) {
+
+            isGameRunning = true;
+            $("#pauseGame").prop("disabled", false);
+            $("#resetGame").prop("disabled", false);
+            $("#selectCartella").prop("disabled", true);
+            $("#startGame").prop("disabled", true);
+            $('#refundGame').addClass("d-none");
+
+            animateNumbersSequentially(resultNumbers, resultIndex);
+            // resultIndex++;
+
+            clearNumberHistory();
+            successStart(resultNumbers, transactionId, balance);
+            resultIndex++;
+            // totalCalls--;
+            pauseGame();
+
+        } else {
+            console.log('clear everything');
+        }
+
+    }
+
     // Start Game Animation with predefined numbers
     $("#startGame").on("click", function () {
-        if (!isGameRunning) {
+        var cartellaLength = cartellaState.selected.length;
+        if (!isGameRunning && cartellaLength > 0) {
             console.log('selected cartellas in start game:', cartellaState.selected);
+
             isGameRunning = true;
             $("#startGame").prop("disabled", true);
             $("#pauseGame").prop("disabled", false);
             $("#resetGame").prop("disabled", false);
-            $("#selectCartella").prop("disabled", true); // Disable "Select Cartella"
-            transactionId = null;
+            $("#selectCartella").prop("disabled", true);
+            $('#refundGame').addClass("d-none");
 
             // send request
             const cartellas = cartellaState.selected;
             const betAmount = cartellaState.betAmount;
 
-            startBingo(cartellas, betAmount); // Call the startBingo method
+            currentNumberIndex = 0;
+            resultIndex = 0;
+            totalCalls = 0;
+            previousCall = 0;
+            transactionId = 0;
 
-            // Play start game audio
-            playSpecialAudio("start_game.mp3");
+            localStorage.setItem('refund', 'false');
+            localStorage.setItem('transactionId', 0);
+            localStorage.setItem('resultIndex', 0);
+            localStorage.setItem('previousCall', 0);
+            localStorage.setItem('totalCalls', 0);
+            startBingo(cartellas, betAmount, gamePattern); // Call the startBingo method
 
-            // Start the game after a short delay to allow the start audio to finish
-            setTimeout(() => startGameWithPredefinedNumbers(), 2000);
         } else {
             console.log('game is running cant start another game');
         }
     });
 
+    // Add a blur event listener to replace the placeholder when clicking away
+    $('#checkCartella').on('blur', function () {
+        console.log('Input field lost focus!'); // Replace with your action
+        $(this).attr('placeholder', 'Enter Cartella Number'); // Reset placeholder
+    });
 
-    $("#check-winner-btn").click(function () {
+    $('#checkCartella').on('click', function () {
+        clearInterval(gameInterval);
+        console.log('Input field clicked!'); // Replace this with your desired action
+        $(this).css('border', '2px solid #007bff'); // Add a blue border
+
+        // Example action: Change the placeholder text
+        $(this).attr('placeholder', 'Enter Number...');
+        // Remove the border after 2 seconds
+        setTimeout(() => {
+            $(this).css('border', '1px solid #ced4da'); // Reset to default
+        }, 2000);
+    });
+
+    $("#check-winner-btn").on('click', function () {
+        clearInterval(gameInterval);
         let cartella = $("#checkCartella").val().trim(); // Get the value of the cartella input
-        let gamePattern = $("#gamePattern").val(); // Get the selected game pattern
         pauseGame();
 
 
         if (!cartella) {
-            showModal("Error", "Please enter a valid cartella number.");
+            showResultModal("Error", "Please enter a valid cartella number.");
             return;
         }
 
         if (!transactionId) {
-            showModal("Error", "Bingo game not found.");
+            showResultModal("Error", "Bingo game not found.");
             return;
         }
 
         if (cartellaState.selected.includes(cartella)) {
+            console.log('checking resultIndex: ',resultIndex);
+            console.log('checking totalCalls : ',totalCalls);
             $.ajax({
                 url: "/check-bingo-winner/",
                 method: "POST",
                 data: {
                     cartella: cartella,
                     transaction_id: transactionId,
-                    call_number: totalCalls,
+                    call_number: resultIndex,
                     game_pattern: gamePattern, // Include selected game pattern
                     csrfmiddlewaretoken: $("#check_csrf").val(), // CSRF token
                 },
+
                 success: function (response) {
                     if (response.success) {
                         const cartellasList = JSON.parse($(".cartellas_list").text());
                         const selectedCartella = cartellasList[cartella - 1];
+                        refund = response.refund;
+                        localStorage.setItem('refund', refund.toString());
+                        console.log('response', response);
+                        console.log('refund while checking', refund);
+
+                        if (refund) {
+                            $('#refundGame').removeClass("d-none");
+                        } else {
+                            $('#refundGame').addClass("d-none");
+                        }
 
                         if (response.is_winner) {
-                            showModal(
+                            showResultModal(
                                 "Congratulations!",
                                 `You won $${response.total_won}`,
                                 [{ number: cartella, isWinner: true }],
@@ -420,7 +737,7 @@ $(document).ready(function () {
                             );
                             $("#endGameBtn").prop("disabled", false); // Enable End Game button
                         } else {
-                            showModal(
+                            showResultModal(
                                 "Result",
                                 "Sorry, you did not win.",
                                 [{ number: cartella, isWinner: false }],
@@ -430,20 +747,20 @@ $(document).ready(function () {
                             );
                         }
                     } else {
-                        showModal("Error", response.error || "Error checking winner.");
+                        showResultModal("Error", response.error || "Error checking winner.");
                     }
                 },
                 error: function () {
-                    showModal("Error", "An error occurred while checking the winner.");
+                    showResultModal("Error", "An error occurred while checking the winner.");
                 },
             });
         } else {
-            showModal("Error", "Un-known cartella number.");
+            showResultModal("Un-known Cartella", "Un-known cartella number.");
         }
     });
 
     // Function to show the modal and render the 5x5 cartella grid
-    function showModal(title, message, cartellaResults = [], cartella = [], isWinner = false, gamePattern) {
+    function showResultModal(title, message, cartellaResults = [], cartella = [], isWinner = false, gamePattern) {
         $("#bingoResultModalLabel").text(title);
         $("#bingoMessage").text(message);
 
@@ -498,8 +815,10 @@ $(document).ready(function () {
                         .addClass("cartella-cell")
                         .text(cellValue === 0 ? 'Free' : cellValue) // Display "Free" for the free space
                         .toggleClass("matched", isMatched) // Apply 'matched' if the number is in the called results
-                        .toggleClass("unmatched", !isMatched); // Apply 'unmatched' if the number is not in the called results
-    
+                        .toggleClass("unmatched", !isMatched && cellValue != 0) // Apply 'unmatched' if the number is not in the called results
+                        .toggleClass("freeMatch", cellValue === 0);
+                        // .removeClass("unmatched", cellValue === 0); // Add 'freeMatch' class for free space
+
                     grid.append(cell);
                 });
             }
@@ -507,11 +826,19 @@ $(document).ready(function () {
             resultContainer.append(grid);
         }
 
-        // Show cartella results (e.g., win/loss icons)
         cartellaResults.forEach((result) => {
+            // Show cartella results (e.g., win/loss icons)
+            if (result.isWinner) {
+                $("#endGameBtn").prop("disabled", false); // Enable End Game button
+                setTimeout(() => playSpecialAudio("winner_.mp3"), 1000);
+            } else {
+                $("#endGameBtn").prop("disabled", true); // Enable End Game button
+                setTimeout(() => playSpecialAudio("loser_.mp3"), 1000);
+            }
+
             const icon = result.isWinner
-                ? '<span class="text-success ms-2">&#10003; Won</span>' // Checkmark
-                : '<span class="text-danger ms-2">&#10007; Lost</span>'; // Crossmark
+                ? '<span class="text-success ms-2">&#10003; Won👍!</span>' // Checkmark
+                : '<span class="text-danger ms-2">&#10007; Lost👎!</span>'; // Crossmark
 
             resultContainer.append(
                 `<div class="cartella-item d-flex align-items-center mb-2">
@@ -530,6 +857,8 @@ $(document).ready(function () {
         // Logic to end the game
         $("#bingoResultModal").modal("hide");
         resetGameConfirmed();
+        console.log('reset called from endGameBtn');
+
         // alert("Game ended. Thanks for playing!");
     });
 
@@ -538,5 +867,88 @@ $(document).ready(function () {
         // togglePauseGame(); // Resume the game
         $("#bingoResultModal").modal("hide");
     });
+
+
+    // initializeAndCheckUnfinishedTransactionId();
+
+    function initializeAndCheckUnfinishedTransactionId() {
+
+        // Update balance, cut percentage, and username
+        $('#balance').text(gameData.balance);
+        $('#cut-percentage').text(gameData.cut_percentage);
+        $('#username').text(gameData.username);
+
+        if (gameData.has_unfinished_game === 'true') {
+            // initializeUnfinishedGame(gameData);
+            transactionId = gameData.unfinished_transaction_id;
+            balance = gameData.game_pattern_list;
+            // 
+        } else {
+            // No unfinished game
+            $('#game-options').hide();
+            $('#game-section').addClass('d-none');
+        }
+    }
+
+    function initializeUnfinishedGame(gameData) {
+        console.log('Game Data:', gameData);
+
+        // Handle unfinished game
+        $('#game-options').show();
+        console.log('transactionId', transactionId);
+        isGameRunning = true;
+        isGamePaused = false;
+        $("#startGame").prop("disabled", true);
+        $("#pauseGame").prop("disabled", true);
+        $("#selectCartella").prop("disabled", true);
+        // transactionId = null;
+        updateBalance(gameData.balance);
+        $("#game-numbers").text(gameData.resultNumbers);
+        resultNumbers = gameData.resultNumbers;
+        console.log("resultNumbers , ", resultNumbers);
+        $("#start-game-section").addClass("d-none");
+        $("#game-section").removeClass("d-none");
+        cartellaState.betAmount = gameData.bet_amount;
+        cartellaState.selected = gameData.submitted_cartella;
+        transactionId = gameData.unfinished_transaction_id;
+        $('#resumeUnfinishedGame').off('click').on('click', function () {
+            resumeGame(gameData);
+        });
+        $('#resetGame').off('click').on('click', resetGameConfirmed);
+    }
+
+    function resumeGame(gameData) {
+        console.log('Resuming game with data:', gameData);
+
+        // Populate game section with unfinished game data
+        $('#game-section').removeClass('d-none');
+        $('#game-numbers').text(gameData.resultNumbers || 'No numbers yet');
+        // Other UI updates...
+    }
+
+    // function resetGame() {
+    //     const csrfToken = getCSRFToken(); // Get CSRF token for POST requests
+
+    //     $.ajax({
+    //         url: '/reset-game/', // Adjust the URL path
+    //         method: 'POST',
+    //         headers: {
+    //             'X-CSRFToken': csrfToken,
+    //         },
+    //         success: function (response) {
+    //             if (response.status === 'success') {
+    //                 alert(response.message);
+    //                 // Reset UI
+    //                 $('#game-options').hide();
+    //                 $('#game-section').addClass('d-none');
+    //             } else {
+    //                 console.log('Failed to reset game:', response.message);
+    //             }
+    //         },
+    //         error: function (xhr, status, error) {
+    //             console.log('Error resetting game:', error);
+    //         },
+    //     });
+    // }
 
 });

@@ -1,49 +1,91 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    min-height: 100vh;
-    background-color: #fff;
-  }
-  
-  .side-navbar {
-    width: 250px;
-    height: 100%;
-    position: fixed;
-    margin-left: -300px;
-    background-color: white;
-    transition: 0.3s;
-  }
-  
-  .nav-link:active,
-  .nav-link:focus,
-  .nav-link:hover {
-    background-color: #ffffff26;
-  }
-  
-  .my-container {
-    transition: 0.4s;
-  }
-  
-  .active-nav {
-    margin-left: 0;
-  }
-  
-  /* for main section */
-  .active-cont {
-    margin-left: 250px;
-  }
-  
-  #menu-btn {
-    background-color: #d4d4d4;
-    color: #000000;
-    margin-left: -62px;
-  }
-  
-  .my-container input {
-    border-radius: 2rem;
-    padding: 2px 20px;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+.side-navbar {
+  height: 100%;
+  position: fixed;
+  margin-left: -300px;
+  background-color: white;
+  transition: 0.3s;
+}
+
+.nav-link:active,
+.nav-link:focus,
+.nav-link:hover {
+  background-color: #ffffff26;
+}
+
+.my-container {
+  transition: 0.4s;
+}
+
+.active-nav {
+  margin-left: 0;
+}
+
+/* for main section */
+.active-cont {
+  margin-left: 190px;
+}
+
+#menu-btn {
+  background-color: #d4d4d4;
+  color: #000000;
+  margin-left: -62px;
+}
+
+
+.payable-title {
+  font-size: 1rem;
+}
+
+
+.logo {
+  border: 2px solid rgb(105, 105, 105);
+  border-radius: 20px;
+  height: 70px !important;
+  margin: 2px;
+}
+
+.logo:hover {
+  border: 2px solid #000000;
+}
+
+.toggle-side {
+	border: 1px solid rgb(162, 162, 162);
+	border-radius: 10px;
+	background-color: white;
+	padding: 10px !important;
+	margin: 2px;
+	width: 100%;
+	color: black;
+}
+.toggle-side:hover {
+	background-color: #ececec;
+	color: black !important;
+}
+.toggle-side.select-pattern {
+	color: black !important;
+  height: 100px !important;
+}
+
+.logo img {
+  max-height: 65px; /* Ensures the image height is consistent */
+  width: auto;      /* Maintains the aspect ratio */
+}
+
+
+.number-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px;
+}
