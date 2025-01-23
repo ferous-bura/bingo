@@ -36,7 +36,7 @@ def fetch_reports(request):
             "cut": float(transaction.cut),
             "won": float(transaction.won),
             "call_number": transaction.call_number,
-            "winners": transaction.winners,
+            "winners":transaction.winners if transaction.winners else transaction.submitted_cartella,
             "branch": transaction.daily_record.user.branch,
             "cashier": transaction.daily_record.user.owner.username,
             "balance": float(transaction.daily_record.user.balance),

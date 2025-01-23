@@ -165,7 +165,7 @@ $(document).ready(function () {
                 $("#startGame").prop("disabled", false);
                 $("#pauseGame").prop("disabled", true);
                 $("#resetGame").prop("disabled", false);
-                resetGameConfirmed();
+                resetGameConfirmed(); // check by uncommenting these bye
                 console.log('reset called from playGame');
 
                 updateBingoCircleText("Over!");
@@ -450,7 +450,6 @@ $(document).ready(function () {
                 bingoCircleElement.style.borderColor = bgColor;
                 bingo2ndCircleElement.style.borderColor = bgColor;
 
-                console.log('totalCalls+:', totalCalls);
                 document.getElementById('totalCalls').textContent = totalCalls - 1;
                 document.getElementById('previousCall').textContent = previousCall || '0';
 
