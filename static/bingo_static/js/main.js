@@ -837,7 +837,7 @@ $(document).ready(function () {
             }
 
             const icon = result.isWinner
-                ? '<span class="text-success ms-2">&#10003; Won👍!</span>' // Checkmark
+                ? '<span class="text-success ms-2">&#10003; Won</span>' // Checkmark
                 : '<span class="text-danger ms-2">&#10007; Lost</span>'; // Crossmark
 
             resultContainer.append(
