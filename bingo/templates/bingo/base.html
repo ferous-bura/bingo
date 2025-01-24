@@ -33,13 +33,18 @@
         <a href="/" class="nav-link h2 text-black my-2 logo">
           <img src="{% static 'logo.jpg' %}" alt="Maya Games Logo" class="img-fluid" style="max-height: 50px;">
         </a>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a href="#" class="nav-link toggle-side" id="openDBModal">
             <i class="bx bx-bar-chart"></i>
             <span class="mx-2">Sales Report</span>
           </a>
-        </li>
-
+        </li> -->
+        <li class="nav-item">
+          <a href="#" class="nav-link toggle-side" id="openDBModal">
+              <i class="bx bx-bar-chart"></i>
+              <span class="mx-2">Sales Report</span>
+          </a>
+      </li>
       </ul>
     </div>
 
@@ -79,12 +84,24 @@
                     <span>{{ username }}</span>
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="userMenu">
+                    <!-- <li class="nav-item">
+                      <a href="#" class="nav-link toggle-side" id="openDBModal">
+                        <i class="bx bx-bar-chart"></i>
+                        <span class="mx-2">Sales Report</span>
+                      </a>
+                    </li> -->
+                    <!-- <li class="nav-item">
+                      <a href="#" class="nav-link toggle-side" id="openDBModal">
+                        <i class="bx bx-bar-chart"></i>
+                        <span class="mx-2">Sales Report</span>
+                      </a>
+                    </li> -->
                     <li><a class="dropdown-item" href="{% url 'change_password' %}">
                         <i class="bx bx-key mx-1"></i> Change Password</a>
                     </li>
                     <li>
                       <a id="logout" class="dropdown-item" href="{% url 'logout' %}">
-                      <i class="bx bx-log-out mx-1"></i> Logout</a>
+                        <i class="bx bx-log-out mx-1"></i> Logout</a>
                     </li>
                   </ul>
                 </li>
@@ -151,6 +168,23 @@
   <script src="{% static 'bingo_static/js/populate.js' %}"></script>
   <script src="{% static 'bingo_static/js/full_screen.js' %}"></script>
 
+  <script>
+    $(document).ready(function () {
+    // Show the report page
+    $('#openDBModal').click(function (e) {
+        e.preventDefault();
+        $('.main-content').hide(); // Hide main content
+        $('#reportPage').show();  // Show the report page
+    });
+
+    // Close the report page and return to the main content
+    $('#closeReportPage').click(function () {
+        $('#reportPage').hide(); // Hide the report page
+        $('.main-content').show(); // Show main content
+    });
+});
+
+</script>
 </body>
 
 </html>

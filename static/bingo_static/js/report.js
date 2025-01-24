@@ -18,6 +18,29 @@ $(document).ready(function () {
         fetchReports(startDate);
         // fetchReports(startDate, endDate);
     });
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Set today's date
+    $('#setToday').click(function () {
+        let today = new Date();
+        today = formatDate(today);
+        $('#startDate').val(today);
+        fetchReports(today);
+    });
+
+    // Set yesterday's date
+    $('#setYesterday').click(function () {
+        let yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        yesterday = formatDate(yesterday);
+        $('#startDate').val(yesterday);
+        fetchReports(yesterday);
+    });
 
     function fetchReports(startDate = "", endDate = "") {
         $.ajax({
@@ -41,7 +64,7 @@ $(document).ready(function () {
                 // Update left, middle, and right sections
                 modalHeader.find(".report-left").html(`
                     <div class="report-item">
-                        <span>Game Transactions:</span>
+                        <span>Transactions:</span>
                         <strong>${totalTransactions}</strong>
                     </div>
                 `);
@@ -54,11 +77,11 @@ $(document).ready(function () {
                 `);
 
                 modalHeader.find(".report-right").html(`
-                    <div class="report-item" style="color: white;">
+                    <div class="report-item" style="color: blue;">
                         <span>Winning:</span>
                         <strong>${totalWinning.toFixed(2)}</strong>
                     </div>
-                    <div class="report-item" style="color: white;>
+                    <div class="report-item" style="color: blue;>
                         <span>Cut:</span>
                         <strong>${totalCut.toFixed(2)}</strong>
                     </div>

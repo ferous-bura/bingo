@@ -534,7 +534,7 @@ $(document).ready(function () {
                 playSpecialAudio("readyPlay.mp3");
 
                 // Start the game after a short delay to allow the start audio to finish
-                setTimeout(() => playGame(), 1000);
+                setTimeout(() => playGame(), 3000);
             },
             function (errorMessage) {
                 resetGameConfirmed();
