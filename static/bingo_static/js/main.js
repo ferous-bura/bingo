@@ -295,7 +295,7 @@ $(document).ready(function () {
         successStart(resultNumbers, transactionId, balance);
 
         // Play start game audio
-        // playSpecialAudio("start_game.mp3");
+        // playSpecialAudio("readyPlay.mp3");
 
         // Start the game after a short delay to allow the start audio to finish
         // setTimeout(() => playGame(), 1000);
@@ -531,7 +531,7 @@ $(document).ready(function () {
                 successStart(resultNumbers, transactionId, balance);
 
                 // Play start game audio
-                playSpecialAudio("start_game.mp3");
+                playSpecialAudio("readyPlay.mp3");
 
                 // Start the game after a short delay to allow the start audio to finish
                 setTimeout(() => playGame(), 1000);
@@ -830,10 +830,10 @@ $(document).ready(function () {
             // Show cartella results (e.g., win/loss icons)
             if (result.isWinner) {
                 $("#endGameBtn").prop("disabled", false); // Enable End Game button
-                setTimeout(() => playSpecialAudio("winner_.mp3"), 1000);
+                setTimeout(() => playSpecialAudio("male_winner.mp3"), 1000);
             } else {
                 $("#endGameBtn").prop("disabled", true); // Enable End Game button
-                setTimeout(() => playSpecialAudio("loser_.mp3"), 1000);
+                setTimeout(() => playSpecialAudio("male_loser_.mp3"), 1000);
             }
 
             const icon = result.isWinner
