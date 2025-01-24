@@ -295,7 +295,7 @@ $(document).ready(function () {
         successStart(resultNumbers, transactionId, balance);
 
         // Play start game audio
-        // playSpecialAudio("start_game.mp3");
+        // playSpecialAudio("readyPlay.mp3");
 
         // Start the game after a short delay to allow the start audio to finish
         // setTimeout(() => playGame(), 1000);
@@ -531,7 +531,7 @@ $(document).ready(function () {
                 successStart(resultNumbers, transactionId, balance);
 
                 // Play start game audio
-                playSpecialAudio("start_game.mp3");
+                playSpecialAudio("readyPlay.mp3");
 
                 // Start the game after a short delay to allow the start audio to finish
                 setTimeout(() => playGame(), 1000);
@@ -830,15 +830,15 @@ $(document).ready(function () {
             // Show cartella results (e.g., win/loss icons)
             if (result.isWinner) {
                 $("#endGameBtn").prop("disabled", false); // Enable End Game button
-                setTimeout(() => playSpecialAudio("winner_.mp3"), 1000);
+                setTimeout(() => playSpecialAudio("male_winner.mp3"), 1000);
             } else {
                 $("#endGameBtn").prop("disabled", true); // Enable End Game button
-                setTimeout(() => playSpecialAudio("loser_.mp3"), 1000);
+                setTimeout(() => playSpecialAudio("male_loser.mp3"), 1000);
             }
 
             const icon = result.isWinner
-                ? '<span class="text-success ms-2">&#10003; Won👍!</span>' // Checkmark
-                : '<span class="text-danger ms-2">&#10007; Lost👎!</span>'; // Crossmark
+                ? '<span class="text-success ms-2">&#10003; Won</span>' // Checkmark
+                : '<span class="text-danger ms-2">&#10007; Lost</span>'; // Crossmark
 
             resultContainer.append(
                 `<div class="cartella-item d-flex align-items-center mb-2">
