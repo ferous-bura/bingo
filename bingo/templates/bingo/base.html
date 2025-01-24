@@ -7,7 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bingo</title>
   <!-- Bootstrap CSS -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=1200, initial-scale=1">
+
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
   <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
   <link rel="icon" href="{% static 'logo.png' %}" type="image/png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
@@ -21,6 +23,32 @@
   <link rel="stylesheet" href="{% static 'bingo_static/css/select_cartella.css' %}">
   <link rel="stylesheet" href="{% static 'bingo_static/css/sidebar_toggle.css' %}">
   <link rel="stylesheet" href="{% static 'bingo_static/css/nav.css' %}">
+  <style>
+    body {
+        overflow-x: auto; /* Allow horizontal scrolling for smaller devices */
+      }
+    .container-fluid {
+        width: 1200px; /* Fixed width for all screens */
+        max-width: 1200px;
+        margin: auto; /* Center the content */
+    }
+    
+    
+    .my-container {
+        flex-wrap: nowrap; /* Prevent wrapping of the main container */
+    }
+    
+    .nav-link {
+        white-space: nowrap; /* Prevent text wrapping in navigation links */
+    }
+        @media (min-width: 1200px) {
+        .container-fluid {
+            width: 100%; /* Scale content for larger screens */
+            max-width: 1600px;
+        }
+    }
+    
+    </style>
 </head>
 
 <body>
@@ -41,10 +69,10 @@
         </li> -->
         <li class="nav-item">
           <a href="#" class="nav-link toggle-side" id="openDBModal">
-              <i class="bx bx-bar-chart"></i>
-              <span class="mx-2">Sales Report</span>
+            <i class="bx bx-bar-chart"></i>
+            <span class="mx-2">Sales Report</span>
           </a>
-      </li>
+        </li>
       </ul>
     </div>
 
@@ -56,68 +84,68 @@
         <!-- Game Area -->
         <div class="row m-0">
           <div class="col-9">
-            <!-- Top Nav -->
+          <!-- Top Nav -->
 
-            <nav class="navbar d-flex justify-content-between align-items-center p-3 px-5">
-              <a class="btn border-0" id="menu-btn"><i class="bx bx-menu"></i></a>
-              <h2 class="nav-link logo shadow-effect nav-birr"><span id="navTotalPayable">0.00 Birr</span></h2>
+          <nav class="navbar d-flex justify-content-between align-items-center p-3 px-5">
+            <a class="btn border-0" id="menu-btn"><i class="bx bx-menu"></i></a>
+            <h2 class="nav-link logo shadow-effect nav-birr"><span id="navTotalPayable">0.00 Birr</span></h2>
 
-              <div class="nav-link logo shadow-effect nav-birr">
-                <span id="navCartellaCount">Total: 0</span>
-              </div>
+            <div class="nav-link logo shadow-effect nav-birr">
+              <span id="navCartellaCount">Total: 0</span>
+            </div>
 
-              <p></p>
-              <ul class="nav d-flex gap-3">
+            <p></p>
+            <ul class="nav d-flex gap-3">
 
-                <li class="nav-item shadow-effect title-box">
-                  <a href="#" class="nav-link text-black text-center d-flex align-items-center gap-2"
-                    data-bs-toggle="modal" data-bs-target="#bingoPatternModal">
-                    <i class="bx bx-grid-alt"></i>
-                    <span> Pattern</span>
-                  </a>
-                </li>
+              <li class="nav-item shadow-effect title-box">
+                <a href="#" class="nav-link text-black text-center d-flex align-items-center gap-2"
+                  data-bs-toggle="modal" data-bs-target="#bingoPatternModal">
+                  <i class="bx bx-grid-alt"></i>
+                  <span> Pattern</span>
+                </a>
+              </li>
 
-                <li class="nav-item shadow-effect title-box d-flex align-items-center dropdown">
-                  <a href="#" class="nav-link text-black text-center d-flex align-items-center gap-2 dropdown-toggle"
-                    id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="{% static 'user.png' %}" alt="User Avatar" class="user-avatar">
-                    <span>{{ username }}</span>
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="userMenu">
-                    <!-- <li class="nav-item">
+              <li class="nav-item shadow-effect title-box d-flex align-items-center dropdown">
+                <a href="#" class="nav-link text-black text-center d-flex align-items-center gap-2 dropdown-toggle"
+                  id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img src="{% static 'user.png' %}" alt="User Avatar" class="user-avatar">
+                  <span>{{ username }}</span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="userMenu">
+                  <!-- <li class="nav-item">
                       <a href="#" class="nav-link toggle-side" id="openDBModal">
                         <i class="bx bx-bar-chart"></i>
                         <span class="mx-2">Sales Report</span>
                       </a>
                     </li> -->
-                    <!-- <li class="nav-item">
+                  <!-- <li class="nav-item">
                       <a href="#" class="nav-link toggle-side" id="openDBModal">
                         <i class="bx bx-bar-chart"></i>
                         <span class="mx-2">Sales Report</span>
                       </a>
                     </li> -->
-                    <li><a class="dropdown-item" href="{% url 'change_password' %}">
-                        <i class="bx bx-key mx-1"></i> Change Password</a>
-                    </li>
-                    <li>
-                      <a id="logout" class="dropdown-item" href="{% url 'logout' %}">
-                        <i class="bx bx-log-out mx-1"></i> Logout</a>
-                    </li>
-                  </ul>
-                </li>
+                  <li><a class="dropdown-item" href="{% url 'change_password' %}">
+                      <i class="bx bx-key mx-1"></i> Change Password</a>
+                  </li>
+                  <li>
+                    <a id="logout" class="dropdown-item" href="{% url 'logout' %}">
+                      <i class="bx bx-log-out mx-1"></i> Logout</a>
+                  </li>
+                </ul>
+              </li>
 
-              </ul>
-            </nav>
+            </ul>
+          </nav>
 
-            <!--End Top Nav -->
+          <!--End Top Nav -->
 
-            {% include 'bingo/content.html' %}
-          </div>
-          <div class="col-3">
-            {% include 'bingo/side.html' %}
-          </div>
+          {% include 'bingo/content.html' %}
         </div>
+      <div class="col-3">
+        {% include 'bingo/side.html' %}
       </div>
+      </div>
+    </div>
     </div>
   </div>
   </div>
@@ -170,21 +198,21 @@
 
   <script>
     $(document).ready(function () {
-    // Show the report page
-    $('#openDBModal').click(function (e) {
+      // Show the report page
+      $('#openDBModal').click(function (e) {
         e.preventDefault();
         $('.main-content').hide(); // Hide main content
         $('#reportPage').show();  // Show the report page
-    });
+      });
 
-    // Close the report page and return to the main content
-    $('#closeReportPage').click(function () {
+      // Close the report page and return to the main content
+      $('#closeReportPage').click(function () {
         $('#reportPage').hide(); // Hide the report page
         $('.main-content').show(); // Show main content
+      });
     });
-});
 
-</script>
+  </script>
 </body>
 
 </html>
