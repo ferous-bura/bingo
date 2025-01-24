@@ -37,7 +37,8 @@ const cartellaState = {
 $(document).ready(function () {
     // Initialize numbers 1-100 in the grid
     const numberGrid = $('#cartellaGrid');
-    for (let i = 1; i <= 100; i++) {
+    const cartellasLen = $('#cartellasListLen').val();
+    for (let i = 1; i <= cartellasLen; i++) {
         const numberBox = $('<div class="card-box"></div>').text(i);
         numberGrid.append(numberBox);
     }

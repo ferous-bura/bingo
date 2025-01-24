@@ -833,12 +833,12 @@ $(document).ready(function () {
                 setTimeout(() => playSpecialAudio("male_winner.mp3"), 1000);
             } else {
                 $("#endGameBtn").prop("disabled", true); // Enable End Game button
-                setTimeout(() => playSpecialAudio("male_loser_.mp3"), 1000);
+                setTimeout(() => playSpecialAudio("male_loser.mp3"), 1000);
             }
 
             const icon = result.isWinner
                 ? '<span class="text-success ms-2">&#10003; Won👍!</span>' // Checkmark
-                : '<span class="text-danger ms-2">&#10007; Lost👎!</span>'; // Crossmark
+                : '<span class="text-danger ms-2">&#10007; Lost</span>'; // Crossmark
 
             resultContainer.append(
                 `<div class="cartella-item d-flex align-items-center mb-2">
