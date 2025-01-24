@@ -105,7 +105,7 @@ $(document).ready(function () {
         min: 3000, // Minimum speed (faster)
         max: 10000, // Maximum speed (slower)
         value: gameSpeed, // Set the slider to saved game speed
-        step: 500, // Increment steps
+        step: 1000, // Increment steps
         slide: function (event, ui) {
             gameSpeed = ui.value; // Update game speed
             $("#speedValue").text(gameSpeed / 1000); // Display updated speed

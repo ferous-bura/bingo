@@ -5,7 +5,7 @@ from django.contrib.messages import constants as message_constants
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z($eo%#4!s5g**n53%8e1x$6unk&8(t8y9t+l+k+z)ikq1cn-l'
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = [
     # 'www.mayabet.com.et', 
     # 'mayabet.com.et', 
@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'whitenoise',
     'bingo',
 ]
 
@@ -42,7 +43,7 @@ AUTHENTICATION_BACKENDS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -53,7 +54,7 @@ MIDDLEWARE = [
 LOGIN_URL = '/login/'  # Adjust this path to your login page
 
 LOGIN_REDIRECT_URL = '/'  # Set this to the desired redirect URL after login
-LOGOUT_REDIRECT_URL = '/users/login/'  # Set this to the desired redirect URL after logout
+LOGOUT_REDIRECT_URL = '/login/'  # Set this to the desired redirect URL after logout
 ROOT_URLCONF = 'game.urls'
 
 TEMPLATES = [
@@ -100,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Africa/Addis_Ababa'
+# TIME_ZONE = 'Africa/Addis_Ababa'
 
 USE_I18N = True
 
@@ -109,13 +110,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Add your static file directories
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",
+# ]
 
 # Media files (User-uploaded content)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Create a 'media' directory in your project
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'buraman@hotmail.com'  # Replace with your desired sender email

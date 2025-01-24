@@ -56,7 +56,7 @@
 
             <div class="form-group select-pattern">
                 <select id="gamePattern" name="game_pattern" class="form-control">
-{{game_pattern}}
+
                   {% for key, value in game_pattern_list.items %}
                   <option value="{{ key }}" {% if forloop.first %}selected{% endif %}>
                     {{ value }}

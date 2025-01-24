@@ -11,9 +11,12 @@
 <div class="row shadow-sm p-1 mb-2">
 
     <div class="col-4">
-        <!-- <label for="speed">Speed: <span id="speedValue">3</span> s</label> -->
-        <div id="slider"></div>
+        <div id="slider" class="tooltip-container">
+            <!-- Speed: <span id="speedValue">3</span> s -->
+            <span id="speedValue">3 sec</span>
+        </div>
     </div>
+    
     <div class="col-4">
 
         <!-- <label for="voiceSelect" class="form-label">Change Voice</label> -->
@@ -214,4 +217,37 @@
         margin-top: 10px;
         justify-content: center;
     }
+
+    .tooltip-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+
+    /* Positioning the tooltip */
+    position: absolute;
+    bottom: 100%; /* Position above the element */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+
+    /* Fade-in effect */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
 </style>

@@ -9,15 +9,20 @@ from bingo.card_lists import ahadu_bingo, hagere_bingo
 
 @login_required(login_url='/login')
 def main(request):
-    context = get_main_context(request)
-    # print(f'context {context}')
+    try:
+        context = get_main_context(request)
+    except Exception as e:
+        print(f'main exception {e}')
+    print(f'running smoothly')
+
     return render(request, 'bingo/base.html', context)
 
 def get_main_context(request):
     """Assemble the main context for the template."""
     game_pattern_list = get_game_pattern_list()
-    bingo_user = get_bingo_user(request.user)
-    
+    bingo_user = get_bingo_user(request.user)    
+    print(f'game_pattern_list: {game_pattern_list}')
+
     try:
         last_trx, balance, branch, username, cut_percentage = get_user_data(bingo_user, request)
         context = create_context_with_transaction(

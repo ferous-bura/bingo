@@ -134,7 +134,8 @@
       cut_percentage: "{{ cut_percentage }}",
       username: "{{ username }}",
       has_unfinished_game: "{{ has_unfinished_game|yesno:'true,false' }}",
-      unfinished_transaction_id: "{{ unfinished_transaction_id }}",
+      unfinished_transaction_id: "{{ unfinished_transaction_id|default:'' }}",
+      // unfinished_transaction_id: "{{ unfinished_transaction_id }}",
       resultNumbers: "{{ result }}",
   };
   console.log('gamedata :', gameData);
