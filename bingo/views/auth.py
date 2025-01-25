@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout, authenticate, login
 
-from django.http import Http404
+from django.contrib import messages
 
 
 class CustomPasswordChangeView(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
@@ -34,7 +34,7 @@ def login_view(request):
             login(request, user)
             return redirect("bingo")  # Redirect to the bingo page
         else:
-            # If the user is not found
-            raise Http404("User not found.")
+            messages.error(request, "Invalid username or password.")
+            return redirect("login")  # Redirect back to the login page
 
-    return render(request, "bingo/login.html", {"error_message": error_message})
+    return render(request, "bingo/login.html")

@@ -25,6 +25,7 @@ def fetch_reports(request):
     total_balance = Decimal(bingo.balance)
     total_winning = sum(transaction.total_won for transaction in transactions)
     total_cut = sum(transaction.cut for transaction in transactions)
+    username = bingo.owner.username
 
     data = [
         {
@@ -44,11 +45,14 @@ def fetch_reports(request):
         for transaction in transactions
     ]
     # print(f'report data: {data}')
-
-    return JsonResponse({
+    response = {
         "data": data,
         "total_transactions": total_transactions,
         "total_balance": total_balance,
         "total_winning": total_winning,
         "total_cut": total_cut,
-    })
+        "username": username,
+    }
+    # print(f'report response: {response}')
+
+    return JsonResponse(response)

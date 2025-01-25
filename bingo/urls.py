@@ -3,7 +3,7 @@ from .views.bingo import main
 from .views.start import start_bingo
 from .views.auth import CustomPasswordChangeView, logout_view, login_view
 from .views.report import fetch_reports
-from .views.check_winner import check_winner 
+from .views.check_winner import check_winner, lock
 from .views.manage_bingo import refund_bingo, close_game
 
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
     path("close-bingo/", close_game, name="close"),
     path("refund-bingo/", refund_bingo, name="refund"),
     path('change-password/', CustomPasswordChangeView.as_view(), name='change_password'),
+    path("lock/", lock, name="lock"),
 ]

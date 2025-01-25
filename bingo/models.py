@@ -8,7 +8,7 @@ class BingoUser(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=1000)
     credit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    branch = models.CharField(max_length=100, default="ahadu_bingo")
+    branch = models.CharField(max_length=100, default="hagere_bingo")
     cut_percentage = models.PositiveIntegerField(default=25)
 
 class BingoDailyRecord(models.Model):
@@ -48,6 +48,7 @@ class BingoTransaction(models.Model):
     call_number = models.PositiveIntegerField()
     winners = models.CharField(max_length=50, blank=True, default='')
     submitted_cartella = models.CharField(max_length=255, blank=True, default='')
+    locked_cartella = models.CharField(max_length=255, blank=True, default='')
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)
     refunded = models.BooleanField(default=False)

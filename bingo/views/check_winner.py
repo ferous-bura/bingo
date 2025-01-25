@@ -1,9 +1,59 @@
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 from bingo.pattern_check import check_bingo
 from bingo.models import BingoTransaction
+
+@csrf_exempt
+@login_required
+def lock(request):
+    if request.method == 'POST':
+
+        try:
+            data = json.loads(request.body)
+
+            user = request.user
+            transaction_id = data.get('transaction_id', False)
+            submitted_cartella = data.get('cartella_num', None)
+            print(f" submitted_cartella: {submitted_cartella}, transaction_id: {transaction_id}")
+            transaction = BingoTransaction.objects.filter(transaction_id=transaction_id, daily_record__user__owner=user).latest('time')
+
+            if not transaction.result:
+                print(f'trx result not found')
+                raise ValueError("Game results not generated yet.")
+
+            locked_cartella = transaction.locked_cartella.split(",") if transaction.locked_cartella else []
+
+            if submitted_cartella and str(submitted_cartella) not in locked_cartella:
+                locked_cartella.append(str(submitted_cartella))                
+                transaction.locked_cartella = ",".join(locked_cartella)
+                transaction.save()
+                data = {"status": "success",'success': True, 'locked': True, 'cartella': submitted_cartella}
+                print(f'locked data {data}')
+                return JsonResponse(data)
+            else:
+                if str(submitted_cartella) in locked_cartella:
+                    locked_cartella.remove(str(submitted_cartella))
+                    transaction.locked_cartella = ",".join(locked_cartella)
+                    transaction.save()
+
+                data = {"status": "success",'success': True, 'locked': False, 'cartella': submitted_cartella}
+                print(f'un-locked data {data}')
+                return JsonResponse(data)
+        except ValueError as e:
+            print(f'error 400 {e}')
+            return JsonResponse({"error": str(e)}, status=400)
+        except BingoTransaction.DoesNotExist:
+            print(f'error trx doesnt exist')
+            return JsonResponse({"error": "Transaction not found."}, status=404)
+        except Exception as e:
+            print(f'error 500 {e}')
+            return JsonResponse({"error": f"Error Locking Cartella: {str(e)}"}, status=500)
+    return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
+
 
 @login_required
 def check_winner(request):
@@ -13,21 +63,32 @@ def check_winner(request):
     refund = False
     try:
         # Ensure cartella is passed as a JSON array
+        #
         submitted_cartella = request.POST.get('cartella')
         print(f" submitted_cartella: {submitted_cartella}, transaction_id: {transaction_id}")
+        if submitted_cartella is None or submitted_cartella == '':
+            print(f'cartella not found')
+            raise ValueError("Cartella not found")
 
         # Retrieve the transaction object
-        transaction = BingoTransaction.objects.get(transaction_id=transaction_id, daily_record__user__owner=user)
+        transaction = BingoTransaction.objects.filter(transaction_id=transaction_id, daily_record__user__owner=user).latest('time')
 
         if not transaction.result:
             print(f'trx result not found')
             raise ValueError("Game results not generated yet.")
         print(f'trx result: {transaction.result}')
 
+        locked_cartella = transaction.locked_cartella.split(",") if transaction.locked_cartella else []
+        if submitted_cartella and str(submitted_cartella) in locked_cartella:
+            print(f'locked cartella found')
+            return JsonResponse({'success': False, 'error': 'Cartella is locked'})
+
+        print(f'trx result: {transaction.result}')
+
         call_number = request.POST.get('call_number', 0)
         is_winner = check_bingo(transaction, int(submitted_cartella), int(call_number), game_pattern)
         print(f'trx is_winner {is_winner}, call_number {call_number}')
-        transaction = BingoTransaction.objects.get(transaction_id=transaction_id, daily_record__user__owner=user)
+        transaction = BingoTransaction.objects.filter(transaction_id=transaction_id, daily_record__user__owner=user).latest('time')
 
         winners_list = transaction.winners.split(",") if transaction.winners else []
 
@@ -59,16 +120,18 @@ def check_winner(request):
                 "total_won": won / Decimal(len(winners_list)),
                 "balance": balance,
                 "refund": refund,
+                'locked': transaction.locked_cartella,
             }
             print(f'check response: {data}') 
             print(f'won {won}, total_won {total_won}, cut {cut}')
             print(f'winners_list {winners_list}')
             print(f'len winners list {len(winners_list)}')
             print(f'refund: {refund}') 
+            print(f'transaction.locked_cartella: {transaction.locked_cartella}') 
 
             return JsonResponse(data)
         else:
-            data = {'success': True, 'is_winner': False, 'balance': transaction.daily_record.user.balance, 'refund': refund,}
+            data = {'success': True, 'is_winner': False, 'balance': transaction.daily_record.user.balance, 'refund': refund, 'locked': transaction.locked_cartella}
             return JsonResponse(data)
     except ValueError as e:
         print(f'error 400 {e}')

@@ -56,8 +56,12 @@
 <body>
   <div class="login-container">
     <h2>Login</h2>
-    {% if error_message %}
-      <div class="error-message">{{ error_message }}</div>
+    {% if messages %}
+      <div class="error-message">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
     {% endif %}
     <form method="post">
       {% csrf_token %}

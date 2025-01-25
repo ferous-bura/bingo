@@ -60,18 +60,18 @@ $(document).ready(function () {
                 const totalTransactions = response.total_transactions || 0;
                 const totalWinning = parseFloat(response.total_winning) || 0;
                 const totalCut = parseFloat(response.total_cut) || 0;
+                const usernme = response.username || '';
 
                 // Update left, middle, and right sections
                 modalHeader.find(".report-left").html(`
                     <div class="report-item">
-                        <span>Transactions:</span>
-                        <strong>${totalTransactions}</strong>
+                        <strong>${usernme}</strong>
                     </div>
                 `);
 
                 modalHeader.find(".report-middle h3").html(`
                     <div class="report-item" style="color: red; font-size: 1.4rem">
-                        <span>Balance:</span>
+                        <span>Deposit:</span>
                         <strong>${totalBalance.toFixed(2)} Birr</strong>
                     </div>
                 `);
@@ -79,13 +79,18 @@ $(document).ready(function () {
                 modalHeader.find(".report-right").html(`
                     <div class="report-item" style="color: blue;">
                         <span>Winning:</span>
-                        <strong>${totalWinning.toFixed(2)}</strong>
-                    </div>
-                    <div class="report-item" style="color: blue;>
+                        <strong>$${totalWinning.toFixed(2)}</strong>
+                        <br>
+
                         <span>Cut:</span>
-                        <strong>${totalCut.toFixed(2)}</strong>
+                        <strong>$${totalCut.toFixed(2)}</strong>
+                        <br>
+
+                        <span>Transactions:</span>
+                        <strong>${totalTransactions}</strong>
                     </div>
                 `);
+
                 if (response.data.length === 0) {
                     tableBody.append("<tr><td colspan='12'>No data available</td></tr>");
                 } else {
@@ -96,9 +101,9 @@ $(document).ready(function () {
                           <td>${row.time}</td>
                           <td>${row.bet}</td>
                           <td>${row.player_number}</td>
-                          <td>${row.total_won}</td>
-                          <td>${row.cut}</td>
-                          <td>${row.won}</td>
+                          <td>$${row.total_won}</td>
+                          <td>$${row.cut}</td>
+                          <td>$${row.won}</td>
                           <td>${row.call_number}</td>
                           <td>${row.winners}</td>
                           <td>${row.branch}</td>

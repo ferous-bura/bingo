@@ -1,26 +1,44 @@
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils.timezone import now
 
 from bingo.models import BingoDailyRecord, BingoUser
 from bingo.pattern_choice import GAME_PATTERN_CHOICES
-from bingo.card_lists import ahadu_bingo, hagere_bingo
+from bingo.card_lists import ahadu_bingo, hagere_bingo, liyu_bingo
+from django.http import Http404
+
+
+def get_cartellas(branch):
+    """Return cartellas based on the branch."""
+    if branch == 'ahadu_bingo':
+        return ahadu_bingo
+    elif branch == 'hagere_bingo':
+        return hagere_bingo
+    elif branch == 'liyu_bingo':
+        return liyu_bingo
+    else:
+        raise ValueError(f"Invalid branch: {branch}")
 
 @login_required(login_url='/login')
 def main(request):
     try:
         context = get_main_context(request)
+        print(f'running smoothly')
+        return render(request, 'bingo/base.html', context)
     except Exception as e:
-        print(f'main exception {e}')
-    print(f'running smoothly')
+        print(f'main exception: {e}')  # Log the exception for debugging
 
-    return render(request, 'bingo/base.html', context)
+        # Render an error page with the exception message (for debug purposes)
+        error_context = {
+            "error_message": str(e),
+        }
+        return render(request, 'bingo/error.html', error_context, status=500)
 
 def get_main_context(request):
     """Assemble the main context for the template."""
     game_pattern_list = get_game_pattern_list()
-    bingo_user = get_bingo_user(request.user)    
+    bingo_user = get_bingo_user(request) 
     print(f'game_pattern_list: {game_pattern_list}')
 
     try:
@@ -39,9 +57,9 @@ def get_game_pattern_list():
     """Retrieve game patterns as a dictionary."""
     return dict(GAME_PATTERN_CHOICES)
 
-def get_bingo_user(user):
+def get_bingo_user(request):
     """Fetch the BingoUser object for the logged-in user."""
-    return BingoUser.objects.get(owner=user)
+    return BingoUser.objects.get(owner=request.user)
 
 def get_user_data(bingo_user, request):
     """Fetch user-related data and the latest transaction."""
@@ -60,7 +78,7 @@ def create_context_with_transaction(last_trx, balance, branch, username, cut_per
     """Create context when there is an unfinished transaction."""
     print(f'context with trx {last_trx}')
     return {
-        "cartellas": ahadu_bingo if branch == 'ahadu_bingo' else hagere_bingo,
+        "cartellas": get_cartellas(branch),
         'game_pattern_list': game_pattern_list,
         "username": username,
         "unfinished_transaction_id": last_trx.transaction_id if last_trx else None,
@@ -82,7 +100,7 @@ def create_context_without_transaction(balance, branch, username, cut_percentage
     print(f'context without trx')
     """Create context when there is no unfinished transaction."""
     return {
-        "cartellas": ahadu_bingo if branch == 'ahadu_bingo' else hagere_bingo,
+        "cartellas": get_cartellas(branch),
         "username": username,
         'game_pattern_list': game_pattern_list,
         'game_pattern': 'default',

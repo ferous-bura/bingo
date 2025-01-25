@@ -13,7 +13,7 @@
     <div class="col-4">
         <div id="slider" class="tooltip-container">
             <!-- Speed: <span id="speedValue">3</span> s -->
-            <span id="speedValue">3 sec</span>
+            <p class="tooltip-text" id="speedValue">3 sec</p>
         </div>
     </div>
     
@@ -21,8 +21,8 @@
 
         <!-- <label for="voiceSelect" class="form-label">Change Voice</label> -->
         <select id="voiceSelect" class="form-select">
-            <option value="male" id="maleVoice">Male Voice</option>
             <option value="female" id="femaleVoice">Female Voice</option>
+            <option value="male" id="maleVoice">Male Voice</option>
         </select>
 
     </div>
@@ -226,7 +226,7 @@
 
 .tooltip-text {
     visibility: hidden;
-    width: 200px;
+    width: 25px;
     background-color: #555;
     color: #fff;
     text-align: center;

@@ -23,12 +23,12 @@ $(document).ready(function () {
     const unfinishedTransactionId = null;
     const gameStateUrl = '127.0.0.1:8000'; // Adjust the URL path as needed
     const currentDate = new Date();
-    let gameSpeed = parseInt(localStorage.getItem('gameSpeed'), 10) || 3000; // Default to 3000ms
+    let gameSpeed = parseInt(localStorage.getItem('gameSpeed'), 10) || 5000; // Default to 3000ms
     let gameInterval;
     let isGameRunning = false;
     let refund = localStorage.getItem('refund') === 'true';
     let storedDate = getDateFromLocalStorage();
-
+    const lockedCartella = [];
     let transactionId = localStorage.getItem('transactionId') || null;
     // let transactionId = null;
 
@@ -138,7 +138,7 @@ $(document).ready(function () {
             console.log('resultNumbers length', resultNumbers.length);
             console.log('resultIndex', resultIndex);
             console.log('totalCalls', totalCalls);
-            
+
             if (resultIndex < resultNumbers.length) {
                 const number = resultNumbers[resultIndex];
                 localStorage.setItem('resultIndex', resultIndex);
@@ -240,6 +240,7 @@ $(document).ready(function () {
         transactionId = 0;
 
         refund = false;
+        lockedCartella.length = 0;
         localStorage.setItem('refund', 'false');
         localStorage.setItem('transactionId', 0);
         localStorage.setItem('resultIndex', 0);
@@ -265,7 +266,7 @@ $(document).ready(function () {
         }
         $("#resetGame").prop("disabled", true);
         console.log('reset is done ');
-        $('#checkCartella').attr('placeholder', 'Enter Cartella Number');    
+        $('#checkCartella').attr('placeholder', 'Enter Cartella Number');
     }
 
     function closeGame() {
@@ -302,6 +303,7 @@ $(document).ready(function () {
     }
 
     function refundGame(transaction_id) {
+        lockedCartella.length = 0;
 
         const data = {
             transaction_id: transaction_id
@@ -316,7 +318,7 @@ $(document).ready(function () {
                 refund = true;
                 localStorage.setItem('refund', refund.toString());
                 resetGameConfirmed(true);
-        console.log('reset called from refundGame()');
+                console.log('reset called from refundGame()');
 
                 responseStartAction(response);
             },
@@ -467,7 +469,7 @@ $(document).ready(function () {
             totalCalls = 0;
             resultIndex = 0;
 
-            localStorage.setItem('totalCalls', 0);    
+            localStorage.setItem('totalCalls', 0);
             localStorage.setItem('resultIndex', 0);
             localStorage.setItem('previousCall', 0);
 
@@ -634,6 +636,7 @@ $(document).ready(function () {
             console.log('selected cartellas in start game:', cartellaState.selected);
 
             isGameRunning = true;
+            lockedCartella.length = 0;
             $("#startGame").prop("disabled", true);
             $("#pauseGame").prop("disabled", false);
             $("#resetGame").prop("disabled", false);
@@ -664,12 +667,13 @@ $(document).ready(function () {
 
     // Add a blur event listener to replace the placeholder when clicking away
     $('#checkCartella').on('blur', function () {
+        togglePauseGame();
         console.log('Input field lost focus!'); // Replace with your action
         $(this).attr('placeholder', 'Enter Cartella Number'); // Reset placeholder
     });
 
     $('#checkCartella').on('click', function () {
-        clearInterval(gameInterval);
+        pauseGame();
         console.log('Input field clicked!'); // Replace this with your desired action
         $(this).css('border', '2px solid #007bff'); // Add a blue border
 
@@ -682,10 +686,8 @@ $(document).ready(function () {
     });
 
     $("#check-winner-btn").on('click', function () {
-        clearInterval(gameInterval);
-        let cartella = $("#checkCartella").val().trim(); // Get the value of the cartella input
         pauseGame();
-
+        let cartella = $("#checkCartella").val().trim();
 
         if (!cartella) {
             showResultModal("Error", "Please enter a valid cartella number.");
@@ -698,8 +700,8 @@ $(document).ready(function () {
         }
 
         if (cartellaState.selected.includes(cartella)) {
-            console.log('checking resultIndex: ',resultIndex);
-            console.log('checking totalCalls : ',totalCalls);
+            console.log('checking resultIndex: ', resultIndex);
+            console.log('checking totalCalls : ', totalCalls);
             $.ajax({
                 url: "/check-bingo-winner/",
                 method: "POST",
@@ -712,13 +714,27 @@ $(document).ready(function () {
                 },
 
                 success: function (response) {
+                    console.log('response', response);
+                    console.log('error', response.error);
                     if (response.success) {
                         const cartellasList = JSON.parse($(".cartellas_list").text());
                         const selectedCartella = cartellasList[cartella - 1];
                         refund = response.refund;
                         localStorage.setItem('refund', refund.toString());
-                        console.log('response', response);
                         console.log('refund while checking', refund);
+
+                        // lockedCartella = response.locked_cartella;
+
+                        // const lockbutton = $("#lockCartellaBtn");
+
+                        // // Update the lockedCartella list
+                        // if (response.locked) {
+                        //     lockbutton.text("Unlock");
+                        //     lockbutton.removeClass("btn-secondary").addClass("btn-danger"); // Change style
+                        // } else {
+                        //     button.text("Lock"); // Change button text to 'Lock'
+                        //     button.removeClass("btn-danger").addClass("btn-secondary");
+                        // }
 
                         if (refund) {
                             $('#refundGame').removeClass("d-none");
@@ -727,6 +743,7 @@ $(document).ready(function () {
                         }
 
                         if (response.is_winner) {
+
                             showResultModal(
                                 "Congratulations!",
                                 `You won $${response.total_won}`,
@@ -747,12 +764,14 @@ $(document).ready(function () {
                             );
                         }
                     } else {
-                        showResultModal("Error", response.error || "Error checking winner.");
+                        showModalAlert(response.error || "Error checking cartella.");
                     }
                 },
-                error: function () {
-                    showResultModal("Error", "An error occurred while checking the winner.");
-                },
+                error: function (xhr, status, error) {
+                    // Include the error message in the modal
+                    const errorMessage = xhr.responseText || "An error occurred while checking the winner.";
+                    showModalAlert(`${status} - ${errorMessage}`);
+                }
             });
         } else {
             showResultModal("Un-known Cartella", "Un-known cartella number.");
@@ -762,7 +781,7 @@ $(document).ready(function () {
     // Function to show the modal and render the 5x5 cartella grid
     function showResultModal(title, message, cartellaResults = [], cartella = [], isWinner = false, gamePattern) {
         $("#bingoResultModalLabel").text(title);
-        $("#bingoMessage").text(message);
+        // $("#bingoMessage").text(message);
 
         // Update cartella results
         const resultContainer = $("#cartellaResult");
@@ -817,7 +836,7 @@ $(document).ready(function () {
                         .toggleClass("matched", isMatched) // Apply 'matched' if the number is in the called results
                         .toggleClass("unmatched", !isMatched && cellValue != 0) // Apply 'unmatched' if the number is not in the called results
                         .toggleClass("freeMatch", cellValue === 0);
-                        // .removeClass("unmatched", cellValue === 0); // Add 'freeMatch' class for free space
+                    // .removeClass("unmatched", cellValue === 0); // Add 'freeMatch' class for free space
 
                     grid.append(cell);
                 });
@@ -837,20 +856,88 @@ $(document).ready(function () {
             }
 
             const icon = result.isWinner
-                ? '<span class="text-success ms-2">&#10003; Won</span>' // Checkmark
-                : '<span class="text-danger ms-2">&#10007; Lost</span>'; // Crossmark
+                ? '<span class="text-success ms-2"> won <i class="fas fa-thumbs-up fa-2x text-success thumbs"></i></span>' // Checkmark
+                : '<span class="text-danger ms-2"> lost <i class="fas fa-thumbs-down fa-2x text-danger thumbs"></i></span>'; // Crossmark
 
             resultContainer.append(
                 `<div class="cartella-item d-flex align-items-center mb-2">
                 <span>${result.number}</span>${icon}
             </div>`
             );
+
         });
 
         // Show modal
         $("#bingoResultModal").modal("show");
     }
 
+    function lockCartella() {
+        let cartellaNum = $("#checkCartella").val().trim();
+        if (cartellaState.selected.includes(cartellaNum)) {
+
+            if (!transactionId) {
+                showResultModal("Error", "Bingo game not found.");
+                return;
+            }
+            if (!cartellaNum) {
+                showResultModal("Error", "Please enter a valid cartella number.");
+                return;
+            }
+
+            const data = {
+                cartella_num: cartellaNum,
+                transaction_id: transactionId,
+            };
+
+            console.log('lock data: ', data);
+
+            makePostRequest(
+                "/lock/",
+                data,
+                function (response) {
+                    if (response.success) {
+                        const lockbutton = $("#lockCartellaBtn");
+
+                        // Update the lockedCartella list
+                        if (response.locked) {
+                            console.log('loced response is succesful ', response);
+                            lockedCartella.push(response.cartella); // Add to list
+                            lockbutton.text("Unlock"); // Change button text to 'Unlock'
+                            lockbutton.removeClass("btn-secondary").addClass("btn-danger"); // Change style
+                            showModalAlert("Cartella is Locked");
+                        } else {
+                            console.log('response is succesful ', response);
+                            const index = lockedCartella.indexOf(response.cartella);
+                            if (index > -1) {
+                                lockedCartella.splice(index, 1); // Remove from list
+                            }
+                            lockbutton.text("Lock"); // Change button text to 'Lock'
+                            lockbutton.removeClass("btn-danger").addClass("btn-secondary"); // Change style
+                            showModalAlert("Cartella is un-Locked");
+                        }
+    
+                        console.log("Updated lockedCartella:", lockedCartella);
+
+                    } else {
+                        console.log('response is unsuccesful ', response);
+
+                        showResultModal("Error", response.error || "Error Locking Cartella.");
+                    }
+                },
+                function (errorMessage) {
+                    console.log('error', errorMessage)
+                    showResultModal(errorMessage || "Unable to lock the cartella.");
+                }
+            );
+        } else {
+            showResultModal("Un-known Cartella", "Un-known cartella number.");
+        }
+    }
+
+    $("#lockCartellaBtn").click(function () {
+        lockCartella();
+        // $("#bingoResultModal").modal("hide");
+    });
 
     // Event listener for "End Game" button
     $("#endGameBtn").click(function () {
@@ -858,7 +945,6 @@ $(document).ready(function () {
         $("#bingoResultModal").modal("hide");
         resetGameConfirmed();
         console.log('reset called from endGameBtn');
-
         // alert("Game ended. Thanks for playing!");
     });
 
