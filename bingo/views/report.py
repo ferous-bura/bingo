@@ -23,7 +23,7 @@ def fetch_reports(request):
     # Calculate totals
     total_transactions = transactions.count()
     total_balance = Decimal(bingo.balance)
-    total_winning = sum(transaction.total_won for transaction in transactions)
+    total_winning = sum(transaction.won for transaction in transactions)
     total_cut = sum(transaction.cut for transaction in transactions)
     username = bingo.owner.username
 
@@ -36,8 +36,8 @@ def fetch_reports(request):
             "total_won": float(transaction.total_won),
             "cut": float(transaction.cut),
             "won": float(transaction.won),
-            "call_number": transaction.call_number,
-            "winners":transaction.winners if transaction.winners else transaction.submitted_cartella,
+            "call_number": transaction.call_number if transaction.call_number else '-',
+            "winners":transaction.winners if transaction.winners else '-',
             "branch": transaction.daily_record.user.branch,
             "cashier": transaction.daily_record.user.owner.username,
             "balance": float(transaction.daily_record.user.balance),

@@ -188,3 +188,4 @@ $(document).ready(function () {
 $('#closeModal').on('click', function () {
     $('#cartellaModal').hide();
 });
+

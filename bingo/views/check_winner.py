@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.utils.timezone import now
 
 from bingo.pattern_check import check_bingo
 from bingo.models import BingoTransaction
@@ -71,7 +72,8 @@ def check_winner(request):
             raise ValueError("Cartella not found")
 
         # Retrieve the transaction object
-        transaction = BingoTransaction.objects.filter(transaction_id=transaction_id, daily_record__user__owner=user).latest('time')
+        today = now().date()
+        transaction = BingoTransaction.objects.filter(transaction_id=transaction_id, daily_record__user__owner=user,     created_at__date=today).latest('time')
 
         if not transaction.result:
             print(f'trx result not found')
@@ -102,14 +104,14 @@ def check_winner(request):
             won = transaction.won
             balance = transaction.daily_record.user.balance
 
-            print('user has won the game')
+            print(f'user has won the game, winners_list {winners_list}')
             if str(submitted_cartella) not in winners_list:
                 print(f"{submitted_cartella} is not in the winners list.")
                 winners_list.append(str(submitted_cartella))                
                 if len(winners_list) > 3:
                     refund = True
                 transaction.winners = ",".join(winners_list)
-                transaction.call_number = call_number
+                transaction.call_number = int(call_number)
                 transaction.save()
             else:
                 print(f"{submitted_cartella} is already in the winners list.")

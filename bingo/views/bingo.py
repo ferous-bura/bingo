@@ -2,8 +2,9 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils.timezone import now
+from django.http import JsonResponse
 
-from bingo.models import BingoDailyRecord, BingoUser
+from bingo.models import BingoDailyRecord, BingoUser, Notification
 from bingo.pattern_choice import GAME_PATTERN_CHOICES
 from bingo.card_lists import ahadu_bingo, hagere_bingo, liyu_bingo
 from django.http import Http404
@@ -19,6 +20,19 @@ def get_cartellas(branch):
         return liyu_bingo
     else:
         raise ValueError(f"Invalid branch: {branch}")
+
+@login_required(login_url='/login')
+def mark_notification_as_read(request, notification_id):
+    try:
+        notification = Notification.objects.get(id=notification_id, user__owner=request.user)
+        notification.is_read = True
+        notification.save()
+        print(f'notification {notification.message} {notification_id}')
+        return JsonResponse({"status": "success"})
+    except Notification.DoesNotExist:
+        print(f'notification not found {notification_id}')
+        return JsonResponse({"status": "error", "message": "Notification not found"})
+
 
 @login_required(login_url='/login')
 def main(request):
@@ -39,7 +53,10 @@ def get_main_context(request):
     """Assemble the main context for the template."""
     game_pattern_list = get_game_pattern_list()
     bingo_user = get_bingo_user(request) 
-    print(f'game_pattern_list: {game_pattern_list}')
+    notifications = Notification.objects.filter(user=bingo_user).order_by('-created_at')
+    unread_notifications = notifications.filter(is_read=False)
+
+    print(f'notitication: {notifications}, unread_notifications: {unread_notifications}')
 
     try:
         last_trx, balance, branch, username, cut_percentage = get_user_data(bingo_user, request)
@@ -51,6 +68,10 @@ def get_main_context(request):
         context = create_context_without_transaction(
             balance, branch, username, cut_percentage, game_pattern_list
         )
+
+    context['notifications'] = notifications
+    context['unread_notifications_count'] = unread_notifications.count()
+    print(f'context  {context}')
     return context
 
 def get_game_pattern_list():
@@ -112,3 +133,5 @@ def create_context_without_transaction(balance, branch, username, cut_percentage
 def get_bingo_user_data(bingo_user):
     """Extract balance, branch, username, and cut percentage from BingoUser."""
     return Decimal(bingo_user.balance), bingo_user.branch, bingo_user.owner.username, bingo_user.cut_percentage
+
+

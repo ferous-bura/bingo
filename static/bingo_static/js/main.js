@@ -58,8 +58,17 @@ $(document).ready(function () {
         const storedDate = localStorage.getItem('storedDate');
         return storedDate ? new Date(storedDate) : null; // Convert back to Date object if exists
     }
+
     // Attach a change event listener to update gamePattern dynamically
     $("#gamePattern").on("change", function () {
+        if (isGameRunning) {
+            // Revert the dropdown to the previously stored value
+            const currentPattern = localStorage.getItem('gamePattern') || 'default';
+            $(this).val(currentPattern); // Reset dropdown to the current pattern
+            console.log("Cannot change game pattern while the game is running.");
+            return; // Exit without changing anything
+        }
+        // Update the game pattern if the game is not running
         gamePattern = $(this).val() || 'default';
         localStorage.setItem('gamePattern', gamePattern);
         console.log("Game pattern updated:", gamePattern);
@@ -667,7 +676,7 @@ $(document).ready(function () {
 
     // Add a blur event listener to replace the placeholder when clicking away
     $('#checkCartella').on('blur', function () {
-        togglePauseGame();
+        // togglePauseGame();
         console.log('Input field lost focus!'); // Replace with your action
         $(this).attr('placeholder', 'Enter Cartella Number'); // Reset placeholder
     });
@@ -915,7 +924,7 @@ $(document).ready(function () {
                             lockbutton.removeClass("btn-danger").addClass("btn-secondary"); // Change style
                             showModalAlert("Cartella is un-Locked");
                         }
-    
+
                         console.log("Updated lockedCartella:", lockedCartella);
 
                     } else {

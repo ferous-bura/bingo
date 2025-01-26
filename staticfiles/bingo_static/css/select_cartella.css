@@ -7,8 +7,8 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: transparent;
-  color: white;
+  background-color: #fff;
+  color: #000;
   border-radius: 50%; /* Makes the button circular */
   width: 50px; /* Adjust width to make it round */
   height: 50px; /* Adjust height to make it round */
@@ -197,7 +197,7 @@ close-report {
 
 .action-buttons button {
   font-size: 2rem;
-  padding: 20px 50px;
+  padding: 30px 50px;
   color: #fff;
 }
 
@@ -352,4 +352,18 @@ close-report {
 tbody, td, tfoot, th, thead, tr {
   border: 10px solid rgb(207, 207, 207);
   padding : 10px 0 !important;
+}
+
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 10%; /* Circular buttons */
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.btn-icon i {
+  font-size: 3rem; /* Adjust icon size */
 }

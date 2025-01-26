@@ -3,12 +3,12 @@
     <div class="modal-content">
       <!-- Close Button (X) -->
       <button id="closeModal" class="close-btn">&times;</button>
-      <h2 id="cartellaModalLabel" class="text-center">Select Cartella</h2>
+      <h2 id="cartellaModalLabel" class="text-center">ካርቴላ ምረጡ</h2>
 
       <!-- Top row with Game Type, Bet, Add Cartella, and Action Buttons -->
       <div class="top-row">
         <div class="game-type boxed">
-          <label for="bet" class="form-label">Bet Amount</label>
+          <label for="bet" class="form-label">መደብ</label>
           <div class="bet-controls">
             <button id="decreaseBet" class="btn btn-danger">-</button>
             <input type="number" id="bet" class="form-control text-center" value="20" min="10" step="5"
@@ -19,9 +19,9 @@
           </div>
         </div>
         <div class="add-cartella-input boxed">
-          <label for="cartellaInput" class="form-label">Add Cartella</label>
+          <label for="cartellaInput" class="form-label">ካርቴላ</label>
           <div class="input-group">
-            <input type="number" id="cartellaInput" placeholder="Add Cartella" class="form-control" min="0" step="any"
+            <input type="number" id="cartellaInput" placeholder="ካርቴላ ቁጥር" class="form-control" min="0" step="any"
               oninput="this.value = this.value < 0 ? 0 : this.value;">
 
             <!-- <input type="number" id="cartellaInput" placeholder="Add Cartella" class="form-control" /> -->
@@ -29,18 +29,23 @@
           </div>
         </div>
         <div class="add-cartella-input boxed">
-          <div class="payable-display payable-title text-primary">Win</div>
-          <div id="totalPayable" class="payable-display">0 Birr</div>
+          <div class="payable-display payable-title text-primary">ደራሽ</div>
+          <div id="totalPayable" class="payable-display">0 ብር</div>
         </div>
         <div class="add-cartella-input boxed">
-          <div class="payable-display payable-title text-primary">Total Cartella</div>
+          <div class="payable-display payable-title text-primary">የ ካርቴላ ብዛት</div>
           <div id="totalSelectable" class="payable-display">0</div>
         </div>
         <!-- Save and Clear Buttons -->
-        <div class="action-buttons">
-          <button id="clearSelection" class="btn btn-danger">Clear</button>
-          <button id="saveSelection" class="btn btn-success">Save</button>
+        <div class="action-buttons d-flex gap-2">
+          <button id="clearSelection" class="btn btn-icon btn-danger" title="Clear Selection">
+            <i class="bx bx-x"></i> <!-- Example using Boxicons -->
+          </button>
+          <button id="saveSelection" class="btn btn-icon btn-success" title="Save Selection">
+            <i class="bx bx-check"></i> <!-- Example using Boxicons -->
+          </button>
         </div>
+        
       </div>
 
       <!-- Grid of numbers 1-100 -->

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views.bingo import main
+from .views.bingo import main, mark_notification_as_read
 from .views.start import start_bingo
 from .views.auth import CustomPasswordChangeView, logout_view, login_view
 from .views.report import fetch_reports
@@ -17,4 +17,5 @@ urlpatterns = [
     path("refund-bingo/", refund_bingo, name="refund"),
     path('change-password/', CustomPasswordChangeView.as_view(), name='change_password'),
     path("lock/", lock, name="lock"),
+    path('mark-notification-as-read/<int:notification_id>/', mark_notification_as_read, name='mark_notification_as_read'),
 ]

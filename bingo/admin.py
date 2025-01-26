@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import BingoDailyRecord, BingoTransaction, BingoUser
+from .models import BingoDailyRecord, BingoTransaction, BingoUser, Notification
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ("user", "message", "created_at", "is_read")
 
 @admin.register(BingoUser)
 class BingoUserAdmin(admin.ModelAdmin):
@@ -11,4 +15,4 @@ class BingoDailyRecordAdmin(admin.ModelAdmin):
 
 @admin.register(BingoTransaction)
 class BingoTransactionAdmin(admin.ModelAdmin):
-    list_display = ("time", "bet", "player_number", "total_won", "cut", "won","game_type", "winners", "submitted_cartella", "started", "ended")
+    list_display = ("created_at", "time", "bet", "player_number", "total_won", "cut", "won","game_type", "winners", "submitted_cartella", "started", "ended")

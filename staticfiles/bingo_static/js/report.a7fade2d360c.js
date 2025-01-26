@@ -100,12 +100,12 @@ $(document).ready(function () {
                           <td>${row.date}</td>
                           <td>${row.time}</td>
                           <td>${row.bet}</td>
-                          <td>${row.player_number}</td>
+                          <td>#${row.player_number}</td>
                           <td>$${row.total_won}</td>
                           <td>$${row.cut}</td>
-                          <td>$${row.won}</td>
-                          <td>${row.call_number}</td>
-                          <td>${row.winners}</td>
+                          <td class="text-primary">$${row.won}</td>
+                          <td>#${row.call_number}</td>
+                          <td class="text-primary">${row.winners}</td>
                           <td>${row.branch}</td>
                           <td>${row.cashier}</td>
                       </tr>
