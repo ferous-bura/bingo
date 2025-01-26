@@ -21,15 +21,15 @@ function makeGetRequest(url, successCallback, errorCallback = null) {
         dataType: "json",
         success: function (response) {
             if (response.status === "success") {
-                console.log('response success', response);
+                // console.log('response success', response);
                 successCallback(response);
             } else {
-                console.log("Error message from server:", response.message || "Request failed.");
+                // console.log("Error message from server:", response.message || "Request failed.");
                 if (errorCallback) errorCallback(response.message || "Request failed.");
             }
         },
         error: function (xhr, status, error) {
-            console.log("An error occurred:", error);
+            // console.log("An error occurred:", error);
             if (errorCallback) errorCallback(error);
         }
     });
@@ -50,12 +50,12 @@ function makePostRequest(url, data, successCallback, errorCallback = null) {
             if (response.status === "success") {
                 successCallback(response);
             } else {
-                console.log("Error message from server:", response.message || "Request failed.");
+                // console.log("Error message from server:", response.message || "Request failed.");
                 if (errorCallback) errorCallback(response.message || "Request failed.");
             }
         },
         error: function (xhr, status, error) {
-            console.log("An error occurred:", error);
+            // console.log("An error occurred:", error);
             if (errorCallback) errorCallback(error);
         }
     });

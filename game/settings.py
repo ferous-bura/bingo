@@ -130,7 +130,7 @@ EMAIL_HOST = 'smtp-mail.outlook.com'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 24 * 3600
+SESSION_COOKIE_AGE = 3 * 24 * 3600
 CSRF_TRUSTED_ORIGINS = [
     'https://bingolottery.onrender.com',
     'https://lotterybingo.pythonanywhere.com',

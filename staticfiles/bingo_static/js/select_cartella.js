@@ -162,9 +162,9 @@ $(document).ready(function () {
 
     // Save selection
     $('#saveSelection').on('click', function () {
-        console.log('Selected cartellas:', cartellaState.selected);
-        console.log('Bet Amount:', cartellaState.betAmount);
-        console.log('Total Payable:', cartellaState.totalPayable.toFixed(2));
+        // console.log('Selected cartellas:', cartellaState.selected);
+        // console.log('Bet Amount:', cartellaState.betAmount);
+        // console.log('Total Payable:', cartellaState.totalPayable.toFixed(2));
         $('#cartellaModal').hide();
     });
 

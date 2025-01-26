@@ -1,25 +1,24 @@
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.utils.timezone import now
 from django.http import JsonResponse
 
+from bingo.helper import get_cartellas
 from bingo.models import BingoDailyRecord, BingoUser, Notification
 from bingo.pattern_choice import GAME_PATTERN_CHOICES
-from bingo.card_lists import ahadu_bingo, hagere_bingo, liyu_bingo
-from django.http import Http404
+# from bingo.card_lists import ahadu_bingo, hagere_bingo, liyu_bingo
 
-
-def get_cartellas(branch):
-    """Return cartellas based on the branch."""
-    if branch == 'ahadu_bingo':
-        return ahadu_bingo
-    elif branch == 'hagere_bingo':
-        return hagere_bingo
-    elif branch == 'liyu_bingo':
-        return liyu_bingo
-    else:
-        raise ValueError(f"Invalid branch: {branch}")
+# def get_cartellas(branch):
+    # """Return cartellas based on the branch."""
+    # if branch == 'ahadu_bingo':
+    #     return ahadu_bingo
+    # elif branch == 'hagere_bingo':
+    #     return hagere_bingo
+    # elif branch == 'liyu_bingo':
+    #     return liyu_bingo
+    # else:
+        # raise ValueError(f"Invalid branch: {branch}")
 
 @login_required(login_url='/login')
 def mark_notification_as_read(request, notification_id):

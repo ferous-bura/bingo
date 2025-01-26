@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
 
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
@@ -14,6 +13,7 @@ class BingoUser(models.Model):
     credit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     branch = models.CharField(max_length=100, default="hagere_bingo")
     cut_percentage = models.PositiveIntegerField(default=25)
+    last_notification = models.DateTimeField(null=True, blank=True)
 
 class Notification(models.Model):
     user = models.ForeignKey(BingoUser, on_delete=models.CASCADE, related_name="notifications")
@@ -72,13 +72,23 @@ class BingoTransaction(models.Model):
         return f"Bet: {self.bet}, Player#: {self.player_number}, Total Won: {self.total_won}"
 
 
+class BingoCard(models.Model):
+    name = models.CharField(max_length=100, unique=True)  # e.g., "hagere_bingo", "ahadu_bingo"
+    cards = models.JSONField()  # Store the list of cards as JSON
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
 def add_daily_balance_and_notify(user: BingoUser):
     # Add daily balance
-    user.balance += 200
+    balance = 200
+    user.balance += balance
     user.save()
 
     # Create a notification message
-    message = f"Dear {user.owner.username}, your daily balance of 400 has been added. Your new balance is {user.balance:.2f}."
+    message = f"Dear {user.owner.username}, your daily balance of {balance} has been added. Your new balance is {user.balance:.2f}."
 
     # Save the notification (if you have a Notification model)
     Notification.objects.create(user=user, message=message)
@@ -88,20 +98,37 @@ def add_daily_balance_and_notify(user: BingoUser):
 
     return message
 
-
 @receiver(user_logged_in)
 def handle_daily_login(sender, request, user, **kwargs):
     try:
         bingo_user = BingoUser.objects.get(owner=user)
 
         # Check if the user already received their daily balance today
-        last_notification = bingo_user.notifications.last()
-        if last_notification and last_notification.created_at.date() == datetime.now().date():
+        if bingo_user.last_notification and bingo_user.last_notification.date() == now().date():
             print(f"User {user.username} has already received today's balance.")
             return
 
-        # Add balance and send notification
+        # Add balance and update the last_notification timestamp
         add_daily_balance_and_notify(bingo_user)
+        bingo_user.last_notification = now()
+        bingo_user.save()
 
     except BingoUser.DoesNotExist:
         print(f"No BingoUser profile found for {user.username}.")
+
+# @receiver(user_logged_in)
+# def handle_daily_login(sender, request, user, **kwargs):
+#     try:
+#         bingo_user = BingoUser.objects.get(owner=user)
+
+#         # Check if the user already received their daily balance today
+#         last_notification = bingo_user.notifications.last()
+#         if last_notification and last_notification.created_at.date() == datetime.now().date():
+#             print(f"User {user.username} has already received today's balance.")
+#             return
+
+#         # Add balance and send notification
+#         add_daily_balance_and_notify(bingo_user)
+
+#     except BingoUser.DoesNotExist:
+#         print(f"No BingoUser profile found for {user.username}.")

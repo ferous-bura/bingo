@@ -4,12 +4,37 @@ from django.utils.timezone import now
 import logging
 from decimal import Decimal
 from django.core.exceptions import ObjectDoesNotExist
-from .models import BingoUser, BingoDailyRecord, BingoTransaction, Notification
 from django.utils.timezone import now
+from django.shortcuts import get_object_or_404
 
-from .models import BingoTransaction, BingoDailyRecord, BingoUser
-from .card_lists import ahadu_bingo, hagere_bingo
+from bingo.models import BingoTransaction, BingoDailyRecord, BingoUser, BingoCard
 logger = logging.getLogger(__name__)
+
+
+def get_cartellas(branch):
+    """Return cartellas based on the branch."""
+    card = get_object_or_404(BingoCard, name=branch)
+    return card.cards  # Return the list of cartellas stored in the JSONField
+
+
+def retrieve_cartella(transaction, submitted_cartella):
+    """Retrieve the relevant cartella based on the user's branch."""
+    branch = transaction.daily_record.user.branch
+
+    try:
+        # Fetch the cartellas for the user's branch
+        cartellas = get_cartellas(branch)
+        
+        # Retrieve the specific cartella
+        cartella = cartellas[int(submitted_cartella) - 1]
+        print(f"Retrieved cartella for '{branch}': {cartella}")
+        return cartella
+    except IndexError as e:
+        print(f"Error retrieving cartella for '{branch}': {e}")
+        return False
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return False
 
 # Helper Functions
 def generate_result():

@@ -1,4 +1,7 @@
-from .card_lists import ahadu_bingo, hagere_bingo
+# from .card_lists import ahadu_bingo, hagere_bingo
+
+
+from bingo.helper import retrieve_cartella
 
 
 def check_bingo(transaction, submitted_cartella, call_number, game_pattern):
@@ -11,23 +14,28 @@ def check_bingo(transaction, submitted_cartella, call_number, game_pattern):
         print(f"Checking bingo winner: transaction={transaction.id}, submitted_cartella={submitted_cartella}, call_number={call_number}")
         
         # Retrieve the relevant cartella
-        if transaction.daily_record.user.branch == 'ahadu_bingo':
-            try:
-                cartella = ahadu_bingo[int(submitted_cartella) - 1]
-                print(f"Retrieved cartella for 'ahadu_bingo': {cartella}")
-            except IndexError as e:
-                print(f"Error retrieving cartella for 'ahadu_bingo': {e}")
-                return False
-        # Retrieve the relevant cartella
-        elif transaction.daily_record.user.branch == 'hagere_bingo':
-            try:
-                cartella = hagere_bingo[int(submitted_cartella) - 1]
-                print(f"Retrieved cartella for 'hagere_bingo': {cartella}")
-            except IndexError as e:
-                print(f"Error retrieving cartella for 'hagere_bingo': {e}")
-                return False
+        cartella = retrieve_cartella(transaction, submitted_cartella)
+        if cartella:
+            print("Cartella retrieved successfully:", cartella)
         else:
-            raise ValueError('Branch not found')
+            print("Failed to retrieve cartella.")
+        # if transaction.daily_record.user.branch == 'ahadu_bingo':
+        #     try:
+        #         cartella = ahadu_bingo[int(submitted_cartella) - 1]
+        #         print(f"Retrieved cartella for 'ahadu_bingo': {cartella}")
+        #     except IndexError as e:
+        #         print(f"Error retrieving cartella for 'ahadu_bingo': {e}")
+        #         return False
+        # # Retrieve the relevant cartella
+        # elif transaction.daily_record.user.branch == 'hagere_bingo':
+        #     try:
+        #         cartella = hagere_bingo[int(submitted_cartella) - 1]
+        #         print(f"Retrieved cartella for 'hagere_bingo': {cartella}")
+        #     except IndexError as e:
+        #         print(f"Error retrieving cartella for 'hagere_bingo': {e}")
+        #         return False
+        # else:
+        #     raise ValueError('Branch not found')
 
         # Ensure call number is enough to check
         if call_number < 5:

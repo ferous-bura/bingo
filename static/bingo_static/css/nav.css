@@ -80,3 +80,43 @@
   border: 2px solid #007bff;
   /* Optional border color */
 }
+
+#gameOverModal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  text-align: center;
+}
+
+#gameOverModal h2 {
+  margin-top: 0;
+}
+
+#gameOverModal button {
+  margin: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+#countdown {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 1001; /* Ensure it's above other elements */
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}

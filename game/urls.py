@@ -12,3 +12,10 @@ urlpatterns = [
 if not settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+# cp db.sqlite3 db.sqlite3.backup
+# git reset --hard origin/main
+# mv db.sqlite3.backup db.sqlite3
+
+# source ~/.virtualenvs/<env_name>/bin/activate
