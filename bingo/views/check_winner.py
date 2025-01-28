@@ -71,9 +71,11 @@ def check_winner(request):
             print(f'cartella not found')
             raise ValueError("Cartella not found")
 
-        # Retrieve the transaction object
+        from datetime import timedelta
         today = now().date()
-        transaction = BingoTransaction.objects.filter(transaction_id=transaction_id, daily_record__user__owner=user,     created_at__date=today).latest('time')
+        # today = today - timedelta(days=1)
+        today = now().date()
+        transaction = BingoTransaction.objects.filter(transaction_id=transaction_id, daily_record__user__owner=user, created_at__date=today).latest('time')
 
         if not transaction.result:
             print(f'trx result not found')

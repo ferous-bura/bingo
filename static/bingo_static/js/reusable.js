@@ -61,4 +61,59 @@ function makePostRequest(url, data, successCallback, errorCallback = null) {
     });
 }
 
-// });
+
+$(document).ready(function () {
+    function playShuffleAudio(fileName) {
+        const audio = new Audio(`/static/bingo_static/audio/special/${fileName}`);
+        audio.play().catch(error => {
+            console.log(`Audio file not found: ${fileName}`, error);
+        });
+    }
+
+    // Shuffle functionality
+    $('#shuffleCartella').on('click', function () {
+        const shuffleButton = $(this);
+
+        playShuffleAudio('shuffle.mp3');
+
+        // Add glow effect to the button
+        shuffleButton.addClass('glow');
+
+        // Animate numbers
+        $('.number-box').each(function () {
+            const $numberBox = $(this);
+
+            // Add the 'animated' class to trigger animation
+            $numberBox.addClass('shuffled-animated');
+
+            // Add the 'animated-style' class for specific movement and background color
+            $numberBox.addClass('shuffled-animated-style');
+
+            // Apply the animation to the number box
+            $numberBox.animate(
+                {
+                    transform: 'translate(15px, 15px)', // Apply the transform directly in animation
+                },
+                {
+                    duration: 7000,
+                    step: function (now, fx) {
+                        if (fx.prop === 'transform') {
+                            $(this).css('transform', now);
+                        }
+                    },
+                    complete: function () {
+                        // Remove 'animated' and 'animated-style' classes after the animation is complete
+                        $numberBox.removeClass('shuffled-animated shuffled-animated-style');
+
+                        // Optionally, reset any properties or styles if needed
+                    },
+                }
+            );
+        });
+
+        // Remove glow effect after 5 seconds
+        setTimeout(() => {
+            shuffleButton.removeClass('glow');
+        }, 6000);
+    });
+});

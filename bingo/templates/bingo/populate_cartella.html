@@ -32,8 +32,8 @@
         display: block;
         margin: 20px auto;
         padding: 10px 20px;
-        background-color: navy;
-        color: white;
+        /* background-color: navy;
+        color: white; */
         border: none;
         cursor: pointer;
     }
@@ -47,10 +47,10 @@
 <div class="modal fade" id="bingoPatternModal" tabindex="-1" aria-labelledby="bingoPatternModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
+        <!-- <div class="modal-header">
           <h5 class="modal-title" id="bingoPatternModalLabel">Bingo Pattern Selection</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+        </div> -->
         <div class="modal-body">
           <div>
 
@@ -65,8 +65,9 @@
 
                 </select>
               </div>
-
-            <button class="pattern-clear-btn" id="clearPatterns">Clear Patterns</button>
+            <button id="randomizePattern" class="pattern-clear-btn btn btn-success">ተጫነኝ</button>
+            <!-- <button class="pattern-clear-btn" id="clearPatterns">Clear Patterns</button>
+            <button class="btn btn-secondary" id="randomizePattern">Randomize</button> -->
           </div>
   
           <div id="bingoContainer">
@@ -101,7 +102,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button>
           <!-- <button type="button" class="btn btn-primary">Save Pattern</button> -->
         </div>
       </div>

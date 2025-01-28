@@ -1,58 +1,30 @@
-// import { clearCartellaSelection } from './cartella.js';
-
-// clearCartellaSelection();
-// import { initializeGameState } from './gameState.js';
-// import { attachEventHandlers } from './eventHandlers.js';
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     initializeGameState();
-//     attachEventHandlers();
-// });
 
 $(document).ready(function () {
-    // Other logic
-    const columns = {
-        B: Array.from({ length: 15 }, (_, i) => i + 1),
-        I: Array.from({ length: 15 }, (_, i) => i + 16),
-        N: Array.from({ length: 15 }, (_, i) => i + 31),
-        G: Array.from({ length: 15 }, (_, i) => i + 46),
-        O: Array.from({ length: 15 }, (_, i) => i + 61)
-    };
-
-    // Call the function once to check and set value
-    const unfinishedTransactionId = null;
-    const gameStateUrl = '127.0.0.1:8000'; // Adjust the URL path as needed
+    let isChimeMuted = false; // State to track chime toggle
+    let audioTimeout = null; // Track the setTimeout ID for pending audio
+    let currentAudio = null; // Track the currently playing audio
     const currentDate = new Date();
     let gameSpeed = parseInt(localStorage.getItem('gameSpeed'), 10) || 5000; // Default to 3000ms
+    let newGameSpeed;
     let gameInterval;
+    let animeInterval;
+    let lastAnimatedNumber = null;  // Track the last animated number
     let isGameRunning = false;
     let refund = localStorage.getItem('refund') === 'true';
     let storedDate = getDateFromLocalStorage();
     const lockedCartella = [];
     let transactionId = localStorage.getItem('transactionId') || null;
-    // let transactionId = null;
-
+    let audioPlaybackPosition = 0; // Track the playback position of the audio
     let resultIndex = parseInt(localStorage.getItem('resultIndex'), 10) || 0;
     let balance = parseInt(localStorage.getItem('balance'), 10) || 0;
-    // let resultIndex = 0; // Used for tracking the current number in the result sequence
-
-    // let resultNumbers = localStorage.getItem('resultNumbers') || null;
     let resultNumbers = localStorage.getItem('resultNumbers');
     resultNumbers = resultNumbers ? JSON.parse(resultNumbers) : null;
-
-    // let resultNumbers = null;
-
     let isGamePaused = false;
-    // Default settings if nothing is stored
     let voiceChoice = localStorage.getItem('voiceChoice') || 'female'; // Default to female
     let totalCalls = parseInt(localStorage.getItem('totalCalls'), 10) || 0;
-    // console.log('local storage totalCalls:', totalCalls);
-    // let totalCalls = 0; // To track the total number of calls
-    let previousCall = parseInt(localStorage.getItem('previousCall'), 10) || 0;
-    // let previousCall = 0; // To store the last called number
-    // selected cartella states
+    let aniTime = 2000; // Default animation interval time
 
-    // Initialize gamePattern with the current value
+    let previousCall = parseInt(localStorage.getItem('previousCall'), 10) || 0;
     let gamePattern = localStorage.getItem('gamePattern') || 'default';
     function getDateFromLocalStorage() {
         const storedDate = localStorage.getItem('storedDate');
@@ -82,20 +54,72 @@ $(document).ready(function () {
         localStorage.clear();
     });
 
-    // Function to play audio based on the selected voice
     function playAudio(fileName) {
+        // Stop any currently playing audio
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0; // Reset audio to the beginning
+        }
+
         // Play the selected voice
         if (voiceChoice === 'female') {
-            const female_audio = new Audio(`/static/bingo_static/audio/amharic/female/${fileName}`);
-            female_audio.play().catch(error => {
-                console.log(`Audio file not found: ${fileName}`, error);
-            });
+            currentAudio = new Audio(`/static/bingo_static/audio/amharic/f/${fileName}`);
         } else {
-            const male_audio = new Audio(`/static/bingo_static/audio/amharic/male/${fileName}`);
-            male_audio.play().catch(error => {
-                console.log(`Audio file not found: ${fileName}`, error);
-            });
+            currentAudio = new Audio(`/static/bingo_static/audio/amharic/m/${fileName}`);
         }
+        // currentAudio.playbackRate = 1 + (gameSpeed / 1000); // Adjust playback speed based on game speed
+
+        currentAudio.play().catch(error => {
+            console.log(`Audio file not found: ${fileName}`, error);
+        });
+    }
+
+    // // Function to play audio based on the selected voice
+    // function playAudio(fileName) {
+    //     // Play the selected voice
+    //     if (voiceChoice === 'female') {
+    //         const female_audio = new Audio(`/static/bingo_static/audio/amharic/f/${fileName}`);
+    //         female_audio.play().catch(error => {
+    //             console.log(`Audio file not found: ${fileName}`, error);
+    //         });
+    //     } else {
+    //         const male_audio = new Audio(`/static/bingo_static/audio/amharic/m/${fileName}`);
+    //         male_audio.play().catch(error => {
+    //             console.log(`Audio file not found: ${fileName}`, error);
+    //         });
+    //     }
+    // }
+
+    // Toggle chime setting
+    $('#chimeAudio').on('click', function () {
+        const $chimebutton = $(this);
+        const $chimeicon = $chimebutton.find('i');
+
+        if ($chimebutton.hasClass('btn-success')) {
+            // Turn OFF the chime
+            $chimebutton.removeClass('btn-success').addClass('btn-danger');
+            $chimeicon.removeClass('fa-toggle-on').addClass('fa-toggle-off');
+            isChimeMuted = true;
+        } else {
+            // Turn ON the chime
+            $chimebutton.removeClass('btn-danger').addClass('btn-success');
+            $chimeicon.removeClass('fa-toggle-off').addClass('fa-toggle-on');
+            isChimeMuted = false;
+        }
+    });
+
+    function audioFunction(number) {
+        let prefix = '';
+        if (number >= 1 && number <= 15) prefix = 'B';
+        else if (number >= 16 && number <= 30) prefix = 'I';
+        else if (number >= 31 && number <= 45) prefix = 'N';
+        else if (number >= 46 && number <= 60) prefix = 'G';
+        else if (number >= 61 && number <= 75) prefix = 'O';
+
+        // Play the audio file for the number
+        // playChimeAudio("chime.mp3");
+        playAudio(`${prefix}_${number}.mp3`);
+        audioTimeout = setTimeout(() => playChimeAudio("chime.mp3"), 2500);
     }
 
     // Voice selection handlers
@@ -112,15 +136,18 @@ $(document).ready(function () {
     // Initialize the slider for game speed
     $("#slider").slider({
         min: 3000, // Minimum speed (faster)
-        max: 10000, // Maximum speed (slower)
+        max: 15000, // Maximum speed (slower)
         value: gameSpeed, // Set the slider to saved game speed
         step: 1000, // Increment steps
         slide: function (event, ui) {
             gameSpeed = ui.value; // Update game speed
+            togglePauseGame();
             $("#speedValue").text(gameSpeed / 1000); // Display updated speed
             localStorage.setItem('gameSpeed', gameSpeed); // Save game speed to localStorage
+            togglePauseGame();
             // console.log('Game speed is', gameSpeed);
         },
+        
     });
 
     // Set initial voice selection visually
@@ -129,7 +156,17 @@ $(document).ready(function () {
     } else {
         $('#femaleVoice').addClass('selected');
     }
+    // Function to play audio
+    function playChimeAudio(fileName) {
+        if (isChimeMuted) return; // Skip playback if muted
 
+        const audio = new Audio(`/static/bingo_static/audio/special/${fileName}`);
+        // console.log('Audio file found: ${fileName}');
+
+        audio.play().catch(error => {
+            console.log(`Audio file not found: ${fileName}`, error);
+        });
+    }
     // Function to play audio
     function playSpecialAudio(fileName) {
         const audio = new Audio(`/static/bingo_static/audio/special/${fileName}`);
@@ -203,11 +240,20 @@ $(document).ready(function () {
 
     // // Function to start the game with predefined numbers
     function playGame() {
+        if (isGamePaused) {
+            // If the game is paused, do not start a new interval
+            return;
+        }
+
+        // Clear the previous interval before setting a new one
+        if (gameInterval) {
+            clearInterval(gameInterval);
+        }
+        // newGameSpeed = gameSpeed;
+        // console.log('new game speed ', newGameSpeed);
+        console.log('old game speed ', gameSpeed);
+
         gameInterval = setInterval(function () {
-            // console.log('resultIndex < resultNumbers.length');
-            // console.log('resultNumbers length', resultNumbers.length);
-            // console.log('resultIndex', resultIndex);
-            // console.log('totalCalls', totalCalls);
 
             if (resultIndex < resultNumbers.length) {
                 const number = resultNumbers[resultIndex];
@@ -268,12 +314,56 @@ $(document).ready(function () {
         }, 1000); // Update every second
     }
 
+    // function pauseGame() {
+    //     if (isGameRunning && !isGamePaused) {
+    //         // Pause the game
+    //         clearInterval(gameInterval);
+    //         isGamePaused = true;
+    //         pauseIconToggle();
+    //     }
+    // }
+
     function pauseGame() {
         if (isGameRunning && !isGamePaused) {
             // Pause the game
-            clearInterval(gameInterval);
             isGamePaused = true;
             pauseIconToggle();
+            clearInterval(gameInterval);
+
+            // If there was a last animated number, continue its animation
+            if (lastAnimatedNumber) {
+                console.log('lastAnimatedNumber', lastAnimatedNumber);
+                animateNumber(lastAnimatedNumber, true);
+            }
+
+            // Pause the currently playing audio
+            if (currentAudio) {
+                currentAudio.pause();
+                audioPlaybackPosition = currentAudio.currentTime; // Store the playback position
+            }
+
+            // Clear any pending audio playback
+            clearTimeout(audioTimeout);
+        }
+
+    }
+
+
+    // Function to resume the game
+    function resumeGame() {
+        if (isGamePaused) {
+            isGamePaused = false;
+            pauseIconToggle(); // Update UI
+
+            // Resume the audio from the paused position
+            if (currentAudio) {
+                currentAudio.currentTime = audioPlaybackPosition; // Set the playback position
+                currentAudio.play().catch(error => {
+                    console.log('Error resuming audio:', error);
+                });
+            }
+
+            playGame(); // Restart the game loop
         }
     }
 
@@ -290,17 +380,10 @@ $(document).ready(function () {
 
     // Method to toggle game pause and continue
     function togglePauseGame() {
-
         if (isGameRunning && !isGamePaused) {
-            // Pause the game
-            clearInterval(gameInterval);
-            isGamePaused = true;
-            pauseIconToggle();
-        } else if (isGamePaused) {
-            // Continue the game
-            isGamePaused = false;
-            playGame();
-            pauseIconToggle();
+            pauseGame();
+        } else {
+            resumeGame()
         }
     }
 
@@ -333,6 +416,7 @@ $(document).ready(function () {
         previousCall = 0;
         transactionId = 0;
 
+
         refund = false;
         lockedCartella.length = 0;
         localStorage.setItem('refund', 'false');
@@ -341,7 +425,7 @@ $(document).ready(function () {
         localStorage.setItem('previousCall', 0);
         localStorage.setItem('totalCalls', 0);
         // Clear interval and disable buttons
-        clearInterval(gameInterval);
+
         isGameRunning = false;
         isGamePaused = false;
         // Update UI elements
@@ -361,6 +445,17 @@ $(document).ready(function () {
         $("#resetGame").prop("disabled", true);
         // console.log('reset is done ');
         $('#checkCartella').attr('placeholder', 'Enter Cartella Number');
+        setTimeout(() => {
+
+            clearInterval(gameInterval);
+            clearInterval(animeInterval);
+            
+            const numberBox = $(".table .number-box");
+            numberBox.removeClass('animated active');
+            numberBox.css('color', 'black')
+            .css('background-color', 'white')
+        }, 1000);
+
     }
 
     function closeGame() {
@@ -437,6 +532,19 @@ $(document).ready(function () {
     $("#cancelReset").on("click", function () {
         $("#resetGameModal").modal("hide");
     });
+    $("#resetGame").on("click", function () {
+        // Reset game state variables
+        resetGameConfirmed();
+        // console.log('reset called from confirm reset');
+
+    });
+
+    $("#resetBingo").on("click", function () {
+        // Reset game state variables
+        resetGameConfirmed();
+        // console.log('reset called from confirm reset');
+
+    });
 
     $("#confirmReset").on("click", function () {
         // Reset game state variables
@@ -455,45 +563,75 @@ $(document).ready(function () {
     $("#pauseGame").on("click", togglePauseGame);
     // $("#resetGame").on("click", resetGame);
 
-    function audioFunction(number) {
-        let prefix = '';
-        if (number >= 1 && number <= 15) prefix = 'B';
-        else if (number >= 16 && number <= 30) prefix = 'I';
-        else if (number >= 31 && number <= 45) prefix = 'N';
-        else if (number >= 46 && number <= 60) prefix = 'G';
-        else if (number >= 61 && number <= 75) prefix = 'O';
-
-        // Play the audio file for the number
-        playAudio(`${prefix}_${number}.mp3`);
-        setTimeout(() => playSpecialAudio("chime2.mp3"), 2000);
-    }
-
     // Function to animate the number on the Bingo grid
-    function animateNumber(number) {
-        setTimeout(() => {
-            // console.log('Number to be animated is:', number);
+    // function animateNumber(number) {
+    //     setTimeout(() => {
+    //         // console.log('Number to be animated is:', number);
 
-            const numberBox = $(".table .number-box").filter(function () {
-                return $(this).text() == number;
-            });
+    //         const numberBox = $(".table .number-box").filter(function () {
+    //             return $(this).text() == number;
+    //         });
 
-            const rotateDuration = gameSpeed - 500; // Set rotate animation duration based on gameSpeed
+    //         const rotateDuration = gameSpeed - 500; // Set rotate animation duration based on gameSpeed
 
-            // Add 'active' class to trigger animation, then apply colors
-            numberBox.addClass('active animated')
-                .css('color', 'white')
-                .css('background-color', 'black')
-                .css('animation-duration', `${rotateDuration}ms`);  // Set rotate duration dynamically
+    //         // Add 'active' class to trigger animation, then apply colors
+    //         numberBox.addClass('active animated')
+    //             .css('color', 'white')
+    //             .css('background-color', 'black')
+    //             .css('animation-duration', `${rotateDuration}ms`);  // Set rotate duration dynamically
 
-            // Listen for when the animation ends
-            numberBox.on('animationend', function () {
-                // Remove 'animated' and 'active' classes after animation ends
-                numberBox.removeClass('animated active');
-            });
+    //         // Listen for when the animation ends
+    //         numberBox.on('animationend', function () {
+    //             // Remove 'animated' and 'active' classes after animation ends
+    //             numberBox.removeClass('animated active');
+    //         });
+    //         lastAnimatedNumber = number;
 
-        }, 1000); // Initial delay before animation starts (optional)
+    //     }, 1000); // Initial delay before animation starts (optional)
+    // }
+
+    function animateNumber(number, forever = false) {
+        // if (isGamePaused && number === lastAnimatedNumber) {
+        //     return;
+        // }
+    
+        clearInterval(animeInterval);
+        // Function to perform the animation
+        function performAnimation() {
+            setTimeout(() => {
+                // console.log('Number to be animated is:', number);
+    
+                const numberBox = $(".table .number-box").filter(function () {
+                    return $(this).text() == number;
+                });
+    
+                const rotateDuration = gameSpeed - 500; // Set rotate animation duration based on gameSpeed
+    
+                // Add 'active' class to trigger animation, then apply colors
+                numberBox.addClass('active animated')
+                    .css('color', 'white')
+                    .css('background-color', 'black')
+                    .css('animation-duration', `${rotateDuration}ms`);  // Set rotate duration dynamically
+    
+                // Listen for when the animation ends
+                numberBox.on('animationend', function () {
+                    // Remove 'animated' and 'active' classes after animation ends
+                    numberBox.removeClass('animated active');
+                });
+    
+                lastAnimatedNumber = number;
+    
+            }, 1000); // Initial delay before animation starts (optional)
+        }
+    
+        // Perform the animation immediately
+        performAnimation();
+    
+        // If forever is true, set an interval to repeat the animation
+        if (forever) {
+            animeInterval = setInterval(performAnimation, aniTime);
+        } 
     }
-
 
     // Function to update the bingo circle text, total calls, and previous call
     function updateBingoCircleText(number, closedBefore = false) {
@@ -852,6 +990,7 @@ $(document).ready(function () {
             showResultModal("Un-known Cartella", "Un-known cartella number.");
         }
     }
+
     // Add a blur event listener to replace the placeholder when clicking away
     $('#checkCartella').on('blur', function () {
         // togglePauseGame();
@@ -871,6 +1010,7 @@ $(document).ready(function () {
             $(this).css('border', '1px solid #ced4da'); // Reset to default
         }, 2000);
     });
+
     // Attach click event to the "Check Winner" button
     $("#check-winner-btn").on('click', function () {
         checkWinner();
@@ -1103,12 +1243,12 @@ $(document).ready(function () {
         cartellaState.selected = gameData.submitted_cartella;
         transactionId = gameData.unfinished_transaction_id;
         $('#resumeUnfinishedGame').off('click').on('click', function () {
-            resumeGame(gameData);
+            resumeGame2(gameData);
         });
         $('#resetGame').off('click').on('click', resetGameConfirmed);
     }
 
-    function resumeGame(gameData) {
+    function resumeGame2(gameData) {
         // console.log('Resuming game with data:', gameData);
 
         // Populate game section with unfinished game data
@@ -1141,5 +1281,12 @@ $(document).ready(function () {
     //         },
     //     });
     // }
+
+    $(document).on('keydown', function (event) {
+        if (event.code === 'Space') { // Check if the pressed key is the spacebar
+            event.preventDefault(); // Prevent default spacebar behavior
+            togglePauseGame(); // Toggle pause/resume
+        }
+    });
 
 });

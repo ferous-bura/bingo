@@ -29,7 +29,7 @@ class BingoDailyRecord(models.Model):
     total_transactions = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.user.owner.username} - {self.date} - ${self.user.balance}"
+        return f"{self.user.owner.username}"
 
 
 class BingoTransaction(models.Model):

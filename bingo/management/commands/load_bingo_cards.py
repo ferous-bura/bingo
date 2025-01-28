@@ -2,7 +2,7 @@ import json
 from django.core.management.base import BaseCommand
 from bingo.models import BingoCard
 from bingo.card_lists import ahadu_bingo, hagere_bingo, liyu_bingo
-
+# python manage.py load_bingo_cards
 class Command(BaseCommand):
     help = "Load Bingo cards into the database"
 
