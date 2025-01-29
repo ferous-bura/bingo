@@ -1,3 +1,105 @@
+const patterns = {
+    // Single Line Patterns
+    one_line: [
+        [0, 1, 2, 3, 4],    // First row
+        [5, 6, 7, 8, 9],    // Second row
+        [10, 11, 12, 13, 14], // Third row
+        [15, 16, 17, 18, 19], // Fourth row
+        [20, 21, 22, 23, 24],  // Fifth row
+        [0, 5, 10, 15, 20],  // First column
+        [1, 6, 11, 16, 21],  // Second column
+        [2, 7, 12, 17, 22],  // Third column
+        [3, 8, 13, 18, 23],  // Fourth column
+        [4, 9, 14, 19, 24],  // Fifth column
+        [0, 6, 12, 18, 24],  // Diagonal (top-left to bottom-right)
+        [4, 8, 12, 16, 20]   // Diagonal (top-right to bottom-left)
+    ],
+
+    // Two Lines Patterns
+    two_lines: [
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], // First and Second rows
+        [10, 11, 12, 13, 14, 15, 16, 17, 18, 19], // Third and Fourth rows
+        [0, 1, 2, 3, 4, 20, 21, 22, 23, 24], // First and Fifth rows
+        [0, 5, 10, 15, 20, 1, 6, 11, 16, 21], // First and Second columns
+        [2, 7, 12, 17, 22, 3, 8, 13, 18, 23], // Third and Fourth columns
+        [0, 5, 10, 15, 20, 4, 9, 14, 19, 24], // First and Fifth columns
+        [0, 1, 2, 3, 4, 0, 5, 10, 15, 20], // First row and First column
+        [4, 9, 14, 19, 24, 20, 21, 22, 23, 24], // Fifth row and Fifth column
+        [0, 6, 12, 18, 24, 4, 8, 12, 16, 20] // Both diagonals
+    ],
+
+    // Three Lines Patterns
+    three_lines: [
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], // First, Second, and Third rows
+        [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], // Second, Third, and Fourth rows
+        [0, 1, 2, 3, 4, 10, 11, 12, 13, 14, 20, 21, 22, 23, 24], // First, Third, and Fifth rows
+        [0, 5, 10, 15, 20, 1, 6, 11, 16, 21, 2, 7, 12, 17, 22], // First, Second, and Third columns
+        [1, 6, 11, 16, 21, 2, 7, 12, 17, 22, 3, 8, 13, 18, 23], // Second, Third, and Fourth columns
+        [0, 5, 10, 15, 20, 2, 7, 12, 17, 22, 4, 9, 14, 19, 24], // First, Third, and Fifth columns
+        [0, 1, 2, 3, 4, 0, 5, 10, 15, 20, 4, 9, 14, 19, 24], // First row, First column, and Fifth column
+        [0, 6, 12, 18, 24, 4, 8, 12, 16, 20, 0, 1, 2, 3, 4] // Both diagonals and First row
+    ],
+
+    // Four Lines Patterns
+    four_lines: [
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], // First, Second, Third, and Fourth rows
+        [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], // Second, Third, Fourth, and Fifth rows
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], // First, Second, Fourth, and Fifth rows
+        [0, 5, 10, 15, 20, 1, 6, 11, 16, 21, 2, 7, 12, 17, 22, 3, 8, 13, 18, 23], // First, Second, Third, and Fourth columns
+        [1, 6, 11, 16, 21, 2, 7, 12, 17, 22, 3, 8, 13, 18, 23, 4, 9, 14, 19, 24], // Second, Third, Fourth, and Fifth columns
+        [0, 5, 10, 15, 20, 1, 6, 11, 16, 21, 3, 8, 13, 18, 23, 4, 9, 14, 19, 24], // First, Second, Fourth, and Fifth columns
+        [0, 1, 2, 3, 4, 0, 5, 10, 15, 20, 4, 9, 14, 19, 24, 20, 21, 22, 23, 24], // First row, First column, Fifth column, and Fifth row
+        [0, 6, 12, 18, 24, 4, 8, 12, 16, 20, 0, 1, 2, 3, 4, 20, 21, 22, 23, 24] // Both diagonals, First row, and Fifth row
+    ],
+
+    // Full House Pattern
+    full_house: [
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24] // All cells
+    ],
+
+    // Corners Pattern
+    corners: [
+        [0, 4, 20, 24] // All four corners
+    ],
+
+    // Middle Square Pattern
+    middle_square: [
+        [6, 7, 8, 11, 12, 13, 16, 17, 18] // Middle 3x3 square
+    ],
+
+    // Cross Pattern
+    cross: [
+        [0, 6, 12, 18, 24, 4, 8, 12, 16, 20] // Both diagonals
+    ],
+
+    // Outer Square Pattern
+    outer_square: [
+        [0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24] // Outer square
+    ],
+
+    // Inner Square Pattern
+    inner_square: [
+        [6, 7, 8, 11, 12, 13, 16, 17, 18] // Inner 3x3 square
+    ],
+
+    // Letter Patterns (e.g., 'B', 'I', 'N', 'G', 'O')
+    letterB: [
+        [0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24] // Letter 'B'
+    ],
+    letterI: [
+        [0, 5, 10, 15, 20, 4, 9, 14, 19, 24] // Letter 'I'
+    ],
+    letterN: [
+        [0, 5, 10, 15, 20, 4, 9, 14, 19, 24, 1, 6, 11, 16, 21, 3, 8, 13, 18, 23] // Letter 'N'
+    ],
+    letterG: [
+        [0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24] // Letter 'G'
+    ],
+    letterO: [
+        [0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24] // Letter 'O'
+    ]
+};
+
 $(document).ready(function () {
     // Define all possible lines
     const lines = {
@@ -144,9 +246,9 @@ $(document).ready(function () {
 
         // Only randomize if the selected pattern supports it
         if ([
-            "default", 
+            "default",
             "any_two",
-            "one_line", 
+            "one_line",
             'two_line',
             'three_line',
             'four_line',
@@ -159,6 +261,23 @@ $(document).ready(function () {
         }
     });
 
-    // Initialize with default pattern
-    $("#gamePattern").trigger("change");
+    let intervalId; // Declare a variable to store the interval ID
+
+// Start the interval when the modal is opened
+$('#bingoPatternModal').on('shown.bs.modal', function () {
+    intervalId = setInterval(function () {
+        // Initialize with default pattern
+        $("#gamePattern").trigger("change");
+    }, 1000);
+});
+
+// Clear the interval when the modal is closed
+$('#bingoPatternModal').on('hidden.bs.modal', function () {
+    if (intervalId) {
+        clearInterval(intervalId); // Clear the interval
+        intervalId = null; // Reset the variable
+    }
+});
+
+
 });

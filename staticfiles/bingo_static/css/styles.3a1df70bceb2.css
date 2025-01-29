@@ -110,7 +110,7 @@
 /* Style for the number-box */
 .table> :not(caption)>*>* {
   /* background-color: transparent !important; */
-  border: 6px solid transparent !important;
+  border: 6px solid white !important;
 }
 
 /* Make the table borderless */
