@@ -74,46 +74,46 @@ $(document).ready(function () {
     $('#shuffleCartella').on('click', function () {
         const shuffleButton = $(this);
 
-        playShuffleAudio('shuffle.mp3');
+        // playShuffleAudio('shuffle.mp3');
+        playShuffleAudio('shuffled.mp3');
 
         // Add glow effect to the button
         shuffleButton.addClass('glow');
-
-        // Animate numbers
         $('.number-box').each(function () {
             const $numberBox = $(this);
-
-            // Add the 'animated' class to trigger animation
-            $numberBox.addClass('shuffled-animated');
-
-            // Add the 'animated-style' class for specific movement and background color
-            $numberBox.addClass('shuffled-animated-style');
-
-            // Apply the animation to the number box
+        
+            // Randomize animation properties
+            const translateX = Math.floor(Math.random() * 30) - 15; // Random value between -15 and 15
+            const translateY = Math.floor(Math.random() * 30) - 15; // Random value between -15 and 15
+            const rotate = Math.floor(Math.random() * 360); // Random rotation between 0 and 360 degrees
+            const scale = 1 + Math.random(); // Random scale between 1 and 2
+        
+            $numberBox.addClass('shuffled-animated shuffled-animated-style');
+        
             $numberBox.animate(
                 {
-                    transform: 'translate(15px, 15px)', // Apply the transform directly in animation
+                    transform: `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) scale(${scale})`,
                 },
                 {
-                    duration: 7000,
+                    duration: 3000,
                     step: function (now, fx) {
                         if (fx.prop === 'transform') {
                             $(this).css('transform', now);
                         }
                     },
                     complete: function () {
-                        // Remove 'animated' and 'animated-style' classes after the animation is complete
                         $numberBox.removeClass('shuffled-animated shuffled-animated-style');
-
-                        // Optionally, reset any properties or styles if needed
+                        $numberBox.css('transform', 'translate(0, 0) rotate(0deg) scale(1)');
+                        $numberBox.fadeOut(500, function () {
+                            $(this).fadeIn(500);
+                        });
                     },
                 }
             );
         });
-
         // Remove glow effect after 5 seconds
         setTimeout(() => {
             shuffleButton.removeClass('glow');
-        }, 6000);
+        }, 3000);
     });
 });

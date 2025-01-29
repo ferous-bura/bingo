@@ -1,7 +1,12 @@
 
 $(document).ready(function () {
     let isChimeMuted = false; // State to track chime toggle
+
+    // Get the 'chime' value from localStorage
+    let chime = localStorage.getItem('chime');
+
     let audioTimeout = null; // Track the setTimeout ID for pending audio
+    let numberBoxTimeout = null; // Track the setTimeout ID for pending numberBox
     let currentAudio = null; // Track the currently playing audio
     const currentDate = new Date();
     let gameSpeed = parseInt(localStorage.getItem('gameSpeed'), 10) || 5000; // Default to 3000ms
@@ -31,6 +36,12 @@ $(document).ready(function () {
         return storedDate ? new Date(storedDate) : null; // Convert back to Date object if exists
     }
 
+    // Check if chime is 'on' or 'off'
+    if (chime === 'on') {
+        isChimeMuted = true; // Chime is muted
+    } else {
+        isChimeMuted = false; // Chime is not muted
+    }
     // Attach a change event listener to update gamePattern dynamically
     $("#gamePattern").on("change", function () {
         if (isGameRunning) {
@@ -68,6 +79,7 @@ $(document).ready(function () {
             currentAudio = new Audio(`/static/bingo_static/audio/amharic/m/${fileName}`);
         }
         // currentAudio.playbackRate = 1 + (gameSpeed / 1000); // Adjust playback speed based on game speed
+        console.log(`Audio ${voiceChoice}`, currentAudio);
 
         currentAudio.play().catch(error => {
             console.log(`Audio file not found: ${fileName}`, error);
@@ -95,16 +107,19 @@ $(document).ready(function () {
         const $chimebutton = $(this);
         const $chimeicon = $chimebutton.find('i');
 
-        if ($chimebutton.hasClass('btn-success')) {
+        if ($chimebutton.hasClass('btn-light')) {
             // Turn OFF the chime
-            $chimebutton.removeClass('btn-success').addClass('btn-danger');
+            $chimebutton.removeClass('btn-light').addClass('btn-secondary');
             $chimeicon.removeClass('fa-toggle-on').addClass('fa-toggle-off');
             isChimeMuted = true;
+            localStorage.setItem('chime', 'on');
+
         } else {
             // Turn ON the chime
-            $chimebutton.removeClass('btn-danger').addClass('btn-success');
+            $chimebutton.removeClass('btn-secondary').addClass('btn-light');
             $chimeicon.removeClass('fa-toggle-off').addClass('fa-toggle-on');
             isChimeMuted = false;
+            localStorage.setItem('chime', 'off');
         }
     });
 
@@ -122,15 +137,35 @@ $(document).ready(function () {
         audioTimeout = setTimeout(() => playChimeAudio("chime.mp3"), 2500);
     }
 
-    // Voice selection handlers
-    $('#maleVoice').on('click', function () {
-        voiceChoice = 'male'; // Set to male voice
-        localStorage.setItem('voiceChoice', voiceChoice); // Save choice to localStorage
-    });
+    // // Voice selection handlers
+    // $('#maleVoice').on('click', function () {
+    //     voiceChoice = 'male'; // Set to male voice
+    //     localStorage.setItem('voiceChoice', voiceChoice); // Save choice to localStorage
+    //     console.log('voice set to male');
+    // });
 
-    $('#femaleVoice').on('click', function () {
-        voiceChoice = 'female'; // Set to female voice
+    // $('#femaleVoice').on('click', function () {
+    //     voiceChoice = 'female'; // Set to female voice
+    //     localStorage.setItem('voiceChoice', voiceChoice); // Save choice to localStorage
+    //     console.log('voice set to female');
+    // });
+
+    // // Set initial voice selection visually
+    // if (voiceChoice === 'male') {
+    //     $('#maleVoice').addClass('selected');
+    // } else {
+    //     $('#femaleVoice').addClass('selected');
+    // }
+    $(`#voiceSelect option[value="${voiceChoice}"]`).prop('selected', true).addClass('selected');
+
+    $('#voiceSelect').on('change', function () {
+        voiceChoice = $(this).val(); // Get the selected value
+        console.log(`Voice set to ${voiceChoice}`);
         localStorage.setItem('voiceChoice', voiceChoice); // Save choice to localStorage
+
+        // Update the visual selection
+        $('#voiceSelect option').removeClass('selected');
+        $(`#voiceSelect option[value="${voiceChoice}"]`).addClass('selected');
     });
 
     // Initialize the slider for game speed
@@ -147,15 +182,9 @@ $(document).ready(function () {
             togglePauseGame();
             // console.log('Game speed is', gameSpeed);
         },
-        
+
     });
 
-    // Set initial voice selection visually
-    if (voiceChoice === 'male') {
-        $('#maleVoice').addClass('selected');
-    } else {
-        $('#femaleVoice').addClass('selected');
-    }
     // Function to play audio
     function playChimeAudio(fileName) {
         if (isChimeMuted) return; // Skip playback if muted
@@ -445,16 +474,12 @@ $(document).ready(function () {
         $("#resetGame").prop("disabled", true);
         // console.log('reset is done ');
         $('#checkCartella').attr('placeholder', 'Enter Cartella Number');
-        setTimeout(() => {
-
-            clearInterval(gameInterval);
-            clearInterval(animeInterval);
-            
-            const numberBox = $(".table .number-box");
-            numberBox.removeClass('animated active');
-            numberBox.css('color', 'black')
-            .css('background-color', 'white')
-        }, 1000);
+        clearInterval(gameInterval);
+        clearInterval(animeInterval);
+        const numberBox = $(".table .number-box");
+        numberBox.css('color', 'black').css('background-color', 'white').css('animation-duration', ``);  // Set rotate duration dynamically
+        numberBox.removeClass('animated active');
+        clearTimeout(numberBoxTimeout);
 
     }
 
@@ -594,43 +619,43 @@ $(document).ready(function () {
         // if (isGamePaused && number === lastAnimatedNumber) {
         //     return;
         // }
-    
+
         clearInterval(animeInterval);
         // Function to perform the animation
         function performAnimation() {
-            setTimeout(() => {
+            numberBoxTimeout = setTimeout(() => {
                 // console.log('Number to be animated is:', number);
-    
+
                 const numberBox = $(".table .number-box").filter(function () {
                     return $(this).text() == number;
                 });
-    
+
                 const rotateDuration = gameSpeed - 500; // Set rotate animation duration based on gameSpeed
-    
+
                 // Add 'active' class to trigger animation, then apply colors
                 numberBox.addClass('active animated')
                     .css('color', 'white')
                     .css('background-color', 'black')
                     .css('animation-duration', `${rotateDuration}ms`);  // Set rotate duration dynamically
-    
+
                 // Listen for when the animation ends
                 numberBox.on('animationend', function () {
                     // Remove 'animated' and 'active' classes after animation ends
                     numberBox.removeClass('animated active');
                 });
-    
+
                 lastAnimatedNumber = number;
-    
+
             }, 1000); // Initial delay before animation starts (optional)
         }
-    
+
         // Perform the animation immediately
         performAnimation();
-    
+
         // If forever is true, set an interval to repeat the animation
         if (forever) {
             animeInterval = setInterval(performAnimation, aniTime);
-        } 
+        }
     }
 
     // Function to update the bingo circle text, total calls, and previous call
@@ -959,7 +984,7 @@ $(document).ready(function () {
 
                             showResultModal(
                                 "Congratulations!",
-                                `You won $${response.total_won}`,
+                                ``,
                                 [{ number: cartella, isWinner: true }],
                                 selectedCartella,
                                 true,
@@ -987,7 +1012,8 @@ $(document).ready(function () {
                 }
             });
         } else {
-            showResultModal("Un-known Cartella", "Un-known cartella number.");
+            showUnknownModalAlert("ካርቴላው አልተመዘገበም", "Un-known Cartella");
+            playSpecialAudio("unknown-cartella.mp3");
         }
     }
 
@@ -1023,18 +1049,17 @@ $(document).ready(function () {
         }
     });
 
-    // Function to show the modal and render the 5x5 cartella grid
     function showResultModal(title, message, cartellaResults = [], cartella = [], isWinner = false, gamePattern) {
         $("#bingoResultModalLabel").text(title);
         // $("#bingoMessage").text(message);
-
+    
         // Update cartella results
         const resultContainer = $("#cartellaResult");
         resultContainer.empty();
-
+    
         if (cartella.length > 0) {
             const activePattern = gamePattern;
-
+    
             // BINGO ranges for columns
             const bingoRanges = {
                 B: { start: 1, end: 15 },
@@ -1043,7 +1068,7 @@ $(document).ready(function () {
                 G: { start: 46, end: 60 },
                 O: { start: 61, end: 75 }
             };
-
+    
             // Create arrays for each column based on the bingo range
             let bingoColumns = {
                 B: [],
@@ -1052,7 +1077,7 @@ $(document).ready(function () {
                 G: [],
                 O: []
             };
-
+    
             // Distribute numbers into their respective columns
             cartella.forEach(number => {
                 if (number >= bingoRanges.B.start && number <= bingoRanges.B.end) {
@@ -1067,10 +1092,11 @@ $(document).ready(function () {
                     bingoColumns.O.push(number);
                 }
             });
-
+    
             // Render 5x5 grid with correct column arrangement
             const grid = $("<div>").addClass("check-cartella-grid");
-
+    
+            let cells = [];
             for (let i = 0; i < 5; i++) {
                 ["B", "I", "N", "G", "O"].forEach(letter => {
                     const cellValue = bingoColumns[letter][i]; // Get the number for the current row and column
@@ -1082,14 +1108,15 @@ $(document).ready(function () {
                         .toggleClass("unmatched", !isMatched && cellValue != 0) // Apply 'unmatched' if the number is not in the called results
                         .toggleClass("freeMatch", cellValue === 0);
                     // .removeClass("unmatched", cellValue === 0); // Add 'freeMatch' class for free space
-
+    
                     grid.append(cell);
+                    cells.push(cell);
                 });
             }
-
+    
             resultContainer.append(grid);
         }
-
+    
         cartellaResults.forEach((result) => {
             // Show cartella results (e.g., win/loss icons)
             if (result.isWinner) {
@@ -1099,23 +1126,22 @@ $(document).ready(function () {
                 $("#endGameBtn").prop("disabled", true); // Enable End Game button
                 setTimeout(() => playSpecialAudio("male_loser.mp3"), 1000);
             }
-
+    
             const icon = result.isWinner
                 ? '<span class="text-success ms-2"> won <i class="fas fa-thumbs-up fa-2x text-success thumbs"></i></span>' // Checkmark
                 : '<span class="text-danger ms-2"> lost <i class="fas fa-thumbs-down fa-2x text-danger thumbs"></i></span>'; // Crossmark
-
+    
             resultContainer.append(
                 `<div class="cartella-item d-flex align-items-center mb-2">
-                <span>${result.number}</span>${icon}
-            </div>`
+                    <span>${result.number}</span>${icon}
+                </div>`
             );
-
+    
         });
-
+    
         // Show modal
         $("#bingoResultModal").modal("show");
     }
-
     function lockCartella() {
         let cartellaNum = $("#checkCartella").val().trim();
         if (cartellaState.selected.includes(cartellaNum)) {
@@ -1175,7 +1201,8 @@ $(document).ready(function () {
                 }
             );
         } else {
-            showResultModal("Un-known Cartella", "Un-known cartella number.");
+            showUnknownModalAlert("ካርቴላው አልተመዘገበም", "Un-known Cartella");
+            playSpecialAudio("unknown-cartella.mp3");
         }
     }
 

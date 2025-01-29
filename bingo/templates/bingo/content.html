@@ -99,11 +99,11 @@
 
 <div class="d-flex align-items-end" style="height: 150px;">
   <div class="btn-group-vertical" id="button-container">
-    <button id="shuffleCartella" class="btn btn-primary btn-sm circle-btn" data-toggle="tooltip" title="Shuffle the cartella">
+    <button id="shuffleCartella" class="btn btn-warning btn-sm circle-btn" data-toggle="tooltip" title="Shuffle the cartella">
       <i class="fas fa-random"></i>
     </button>
     
-    <button id="chimeAudio" class="btn btn-success btn-sm circle-btn" data-toggle="tooltip" title="Toggle Chime">
+    <button id="chimeAudio" class="btn btn-light btn-sm circle-btn" data-toggle="tooltip" title="Toggle Chime">
       <i class="fas fa-toggle-on"></i>
     </button>
     
@@ -285,70 +285,61 @@
     /* Adjust the icon size */
     vertical-align: middle;
     /* Align icons to the center */
-  }
+  }/* Glow effect with color transition */
+.glow {
+    box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8); /* Gold glow */
+    transition: box-shadow 0.5s ease, transform 0.5s ease, background-color 0.5s ease;
+}
 
-  /* Glow effect */
-  .glow {
-    box-shadow: 0 0 10px 5px rgba(255, 255, 0, 0.8);
-    transition: box-shadow 0.5s ease;
-  }
-
-  /* Animation for shuffle effect */
-  /* .shuffle-animate {
-  animation: shuffle 0.5s ease-in-out infinite;
-} */
-
-  /* Keyframes for shuffle */
-  @keyframes shuffle {
+/* Keyframes for a pulsating glow effect */
+@keyframes pulseGlow {
     0% {
-      transform: translateY(0);
-    }
-
-    25% {
-      transform: translateY(-10px);
-    }
-
-    50% {
-      transform: translateY(10px);
-    }
-
-    75% {
-      transform: translateY(-10px);
-    }
-
-    100% {
-      transform: translateY(0);
-    }
-  }
-
-
-@keyframes moveAndGlow {
-    0% {
-        transform: translate(0px, 0px);
-        background-color: rgb(255, 255, 255); /* Starting background color */
+        box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.6); /* Subtle glow */
     }
     50% {
-        transform: translate(25px, 25px); /* Random movement */
-        background-color: rgb(45, 137, 199); /* Random color */
+        box-shadow: 0 0 20px 10px rgba(255, 69, 0, 0.8); /* Intense glow with orange tint */
     }
     100% {
-        transform: translate(0px, 0px);
-        background-color: rgb(255, 255, 255); /* Reset background color */
+        box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.6); /* Return to subtle glow */
     }
 }
 
-/* Animation styles */
+/* Keyframes for 3D rotation and movement */
+@keyframes spinAndMove {
+    0% {
+        transform: translate(0, 0) rotateX(0) rotateY(0) scale(1);
+        background-color: #ffffff; /* Starting color */
+    }
+    25% {
+        transform: translate(20px, -20px) rotateX(180deg) rotateY(0) scale(1.2);
+        background-color: #ff6f61; /* Coral color */
+    }
+    50% {
+        transform: translate(-20px, 20px) rotateX(0) rotateY(180deg) scale(0.8);
+        background-color: #6b5b95; /* Purple color */
+    }
+    75% {
+        transform: translate(20px, 20px) rotateX(180deg) rotateY(180deg) scale(1.1);
+        background-color: #88b04b; /* Green color */
+    }
+    100% {
+        transform: translate(0, 0) rotateX(0) rotateY(0) scale(1);
+        background-color: #ffffff; /* Reset to starting color */
+    }
+}
+
+/* Animation styles for the number box */
 .number-box.shuffled-animated {
-    animation: moveAndGlow 1s infinite ease-in-out;
-    transition: background-color 1s ease-in-out;
+    animation: spinAndMove 3s infinite ease-in-out, pulseGlow 2s infinite ease-in-out;
+    border-radius: 10px; /* Rounded corners for a modern look */
+    perspective: 1000px; /* Enable 3D transformations */
 }
 
 /* Class for specific movement and background color */
 .number-box.shuffled-animated-style {
     background-color: rgba(31, 206, 124, 0.377); /* Set your desired color */
-    transform: translate(15px, 15px); /* Set your desired movement */
+    transform: translate(15px, 15px) rotate(15deg); /* Slight movement and rotation */
 }
-
 .control-panel {
   position: absolute;
   bottom: 0; /* Align the control panel with the bottom of the screen */
@@ -391,15 +382,12 @@
 
 
 #shuffleCartella:hover {
-  background-color: #0d59cc; /* Darker shade of yellow for hover */
-}
-
-#chimeAudio {
-  background-color: #2ecc71; /* Green for chime toggle */
+  background-color: #af9504; /* Darker shade of yellow for hover */
+  color: white;
 }
 
 #chimeAudio:hover {
-  background-color: #27ae60; /* Darker shade of green for hover */
+  background-color: #b1b8b4; /* Darker shade of green for hover */
 }
 
 #resetGame {
@@ -407,7 +395,8 @@
 }
 
 #resetGame:hover {
-  background-color: #c0392b; /* Darker shade of red for hover */
+  background-color: #e2a704; /* Darker shade of red for hover */
+  color: rgb(37, 0, 0);
 }
 
 /* Optional: Add animation effect to the button when active */

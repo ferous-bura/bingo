@@ -124,6 +124,7 @@ def check_winner(request):
                 "total_won": won / Decimal(len(winners_list)),
                 "balance": balance,
                 "refund": refund,
+                "game_pattern": f'ዝግ፡ {transaction.get_game_pattern_display()}', 
                 'locked': transaction.locked_cartella,
             }
             print(f'check response: {data}') 
@@ -135,7 +136,13 @@ def check_winner(request):
 
             return JsonResponse(data)
         else:
-            data = {'success': True, 'is_winner': False, 'balance': transaction.daily_record.user.balance, 'refund': refund, 'locked': transaction.locked_cartella}
+            data = {
+                'success': True, 'is_winner': False, 
+                "game_pattern": f'ዝግ፡ {transaction.get_game_pattern_display()}', 
+                'balance': transaction.daily_record.user.balance, 
+                'refund': refund, 
+                'locked': transaction.locked_cartella
+            }
             return JsonResponse(data)
     except ValueError as e:
         print(f'error 400 {e}')

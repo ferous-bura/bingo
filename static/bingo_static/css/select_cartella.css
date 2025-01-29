@@ -230,7 +230,7 @@ close-report {
 }
 
 .number-box {
-  /* border-radius: 50%; */
+  border-radius: 100%;
   width: 10vh;
   height: 10vh;
   align-items: center;
@@ -350,7 +350,7 @@ close-report {
 
 
 tbody, td, tfoot, th, thead, tr {
-  border: 10px solid rgb(207, 207, 207);
+  border: 10px solid white;
   padding : 10px 0 !important;
 }
 

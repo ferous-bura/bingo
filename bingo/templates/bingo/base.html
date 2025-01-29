@@ -75,6 +75,23 @@
     }
   </style>
   <style>
+    /* Close Button */
+    #closeErrorModalButton {
+      background-color: #ff4d4d;
+      /* Red color for the button */
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    #closeErrorModalButton:hover {
+      background-color: #ff1a1a;
+      /* Darker red on hover */
+    }
+
     /* Preloader styling */
     #preloader {
       position: fixed;
@@ -124,16 +141,17 @@
         <a href="/" class="nav-link h2 text-black my-2 logo">
           <img src="{% static 'logo.jpg' %}" alt="Maya Games Logo" class="img-fluid" style="max-height: 50px;">
         </a>
-        <!-- <li class="nav-item">
-          <a href="#" class="nav-link toggle-side" id="openDBModal">
-            <i class="bx bx-bar-chart"></i>
-            <span class="mx-2">Sales Report</span>
-          </a>
-        </li> -->
+
         <li class="nav-item">
           <a href="#" class="nav-link toggle-side" id="openDBModal">
             <i class="bx bx-bar-chart"></i>
             <span class="mx-2">Sales Report</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="https://t.me/mayabets_et/165">
+            <img src="{% static 'tg_channel.jpg' %}" alt="Telegram Channel QR Code Link" class="img-fluid" style="max-height: 250px;">
           </a>
         </li>
       </ul>
@@ -264,7 +282,7 @@
           <p id="customModalMessage">Your message here...</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
         </div>
       </div>
     </div>
@@ -283,7 +301,24 @@
     <button id="restartGame">Restart Game</button>
     <button id="closeModal">Close</button>
   </div>
+
   <script>
+    function showUnknownModalAlert(message, title = 'Alert') {
+      $('#customModalTitle').text(title); // Set title
+      $('#customModalMessage').text(message); // Set message
+
+      // Apply styles dynamically
+      $('#customModalMessage').css({
+        'font-size': '3rem',      // Make the text larger
+        'font-weight': 'bolder',    // Make the text bold
+        'text-align': 'center',   // Center-align the text
+        'color': 'white',          // Optional: Change the text color
+        'margin': '20px 0'        // Optional: Add spacing
+      });
+
+      $('#customModal').modal('show'); // Show modal
+    }
+
     function showModalAlert(message, title = 'Alert') {
       $('#customModalTitle').text(title); // Set title
       $('#customModalMessage').text(message); // Set message
