@@ -18,9 +18,10 @@ def start_bingo(request):
             print(f'start transaction_id data: {transaction_id}')
 
             game_pattern = data.get('game_pattern', 'default')
+            bet_type = int(data.get('bet_type', 0))
             bet_amount = Decimal(data.get('bet_amount', 0))
             transaction, result, new_balance = process_bingo_transaction(
-                request.user, cartella_list, bet_amount, 25, game_pattern, transaction_id
+                request.user, cartella_list, bet_amount, 25, game_pattern, transaction_id, bet_type
             )
             data = {
                 "status": "success",

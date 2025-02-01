@@ -1,7 +1,8 @@
 const cartellaState = {
     selected: JSON.parse(localStorage.getItem('selectedCartella')) || [],
+    betType: parseInt(localStorage.getItem('betType'), 10) || 0,
     betAmount: parseInt(localStorage.getItem('betAmount'), 10) || 20,
-    cutPercent: parseInt(localStorage.getItem('cutPercent'), 10) || 25,
+    cutPercent: 25,
     get totalPayable() {
         const total = this.selected.length * this.betAmount;
         return total - (total * this.cutPercent) / 100;
@@ -19,19 +20,57 @@ const cartellaState = {
             this.saveSelected(); // Save to localStorage
         }
     },
+    
     clearSelected() {
         this.selected = [];
         this.saveSelected(); // Save to localStorage
     },
+
+    saveBetType() {
+        switch (this.betType) {
+            case 0:
+                this.cutPercent = 25;
+                break;
+            case 1:
+                this.cutPercent = 25;
+                break;
+            case 2:
+                this.cutPercent = 30;
+                break;
+            case 3:
+                this.cutPercent = 35;
+                break;
+            case 4:
+                this.cutPercent = 40;
+                break;
+            case 5:
+                this.cutPercent = 20;
+                break;
+            case 6:
+                this.cutPercent = 15;
+                break;
+            case 7:
+                this.cutPercent = 10;
+                break;
+            default:
+                this.cutPercent = 25; // Default value
+                break;
+        }
+        localStorage.setItem('betType', this.betType);
+        console.log('cut ', this.cutPercent);
+        console.log('betType ', this.betType);
+
+    },
+
     saveSelected() {
         localStorage.setItem('selectedCartella', JSON.stringify(this.selected));
     },
     saveBetAmount() {
         localStorage.setItem('betAmount', this.betAmount);
     },
-    saveCutPercent() {
-        localStorage.setItem('cutPercent', this.cutPercent);
-    },
+    // saveCutPercent() {
+    //     localStorage.setItem('cutPercent', this.cutPercent);
+    // },
 };
 
 $(document).ready(function () {
@@ -83,6 +122,19 @@ $(document).ready(function () {
             $('#bet').val(cartellaState.betAmount);
             updateUI();
         }
+    });
+
+    $('#bet-type').on('change', function () {
+        // Get the selected value from the dropdown
+        const selectedBetValue = parseInt($(this).val(), 10);
+
+        // Ensure the value is between 1 and 5
+        cartellaState.betType = Math.min(Math.max(0, selectedBetValue), 7);
+
+        // Save the bet amount to localStorage
+        cartellaState.saveBetType();
+        // Update the UI
+        updateUI();
     });
 
     $('#bet').on('input', function () {
@@ -156,7 +208,35 @@ $(document).ready(function () {
 
     $('#cartellaInput').on('keypress', function (e) {
         if (e.which === 13) {
-            addCartella();
+
+
+            const cartellaInput = $('#cartellaInput');
+            const cartellaValue = parseInt(cartellaInput.val(), 10);
+
+            if (cartellaValue && cartellaValue > 0) {
+                const numberBox = $('#cartellaGrid').find('.card-box').filter(function () {
+                    return $(this).text().trim() == cartellaValue.toString();
+                });
+
+                if (numberBox.length > 0) {
+
+                    if (numberBox.hasClass('selected')) {
+                        showalreadyReg();
+                    } else {
+                        numberBox.addClass('selected');
+                        cartellaState.addToSelected(cartellaValue.toString());
+                    }
+                    cartellaInput.val('');
+                    updateUI();
+                } else {
+                    shownumNotOnGrid();
+                    cartellaInput.val('');
+                }
+            } else {
+                showenterValidNum();
+                cartellaInput.val('');
+            }
+
         }
     });
 
@@ -165,6 +245,7 @@ $(document).ready(function () {
         // console.log('Selected cartellas:', cartellaState.selected);
         // console.log('Bet Amount:', cartellaState.betAmount);
         // console.log('Total Payable:', cartellaState.totalPayable.toFixed(2));
+        cartellaState.saveBetType();
         $('#cartellaModal').hide();
     });
 

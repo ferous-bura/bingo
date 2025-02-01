@@ -151,7 +151,8 @@
 
         <li class="nav-item">
           <a href="https://t.me/mayabets_et/165">
-            <img src="{% static 'tg_channel.jpg' %}" alt="Telegram Channel QR Code Link" class="img-fluid" style="max-height: 250px;">
+            <img src="{% static 'tg_channel.jpg' %}" alt="Telegram Channel QR Code Link" class="img-fluid"
+              style="max-height: 250px;">
           </a>
         </li>
       </ul>
@@ -171,10 +172,20 @@
               <a class="btn border-0" id="menu-btn"><i class="bx bx-menu"></i></a>
               <h2 class="nav-link logo shadow-effect nav-birr"><span id="navTotalPayable">መደብ 0.00 Birr</span></h2>
 
-              <div class="nav-link logo shadow-effect nav-birr">
-                <span id="navCartellaCount">ካርቴላ: 0</span>
+              <div class="d-flex align-items-center gap-3">
+                {% if show_balance %}
+                <div class="nav-link logo shadow-effect nav-birr">
+                  <span id="navCartellaCount">ካርቴላ: 0</span>
+                </div>
+                {% else %}
+                <div class="form-control d-flex align-items-center gap-2" style="margin: 0;">
+                  <input id="checkCartella" type="text" placeholder="Cartella Number" class="form-control"
+                         style="flex: 1; padding: 10px; font-size: 16px;">
+                  <button id="check-winner-btn" class="btn btn-primary" type="submit"
+                          style="padding: 10px 20px; font-size: 16px;">Check</button>
+                </div>
+                {% endif %}
               </div>
-
               <p></p>
               <ul class="nav d-flex gap-3">
                 <!-- Notification Icon -->
@@ -260,6 +271,7 @@
             {% include 'bingo/content.html' %}
           </div>
           <div class="col-3">
+
             {% include 'bingo/side.html' %}
           </div>
         </div>
@@ -303,6 +315,29 @@
   </div>
 
   <script>
+
+    function showalreadyReg() {
+      const alert = document.getElementById('alreadyReg');
+      alert.style.display = 'block'; // Show the alert
+      setTimeout(() => {
+        alert.style.display = 'none'; // Hide the alert after 3 seconds
+      }, 1500); // 3000ms = 3 seconds
+    }
+    function showenterValidNum() {
+      const alert = document.getElementById('enterValidNum');
+      alert.style.display = 'block'; // Show the alert
+      setTimeout(() => {
+        alert.style.display = 'none'; // Hide the alert after 3 seconds
+      }, 1500); // 3000ms = 3 seconds
+    }
+    function shownumNotOnGrid() {
+      const alert = document.getElementById('numNotOnGrid');
+      alert.style.display = 'block'; // Show the alert
+      setTimeout(() => {
+        alert.style.display = 'none'; // Hide the alert after 3 seconds
+      }, 1500); // 3000ms = 3 seconds
+    }
+
     function showUnknownModalAlert(message, title = 'Alert') {
       $('#customModalTitle').text(title); // Set title
       $('#customModalMessage').text(message); // Set message

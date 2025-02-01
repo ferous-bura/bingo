@@ -1,6 +1,8 @@
 GAME_PATTERN_CHOICES = [
     ("default", "Default Pattern"),
     ("any_two", "Any 2 Pattern"),
+    ("any_three", "Any 3 Pattern"),
+    ("any_four", "Any 4 Pattern"),
     ("full_house", "ሙሉ ቤት"),
     ("one_line", "1 መስመር"),
     ("two_line", "2 መስመር"),

@@ -49,7 +49,7 @@ def validate_cartellas(cartella_list, valid_range):
     return all(c in valid_range for c in cartella_list)
 # Set up logger
 
-def process_bingo_transaction(user, cartella_list, bet_amount, game_type, game_pattern, transaction_id):
+def process_bingo_transaction(user, cartella_list, bet_amount, game_type, game_pattern, transaction_id, bet_type):
     """Process a bingo transaction including balance updates and validation."""
     try:
         # Retrieve BingoUser instance for the current user
@@ -59,13 +59,32 @@ def process_bingo_transaction(user, cartella_list, bet_amount, game_type, game_p
             raise ValueError("BingoUser for the current user does not exist.")
 
         bet_amount = Decimal(bet_amount)  # Ensure bet_amount is a Decimal
-        
+        cut_perc = 25
+        if bet_type == 0:
+            cut_perc = 25
+        elif bet_type == 1:
+            cut_perc = 25
+        elif bet_type == 2:
+            cut_perc = 30
+        elif bet_type == 3:
+            cut_perc = 35
+        elif bet_type == 4:
+            cut_perc = 40
+        elif bet_type == 5:
+            cut_perc = 20
+        elif bet_type == 6:
+            cut_perc = 15
+        elif bet_type == 7:
+            cut_perc = 10
+        else:
+            pass
+
         win = bet_amount * Decimal(len(cartella_list))
-        agent_cut = (win * Decimal(bingo_user.cut_percentage)) / Decimal(100)
+        agent_cut = (win * Decimal(cut_perc)) / Decimal(100)
         player_win = win - agent_cut
 
         # Debug log for data processing
-        print(f'Processing bingo transaction. balance: {Decimal(bingo_user.balance)}, user={user}, bet_amount={bet_amount}, win={win}, '
+        print(f'Processing bingo transaction bet_type {bet_type}. balance: {Decimal(bingo_user.balance)}, user={user}, bet_amount={bet_amount}, win={win}, '
                      f'agent_cut={agent_cut}, player_win={player_win}, cartella_list={cartella_list}')
 
         # Check if the user has enough balance
@@ -78,6 +97,7 @@ def process_bingo_transaction(user, cartella_list, bet_amount, game_type, game_p
 
         # Update user balance
         bingo_user.balance = Decimal(bingo_user.balance) - agent_cut
+        bingo_user.cut_percentage = cut_perc
         bingo_user.save()
 
         # Update or create the daily record

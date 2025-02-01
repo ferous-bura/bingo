@@ -7,18 +7,7 @@ from django.http import JsonResponse
 from bingo.helper import get_cartellas
 from bingo.models import BingoDailyRecord, BingoUser, Notification
 from bingo.pattern_choice import GAME_PATTERN_CHOICES
-# from bingo.card_lists import ahadu_bingo, hagere_bingo, liyu_bingo
-
-# def get_cartellas(branch):
-    # """Return cartellas based on the branch."""
-    # if branch == 'ahadu_bingo':
-    #     return ahadu_bingo
-    # elif branch == 'hagere_bingo':
-    #     return hagere_bingo
-    # elif branch == 'liyu_bingo':
-    #     return liyu_bingo
-    # else:
-        # raise ValueError(f"Invalid branch: {branch}")
+import traceback
 
 @login_required(login_url='/login')
 def mark_notification_as_read(request, notification_id):
@@ -26,23 +15,25 @@ def mark_notification_as_read(request, notification_id):
         notification = Notification.objects.get(id=notification_id, user__owner=request.user)
         notification.is_read = True
         notification.save()
-        print(f'notification {notification.message} {notification_id}')
+        # print(f'notification {notification.message} {notification_id}')
         return JsonResponse({"status": "success"})
     except Notification.DoesNotExist:
-        print(f'notification not found {notification_id}')
+        # print(f'notification not found {notification_id}')
         return JsonResponse({"status": "error", "message": "Notification not found"})
 
 
 @login_required(login_url='/login')
 def main(request):
+
     try:
         context = get_main_context(request)
-        print(f'running smoothly')
-        return render(request, 'bingo/base.html', context)
-    except Exception as e:
-        print(f'main exception: {e}')  # Log the exception for debugging
+        # print(f'running smoothly')
+        return render(request, 'bingo/base.html', context, status=200)
 
-        # Render an error page with the exception message (for debug purposes)
+    except Exception as e:
+        print(f'main exception: {e}')
+        traceback.print_exc()
+
         error_context = {
             "error_message": str(e),
         }
@@ -55,7 +46,7 @@ def get_main_context(request):
     notifications = Notification.objects.filter(user=bingo_user).order_by('-created_at')
     unread_notifications = notifications.filter(is_read=False)
 
-    print(f'notitication: {notifications}, unread_notifications: {unread_notifications}')
+    # print(f'notitication: {notifications}, unread_notifications: {unread_notifications}')
 
     try:
         last_trx, balance, branch, username, cut_percentage = get_user_data(bingo_user, request)
@@ -68,9 +59,10 @@ def get_main_context(request):
             balance, branch, username, cut_percentage, game_pattern_list
         )
 
-    context['notifications'] = notifications
+    context['notifications'] = notifications[:3]
     context['unread_notifications_count'] = unread_notifications.count()
-    print(f'context  {context}')
+    context['show_balance'] = bingo_user.show_balance
+    # print(f'context  {context}')
     return context
 
 def get_game_pattern_list():
@@ -96,7 +88,7 @@ def get_user_data(bingo_user, request):
 
 def create_context_with_transaction(last_trx, balance, branch, username, cut_percentage, game_pattern_list):
     """Create context when there is an unfinished transaction."""
-    print(f'context with trx {last_trx}')
+    # print(f'context with trx {last_trx}')
     return {
         "cartellas": get_cartellas(branch),
         'game_pattern_list': game_pattern_list,
@@ -117,7 +109,7 @@ def create_context_with_transaction(last_trx, balance, branch, username, cut_per
     }
 
 def create_context_without_transaction(balance, branch, username, cut_percentage, game_pattern_list):
-    print(f'context without trx')
+    # print(f'context without trx')
     """Create context when there is no unfinished transaction."""
     return {
         "cartellas": get_cartellas(branch),

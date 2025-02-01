@@ -51,6 +51,8 @@ def check_bingo(transaction, submitted_cartella, call_number, game_pattern):
         pattern_checkers = {
             'default': is_default_pattern,
             'any_two': any_two_pattern,
+            'any_three': any_three_pattern,
+            'any_four': any_four_pattern,
             'full_house': is_full_house,
             'one_line': is_one_line,
             'two_line': is_two_lines,
@@ -145,6 +147,78 @@ def any_two_pattern(cartella, result):
 
         # Check if two_line_check is satisfied
         two_line_check = len(passed_lines) >= 2
+        # print("Two line check:", two_line_check)
+
+        return two_line_check
+    except Exception as e:
+        print(f"Error in is_pair_default_pattern: {e}")
+        return False
+
+def any_three_pattern(cartella, result):
+    """Check if the cartella matches the pair default pattern: 
+    Two Lines Any or Two Diagonal X."""
+    try:
+        # Check Two Lines Any (rows or columns)
+        rows = [cartella[i:i + 5] for i in range(0, len(cartella), 5)]
+        columns = [[cartella[i + col] for i in range(0, 25, 5)] for col in range(5)]
+        
+        # Check if both diagonals (X shape) are fully marked
+        diagonals = [
+            [cartella[i * 5 + i] for i in range(5)],  # Top-left to bottom-right
+            [cartella[(i + 1) * 4] for i in range(5)]  # Top-right to bottom-left
+        ]
+
+        all_shapes = rows + columns + diagonals
+        print(f'all shapes {all_shapes}')
+
+        passed_lines = []
+
+        for line in all_shapes:
+            if all(num in result for num in line):
+                passed_lines.append(line)
+
+        # # Print the lines that passed
+        # for line in passed_lines:
+        #     print("Passed line:", line)
+
+        # Check if two_line_check is satisfied
+        two_line_check = len(passed_lines) >= 3
+        # print("Two line check:", two_line_check)
+
+        return two_line_check
+    except Exception as e:
+        print(f"Error in is_pair_default_pattern: {e}")
+        return False
+
+def any_four_pattern(cartella, result):
+    """Check if the cartella matches the pair default pattern: 
+    Two Lines Any or Two Diagonal X."""
+    try:
+        # Check Two Lines Any (rows or columns)
+        rows = [cartella[i:i + 5] for i in range(0, len(cartella), 5)]
+        columns = [[cartella[i + col] for i in range(0, 25, 5)] for col in range(5)]
+        
+        # Check if both diagonals (X shape) are fully marked
+        diagonals = [
+            [cartella[i * 5 + i] for i in range(5)],  # Top-left to bottom-right
+            [cartella[(i + 1) * 4] for i in range(5)]  # Top-right to bottom-left
+        ]
+
+        all_shapes = rows + columns + diagonals
+        print(f'all shapes {all_shapes}')
+
+        passed_lines = []
+
+        for line in all_shapes:
+            if all(num in result for num in line):
+                passed_lines.append(line)
+
+        # # Print the lines that passed
+        # for line in passed_lines:
+        #     print("Passed line:", line)
+
+        # Check if two_line_check is satisfied
+        two_line_check = len(passed_lines) >= 4
         # print("Two line check:", two_line_check)
 
         return two_line_check

@@ -14,6 +14,10 @@ class BingoUser(models.Model):
     branch = models.CharField(max_length=100, default="hagere_bingo")
     cut_percentage = models.PositiveIntegerField(default=25)
     last_notification = models.DateTimeField(null=True, blank=True)
+    show_balance = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.owner.username
 
 class Notification(models.Model):
     user = models.ForeignKey(BingoUser, on_delete=models.CASCADE, related_name="notifications")
@@ -40,12 +44,6 @@ class BingoTransaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     time = models.TimeField(default=now)
-    GAME_PATTERNS = [
-        ('full_house', 'Full House'),  # All numbers must be marked
-        ('two_line', 'Two Lines'),    # Any two lines must be completed
-        ('one_line', 'One Line'),     # Any single line must be completed
-        ('corners', 'Four Corners'),  # Only the four corners must be completed
-    ]
     game_pattern = models.CharField(
         max_length=50,
         choices=GAME_PATTERN_CHOICES,

@@ -756,13 +756,15 @@ $(document).ready(function () {
         transactionId = transaction_id;
     }
 
-    function startBingo(cartellas, betAmount, gamePattern) {
+    function startBingo(cartellas, betAmount, betType, gamePattern) {
         $('#refundGame').addClass("d-none");
         clearNumberHistory();
+        console.log('starting bingo, betType: ', betType);
         const data = {
             cartellas: cartellas,
             bet_amount: betAmount,
-            game_pattern: gamePattern
+            game_pattern: gamePattern,
+            bet_type: betType
         };
 
         // Conditionally add transaction_id
@@ -904,6 +906,7 @@ $(document).ready(function () {
             // send request
             const cartellas = cartellaState.selected;
             const betAmount = cartellaState.betAmount;
+            const betType = cartellaState.betType;
 
             currentNumberIndex = 0;
             resultIndex = 0;
@@ -916,7 +919,7 @@ $(document).ready(function () {
             localStorage.setItem('resultIndex', 0);
             localStorage.setItem('previousCall', 0);
             localStorage.setItem('totalCalls', 0);
-            startBingo(cartellas, betAmount, gamePattern); // Call the startBingo method
+            startBingo(cartellas, betAmount, betType, gamePattern); // Call the startBingo method
 
         } else {
             console.log('game is running cant start another game');

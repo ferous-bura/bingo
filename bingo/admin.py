@@ -11,11 +11,12 @@ class BingoUserAdmin(admin.ModelAdmin):
 
 @admin.register(BingoDailyRecord)
 class BingoDailyRecordAdmin(admin.ModelAdmin):
-    list_display = ("date", "total_winning", "total_cut", "total_transactions")
+    list_display = ("user", "date", "total_winning", "total_cut", "total_transactions")
 
 @admin.register(BingoTransaction)
 class BingoTransactionAdmin(admin.ModelAdmin):
     list_display = ("daily_record", "created_at", "time", "bet", "player_number", "total_won", "cut", "won","game_type", "winners", "submitted_cartella", "started", "ended")
+    ordering = ('-created_at',)  # <-- Add this line
 
 @admin.register(BingoCard)
 class BingoCardAdmin(admin.ModelAdmin):

@@ -13,6 +13,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     'bingolottery.onrender.com',
     'lotterybingo.pythonanywhere.com',
+    # '192.168.128.187'
+    'mayabet.com.et/'
     ]
 
 MESSAGE_TAGS = {
@@ -33,6 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'whitenoise',
     'bingo',
+    'core',
+    'debug_toolbar', #comment me
 ]
 
 SITE_ID = 1
@@ -42,6 +46,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 MIDDLEWARE = [
+    'core.middleware.DeviceInfoMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -50,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware', # comment me
 ]
 LOGIN_URL = '/login/'  # Adjust this path to your login page
 
@@ -134,6 +140,43 @@ SESSION_COOKIE_AGE = 3 * 24 * 3600
 CSRF_TRUSTED_ORIGINS = [
     'https://bingolottery.onrender.com',
     'https://lotterybingo.pythonanywhere.com',
+    'https://mayabet.com.et/',
 ]
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
+
+# settings.py
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/minute',
+        'user': '100/minute'
+    }
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'core': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+        'bingo': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+    },
+}
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

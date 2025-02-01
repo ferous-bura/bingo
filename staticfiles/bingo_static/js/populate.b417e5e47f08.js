@@ -127,6 +127,8 @@ $(document).ready(function () {
     const patterns = {
         default: [], // Will be dynamically generated
         any_two: [], // Will be dynamically generated
+        any_three: [], // Will be dynamically generated
+        any_four: [], // Will be dynamically generated
         full_house: Array.from({ length: 25 }, (_, i) => i + 1),
         one_line: [], // Will be dynamically generated
         two_line: [], // Will be dynamically generated
@@ -191,6 +193,12 @@ $(document).ready(function () {
             case "any_two":
                 activeCells = getNRandomLines(2); // Randomize any two lines
                 break;
+            case "any_three":
+                activeCells = getNRandomLines(3); // Randomize any two lines
+                break;
+            case "any_four":
+                activeCells = getNRandomLines(4); // Randomize any two lines
+                break;                
             case "one_line":
                 activeCells = getRandomLine(true); // Randomize one line (exclude diagonals)
                 break;
@@ -248,6 +256,8 @@ $(document).ready(function () {
         if ([
             "default",
             "any_two",
+            "any_three",
+            "any_four",
             "one_line",
             'two_line',
             'three_line',

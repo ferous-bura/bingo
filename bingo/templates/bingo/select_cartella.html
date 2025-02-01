@@ -1,54 +1,85 @@
-  <!-- Modal for Cartella Selection -->
-  <div id="cartellaModal" class="modal" aria-labelledby="cartellaModalLabel" aria-hidden="true">
-    <div class="modal-content">
-      <!-- Close Button (X) -->
-      <button id="closeModal" class="close-btn">&times;</button>
-      <h2 id="cartellaModalLabel" class="text-center">ካርቴላ ምረጡ</h2>
+<!-- Modal for Cartella Selection -->
+<div id="cartellaModal" class="modal" aria-labelledby="cartellaModalLabel" aria-hidden="true">
+  <div class="modal-content">
+    <!-- Close Button (X) -->
+    <button id="closeModal" class="close-btn">&times;</button>
+    <h2 id="cartellaModalLabel" class="text-center">ካርቴላ ምረጡ</h2>
+    <div id="alreadyReg" class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3"
+      role="alert" style="display: none;">
+      ይህ ቁጥር ተመዝግቧል !
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div id="enterValidNum" class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3"
+      role="alert" style="display: none;">
+      እባክዎ ትክክለኛ ቁጥር አስገቡአስገቡ !
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div id="numNotOnGrid" class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3"
+      role="alert" style="display: none;">
+      ይህ ካርቴላ ሲስተሙ ላይ አልተመዘገበም !
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <!-- Top row with Game Type, Bet, Add Cartella, and Action Buttons -->
+    <div class="top-row">
+      <div class="bet-type boxed">
+        <label for="bet-type" class="form-label">የጨዋታው አይነት</label>
+        <div class="bet-controls">
+          <select id="bet-type" class="form-control text-center">
+            <option value="0" selected>normal</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+          </select>
+        </div>
+      </div>
+      <div class="game-type boxed">
+        <label for="bet" class="form-label">መደብ</label>
+        <div class="bet-controls">
+          <button id="decreaseBet" class="btn btn-danger">-</button>
+          <input type="number" id="bet" class="form-control text-center" value="20" min="10" step="5"
+            oninput="this.value = this.value < 0 ? 0 : this.value;">
 
-      <!-- Top row with Game Type, Bet, Add Cartella, and Action Buttons -->
-      <div class="top-row">
-        <div class="game-type boxed">
-          <label for="bet" class="form-label">መደብ</label>
-          <div class="bet-controls">
-            <button id="decreaseBet" class="btn btn-danger">-</button>
-            <input type="number" id="bet" class="form-control text-center" value="20" min="10" step="5"
-              oninput="this.value = this.value < 0 ? 0 : this.value;">
+          <!-- <input type="number" id="bet" class="form-control text-center" value="20" min="5" /> -->
+          <button id="increaseBet" class="btn btn-success">+</button>
+        </div>
+      </div>
+      <div class="add-cartella-input boxed">
+        <label for="cartellaInput" class="form-label">ካርቴላ</label>
+        <div class="input-group">
+          <input type="number" id="cartellaInput" placeholder="ካርቴላ ቁጥር" class="form-control" min="0" step="any"
+            oninput="this.value = this.value < 0 ? 0 : this.value;">
 
-            <!-- <input type="number" id="bet" class="form-control text-center" value="20" min="5" /> -->
-            <button id="increaseBet" class="btn btn-success">+</button>
-          </div>
+          <!-- <input type="number" id="cartellaInput" placeholder="Add Cartella" class="form-control" /> -->
+          <button id="addCartellaBtn" class="btn btn-primary">Add</button>
         </div>
-        <div class="add-cartella-input boxed">
-          <label for="cartellaInput" class="form-label">ካርቴላ</label>
-          <div class="input-group">
-            <input type="number" id="cartellaInput" placeholder="ካርቴላ ቁጥር" class="form-control" min="0" step="any"
-              oninput="this.value = this.value < 0 ? 0 : this.value;">
-
-            <!-- <input type="number" id="cartellaInput" placeholder="Add Cartella" class="form-control" /> -->
-            <button id="addCartellaBtn" class="btn btn-primary">Add</button>
-          </div>
-        </div>
-        <div class="add-cartella-input boxed">
-          <div class="payable-display payable-title text-primary">ደራሽ</div>
-          <div id="totalPayable" class="payable-display">0 ብር</div>
-        </div>
-        <div class="add-cartella-input boxed">
-          <div class="payable-display payable-title text-primary">የ ካርቴላ ብዛት</div>
-          <div id="totalSelectable" class="payable-display">0</div>
-        </div>
-        <!-- Save and Clear Buttons -->
-        <div class="action-buttons d-flex gap-2">
-          <button id="clearSelection" class="btn btn-icon btn-danger" title="Clear Selection">
-            <i class="bx bx-x"></i> <!-- Example using Boxicons -->
-          </button>
-          <button id="saveSelection" class="btn btn-icon btn-success" title="Save Selection">
-            <i class="bx bx-check"></i> <!-- Example using Boxicons -->
-          </button>
-        </div>
-        
+      </div>
+      <div class="add-cartella-input boxed">
+        <div class="payable-display payable-title text-primary">ደራሽ</div>
+        <div id="totalPayable" class="payable-display">0 ብር</div>
       </div>
 
-      <!-- Grid of numbers 1-100 -->
-      <div id="cartellaGrid" class="cartella-grid"></div>
+      <div class="add-cartella-input boxed {% if not show_balance %}d-none{% endif %}">
+        <div class="payable-display payable-title text-primary">የ ካርቴላ ብዛት</div>
+        <div id="totalSelectable" class="payable-display">0</div>
+      </div>
+
+      <!-- Save and Clear Buttons -->
+      <div class="action-buttons d-flex gap-2">
+        <button id="clearSelection" class="btn btn-icon btn-danger" title="Clear Selection">
+          <i class="bx bx-x"></i> <!-- Example using Boxicons -->
+        </button>
+        <button id="saveSelection" class="btn btn-icon btn-success" title="Save Selection">
+          <i class="bx bx-check"></i> <!-- Example using Boxicons -->
+        </button>
+      </div>
+
     </div>
+
+    <!-- Grid of numbers 1-100 -->
+    <div id="cartellaGrid" class="cartella-grid"></div>
   </div>
+</div>

@@ -1,14 +1,16 @@
 {% load static %}
 <input type="hidden" id="check_csrf" value="{{ csrf_token }}">
 
+{% if show_balance %}
 <div class="form-control" style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
     <input id="checkCartella" type="text" placeholder="Cartella Number" class="form-control"
         style="flex: 1; padding: 10px; font-size: 16px;">
     <button id="check-winner-btn" class="btn btn-primary" type="submit"
         style="padding: 10px 20px; font-size: 16px;">Check</button>
 </div>
+{% endif %}
 
-<div class="row shadow-sm p-1 mb-2">
+<div class="row shadow-sm p-1 mb-2" {% if not show_balance %} style="margin-top:20px;" {% endif %}>
 
     <div class="col-4">
         <div id="slider" class="tooltip-container">
