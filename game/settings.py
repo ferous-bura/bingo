@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'whitenoise',
     'bingo',
     'core',
-    'debug_toolbar', #comment me
+    # 'debug_toolbar', #comment me
 ]
 
 SITE_ID = 1
