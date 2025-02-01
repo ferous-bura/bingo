@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware', # comment me
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware', # comment me
 ]
 LOGIN_URL = '/login/'  # Adjust this path to your login page
 
