@@ -73,7 +73,7 @@ class DeviceInfoMiddleware(MiddlewareMixin):
             self.block_device_and_ip(device_id, ip_address, user_agent)
             return HttpResponseForbidden("Too many requests. Your device and IP have been blocked.")
 
-        cache.set(f'request_count_{device_id}', request_count + 1, timeout=7 * 24 * 60)
+        cache.set(f'request_count_{device_id}', request_count + 1, timeout=60)
         # logger.debug(f"Incremented request count for device {device_id}: {request_count + 1}")
 
     def is_ip_blocked(self, ip_address):
