@@ -171,9 +171,9 @@ $(document).ready(function () {
     // Initialize the slider for game speed
     $("#slider").slider({
         min: 3000, // Minimum speed (faster)
-        max: 15000, // Maximum speed (slower)
+        max: 10000, // Maximum speed (slower)
         value: gameSpeed, // Set the slider to saved game speed
-        step: 1000, // Increment steps
+        step: 500, // Increment steps
         slide: function (event, ui) {
             gameSpeed = ui.value; // Update game speed
             togglePauseGame();
@@ -796,7 +796,7 @@ $(document).ready(function () {
                 playSpecialAudio("readyPlay.mp3");
 
                 // Start the game after a short delay to allow the start audio to finish
-                setTimeout(() => playGame(), 3000);
+                setTimeout(() => playGame(), 500);
             },
             function (errorMessage) {
                 resetGameConfirmed();
