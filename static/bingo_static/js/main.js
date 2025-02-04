@@ -171,7 +171,7 @@ $(document).ready(function () {
     // Initialize the slider for game speed
     $("#slider").slider({
         min: 3000, // Minimum speed (faster)
-        max: 15000, // Maximum speed (slower)
+        max: 8000, // Maximum speed (slower)
         value: gameSpeed, // Set the slider to saved game speed
         step: 500, // Increment steps
         slide: function (event, ui) {
@@ -268,7 +268,68 @@ $(document).ready(function () {
     // }
 
     // // Function to start the game with predefined numbers
-    function playGame() {
+    function playGame(called_from = '') {
+        if (isGamePaused) {
+            return;
+        }
+
+        // Clear any existing interval
+        if (gameInterval) {
+            clearInterval(gameInterval);
+        }
+
+        console.log('Current game speed:', gameSpeed);
+
+        // Define the function to process each number
+        function processNextNumber() {
+            if (resultIndex < resultNumbers.length) {
+                const number = resultNumbers[resultIndex];
+                localStorage.setItem('resultIndex', resultIndex);
+
+                // Trigger audio, animation, and UI updates
+                audioFunction(number);
+                animateNumber(number);
+                updateBingoCircleText(number);
+                console.log('number: ', number);
+
+                resultIndex++;
+                totalCalls++;
+                localStorage.setItem('totalCalls', totalCalls);
+                console.log('result index: ', resultIndex);
+                console.log('totalCalls: ', totalCalls);
+
+                // Add the number to the board after 1 second
+                setTimeout(() => {
+                    console.log('starting to add number: ', number);
+                    addNumber(number);
+                }, 1000);
+            } else {
+                // End the game when all numbers are called
+                clearInterval(gameInterval);
+                isGameRunning = false;
+                showCountdown(5, () => {
+                    localStorage.setItem('resultIndex', 0);
+                    localStorage.setItem('totalCalls', 0);
+                    localStorage.setItem('transactionId', 0);
+                    $("#startGame").prop("disabled", false);
+                    $("#pauseGame").prop("disabled", true);
+                    $("#resetGame").prop("disabled", false);
+                    resetGameConfirmed();
+                    updateBingoCircleText("Over!");
+                });
+            }
+        }
+
+        if (called_from === 'start') {
+            // clearNumberHistory();
+            processNextNumber();
+        }
+
+        // Set up the interval for SUBSEQUENT NUMBERS
+        gameInterval = setInterval(processNextNumber, gameSpeed);
+    }
+
+    function playGame2() {
         if (isGamePaused) {
             // If the game is paused, do not start a new interval
             return;
@@ -444,7 +505,6 @@ $(document).ready(function () {
         totalCalls = 0;
         previousCall = 0;
         transactionId = 0;
-
 
         refund = false;
         lockedCartella.length = 0;
@@ -796,7 +856,7 @@ $(document).ready(function () {
                 playSpecialAudio("readyPlay.mp3");
 
                 // Start the game after a short delay to allow the start audio to finish
-                setTimeout(() => playGame(), 500);
+                setTimeout(() => playGame('start'), 2000);
             },
             function (errorMessage) {
                 resetGameConfirmed();
@@ -1055,14 +1115,14 @@ $(document).ready(function () {
     function showResultModal(title, message, cartellaResults = [], cartella = [], isWinner = false, gamePattern) {
         $("#bingoResultModalLabel").text(title);
         // $("#bingoMessage").text(message);
-    
+
         // Update cartella results
         const resultContainer = $("#cartellaResult");
         resultContainer.empty();
-    
+
         if (cartella.length > 0) {
             const activePattern = gamePattern;
-    
+
             // BINGO ranges for columns
             const bingoRanges = {
                 B: { start: 1, end: 15 },
@@ -1071,7 +1131,7 @@ $(document).ready(function () {
                 G: { start: 46, end: 60 },
                 O: { start: 61, end: 75 }
             };
-    
+
             // Create arrays for each column based on the bingo range
             let bingoColumns = {
                 B: [],
@@ -1080,7 +1140,7 @@ $(document).ready(function () {
                 G: [],
                 O: []
             };
-    
+
             // Distribute numbers into their respective columns
             cartella.forEach(number => {
                 if (number >= bingoRanges.B.start && number <= bingoRanges.B.end) {
@@ -1095,10 +1155,10 @@ $(document).ready(function () {
                     bingoColumns.O.push(number);
                 }
             });
-    
+
             // Render 5x5 grid with correct column arrangement
             const grid = $("<div>").addClass("check-cartella-grid");
-    
+
             let cells = [];
             for (let i = 0; i < 5; i++) {
                 ["B", "I", "N", "G", "O"].forEach(letter => {
@@ -1111,15 +1171,15 @@ $(document).ready(function () {
                         .toggleClass("unmatched", !isMatched && cellValue != 0) // Apply 'unmatched' if the number is not in the called results
                         .toggleClass("freeMatch", cellValue === 0);
                     // .removeClass("unmatched", cellValue === 0); // Add 'freeMatch' class for free space
-    
+
                     grid.append(cell);
                     cells.push(cell);
                 });
             }
-    
+
             resultContainer.append(grid);
         }
-    
+
         cartellaResults.forEach((result) => {
             // Show cartella results (e.g., win/loss icons)
             if (result.isWinner) {
@@ -1129,19 +1189,19 @@ $(document).ready(function () {
                 $("#endGameBtn").prop("disabled", true); // Enable End Game button
                 setTimeout(() => playSpecialAudio("male_loser.mp3"), 1000);
             }
-    
+
             const icon = result.isWinner
                 ? '<span class="text-success ms-2"> won <i class="fas fa-thumbs-up fa-2x text-success thumbs"></i></span>' // Checkmark
                 : '<span class="text-danger ms-2"> lost <i class="fas fa-thumbs-down fa-2x text-danger thumbs"></i></span>'; // Crossmark
-    
+
             resultContainer.append(
                 `<div class="cartella-item d-flex align-items-center mb-2">
                     <span>${result.number}</span>${icon}
                 </div>`
             );
-    
+
         });
-    
+
         // Show modal
         $("#bingoResultModal").modal("show");
     }
