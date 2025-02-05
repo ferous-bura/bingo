@@ -95,6 +95,9 @@ $(document).ready(function () {
                     tableBody.append("<tr><td colspan='12'>No data available</td></tr>");
                 } else {
                     response.data.forEach((row) => {
+                        const refundedIcon = row.refunded 
+                        ? "<i class='fas fa-check-circle text-success'></i>" 
+                        : "<span class='text-success'>-</span>";
                         tableBody.append(`
                       <tr>
                           <td>${row.date}</td>
@@ -108,6 +111,9 @@ $(document).ready(function () {
                           <td class="text-primary">${row.winners}</td>
                           <td>${row.branch}</td>
                           <td>${row.cashier}</td>
+                          <td>${row.submitted_cartella}</td>
+                          <td>${refundedIcon}</td>
+                          <td>${row.single_balance}</td>
                       </tr>
                   `);
                     });

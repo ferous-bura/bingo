@@ -97,4 +97,7 @@ function clearNumberHistory() {
   lastFiveContainer.innerHTML = "";
   rollCounter = 1; // Reset roll counter
   lastFiveCalls.length = 0;
+  console.log(callHistoryContainer.innerHTML);
+  console.log(lastFiveContainer.innerHTML);
+  console.log(rollCounter);
 }

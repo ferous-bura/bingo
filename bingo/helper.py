@@ -1,14 +1,21 @@
 import random
 from decimal import Decimal
-from django.utils.timezone import now
 import logging
 from decimal import Decimal
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.timezone import now
+from django.utils.timezone import now, localtime, make_aware
+from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
 
 from bingo.models import BingoTransaction, BingoDailyRecord, BingoUser, BingoCard
 logger = logging.getLogger(__name__)
+
+
+def get_today_date():
+    today = localtime(now()).date()
+    start_of_day = make_aware(datetime(today.year, today.month, today.day))
+    end_of_day = start_of_day + timedelta(days=1)
+    return start_of_day, end_of_day
 
 
 def get_cartellas(branch):
@@ -101,10 +108,9 @@ def process_bingo_transaction(user, cartella_list, bet_amount, game_type, game_p
         bingo_user.save()
 
         # Update or create the daily record
-        today = now().date()
-
+        start_of_day, end_of_day = get_today_date()
         # Now use the BingoUser instance for get_or_create
-        daily_record, created = BingoDailyRecord.objects.get_or_create(user=bingo_user, date=today)
+        daily_record, created = BingoDailyRecord.objects.get_or_create(user=bingo_user, date__range=(start_of_day, end_of_day))
 
         daily_record.total_winning = Decimal(daily_record.total_winning) + player_win
         daily_record.total_transactions += 1
@@ -134,6 +140,7 @@ def process_bingo_transaction(user, cartella_list, bet_amount, game_type, game_p
         # )
 
         # Prepare default values for the transaction
+        single_balance = bingo_user.balance
         defaults = {
             'started': True,
             'game_pattern': game_pattern,
@@ -147,19 +154,35 @@ def process_bingo_transaction(user, cartella_list, bet_amount, game_type, game_p
             'cut': agent_cut,
             'won': player_win,
             'call_number': 0,
+            'single_balance': single_balance,
         }
+        try:
+            # trx = BingoTransaction.objects.filter(daily_record=daily_record, started=True, refunded=True).latest('-time')
+            # Check if any matching transactions exist
+            trx = BingoTransaction.objects.filter(daily_record=daily_record, started=True, refunded=True, ended=False)
+            print(f'trx {daily_record}, trx {trx}')
 
-        if transaction_id:
-            BingoTransaction.objects.filter(transaction_id=transaction_id).update(**defaults)
-            transaction = BingoTransaction.objects.get(transaction_id=transaction_id)
-            print(f'Transaction updated successfully: {transaction}')
-        else:
+            if trx.exists():
+                # Get the latest refunded transaction
+                transaction = trx.latest('-time')
+                # if transaction_id:
+                # BingoTransaction.objects.filter(transaction_id=transaction_id).update(**defaults)
+                for key, value in defaults.items():
+                    setattr(transaction, key, value)
+                transaction.save()
+                # transaction = BingoTransaction.objects.get(transaction_id=transaction_id)
+                print("trx refunded.")
+                print(f'Transaction updated successfully: {transaction}')
+            else:
+                raise ValueError('trx not found')
+
+        except Exception as e:
             transaction_id = daily_record.total_transactions
             transaction = BingoTransaction.objects.create(
                 transaction_id=transaction_id,
                 **defaults
             )
-            print(f'Transaction created successfully: {transaction}')
+            print(f'Transaction created successfully: {transaction}, {e}')
 
         return transaction, result, bingo_user.balance
 
@@ -183,15 +206,20 @@ def refund_bingo_transaction(user, transaction_id):
             bingo_user = BingoUser.objects.get(owner=user)
         except BingoUser.DoesNotExist:
             raise ValueError("BingoUser for the current user does not exist.")
-        
-        transaction = BingoTransaction.objects.get(transaction_id=transaction_id, daily_record__user__owner=user)
+
+        start_of_day, end_of_day = get_today_date()
+        transaction = BingoTransaction.objects.get(transaction_id=transaction_id, daily_record__user__owner=user, created_at__range=(start_of_day, end_of_day))
         result = generate_result()
         transaction.result = result
         transaction.call_number = 0
+
         transaction.winners = ''
         transaction.ended = False
         transaction.refunded = True
         transaction.save()
+
+        bingo_user.balance += transaction.cut
+        bingo_user.save()
 
         print(f'Transaction created successfully: {transaction}')
         return transaction, result, bingo_user.balance

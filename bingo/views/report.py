@@ -40,6 +40,9 @@ def fetch_reports(request):
             "winners":transaction.winners if transaction.winners else '-',
             "branch": transaction.daily_record.user.branch,
             "cashier": transaction.daily_record.user.owner.username,
+            "submitted_cartella": transaction.submitted_cartella,
+            "refunded": transaction.refunded,
+            "single_balance": float(transaction.single_balance),
             "balance": float(transaction.daily_record.user.balance),
         }
         for transaction in transactions

@@ -62,6 +62,7 @@ class BingoTransaction(models.Model):
     ended = models.BooleanField(default=False)
     refunded = models.BooleanField(default=False)
     transaction_id = models.PositiveIntegerField(default=0)
+    single_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
         ordering = ['created_at']

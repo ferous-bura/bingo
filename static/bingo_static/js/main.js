@@ -520,7 +520,7 @@ $(document).ready(function () {
         // Update UI elements
         updateGameUIAfterReset();
         if (!fund) {
-            window.clearCartellaSelection();
+            // window.clearCartellaSelection();
             // Hide the modal
             closeGame();
         } else {
@@ -832,6 +832,7 @@ $(document).ready(function () {
         if (refund) {
             data.transaction_id = transactionId;
         }
+        console.log('refund in start', refund, data);
 
         makePostRequest(
             "/start-bingo/",
@@ -856,7 +857,7 @@ $(document).ready(function () {
                 playSpecialAudio("readyPlay.mp3");
 
                 // Start the game after a short delay to allow the start audio to finish
-                setTimeout(() => playGame('start'), 2000);
+                setTimeout(() => playGame('start'), 4000);
             },
             function (errorMessage) {
                 resetGameConfirmed();

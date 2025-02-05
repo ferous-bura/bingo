@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from bingo.helper import refund_bingo_transaction
+from bingo.helper import get_today_date, refund_bingo_transaction
 from django.http import JsonResponse
 import json
 from django.utils.timezone import now
@@ -41,7 +41,8 @@ def refund_bingo(request):
 def close_game(request):
     user = request.user
     try:
-        daily_record = BingoDailyRecord.objects.get(user__owner=user, date=now().date())
+        start_of_day, end_of_day = get_today_date()
+        daily_record = BingoDailyRecord.objects.get(user__owner=user, date__range=(start_of_day, end_of_day))
         transactions = BingoTransaction.objects.filter(daily_record=daily_record, started=True, ended=False)
         if not transactions.exists():
             raise ValueError("No active games to close.")

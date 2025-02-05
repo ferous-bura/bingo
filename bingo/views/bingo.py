@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.utils.timezone import now
 from django.http import JsonResponse
 
-from bingo.helper import get_cartellas
+from bingo.helper import get_cartellas, get_today_date
 from bingo.models import BingoDailyRecord, BingoUser, Notification
 from bingo.pattern_choice import GAME_PATTERN_CHOICES
 import traceback
@@ -80,8 +80,9 @@ def get_user_data(bingo_user, request):
     cut_percentage = bingo_user.cut_percentage
     username = bingo_user.owner.username
 
+    start_of_day, end_of_day = get_today_date()
     daily_record = BingoDailyRecord.objects.filter(
-        user__owner=request.user, date=now().date(), transactions__started=True, transactions__ended=False
+        user__owner=request.user, date__range=(start_of_day, end_of_day), transactions__started=True, transactions__ended=False
     ).latest('transactions__time')
     last_trx = daily_record.transactions.filter(ended=False).first()
     return last_trx, balance, branch, username, cut_percentage
