@@ -6,6 +6,7 @@ from django.conf import settings
 urlpatterns = [
     path('', include('bingo.urls')),
     path('core/', include('core.urls')),
+    path('offline/', include('offline_app.urls')),
     path('admin/', admin.site.urls),
 ]
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

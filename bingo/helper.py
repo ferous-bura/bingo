@@ -11,6 +11,12 @@ from bingo.models import BingoTransaction, BingoDailyRecord, BingoUser, BingoCar
 logger = logging.getLogger(__name__)
 
 
+def is_user_bingo(user):
+    try:
+        return BingoUser.objects.get(owner=user) is not None
+    except ObjectDoesNotExist:
+        return False
+
 def get_today_date():
     today = localtime(now()).date()
     start_of_day = make_aware(datetime(today.year, today.month, today.day))
@@ -193,7 +199,7 @@ def process_bingo_transaction(user, cartella_list, bet_amount, game_type, game_p
     except ValueError as e:
         logger.error(f"Value error: {e}")
         raise ValueError(f"Error processing the transaction: {e}")
-    
+
     except Exception as e:
         logger.exception(f"Unexpected error occurred: {e}")
         raise ValueError("An unexpected error occurred while processing the transaction.")

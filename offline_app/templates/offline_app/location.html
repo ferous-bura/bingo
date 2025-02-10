@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allow Location</title>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(sendLocation, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function getDeviceId() {
+            return navigator.userAgent;  // Example (use a better unique identifier)
+        }
+
+        function sendLocation(position) {
+            const data = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                device_id: getDeviceId()
+            };
+
+            fetch("/offline/save-location/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        window.location.href = "/offline";  // Redirect to index
+                    } else {
+                        window.open("http://www.staggeringbeauty.com/", "_self"); // Redirect to a scary website
+                        // setTimeout(() => {
+                        //     window.close(); // Attempt to close the tab
+                        // }, 1000); // Close after 1 second
+
+                    }
+                });
+        }
+
+        function showError(error) {
+            alert("Error getting location: " + error.message);
+        }
+
+        getLocation();
+    </script>
+
+</head>
+
+<body onload="getLocation()">
+    <h2>Please enable location access</h2>
+    <p>This page will redirect once you allow location access.</p>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BingoDailyRecord, BingoTransaction, BingoUser, Notification, BingoCard
+from bingo.models import BingoDailyRecord, BingoTransaction, BingoUser, Notification, BingoCard
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):

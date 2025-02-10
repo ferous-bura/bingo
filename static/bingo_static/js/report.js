@@ -111,7 +111,7 @@ $(document).ready(function () {
                           <td class="text-primary">${row.winners}</td>
                           <td>${row.branch}</td>
                           <td>${row.cashier}</td>
-                          <td>${row.submitted_cartella}</td>
+                          <td class="small">${row.submitted_cartella}</td>
                           <td>${refundedIcon}</td>
                           <td>${row.single_balance}</td>
                       </tr>

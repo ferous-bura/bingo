@@ -6,10 +6,11 @@ from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 
 from bingo.pattern_choice import GAME_PATTERN_CHOICES
+from offline_app.helper import is_user_offline
 
 class BingoUser(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
-    balance = models.DecimalField(max_digits=12, decimal_places=2, default=1000)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     credit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     branch = models.CharField(max_length=100, default="hagere_bingo")
     cut_percentage = models.PositiveIntegerField(default=25)
@@ -80,9 +81,8 @@ class BingoCard(models.Model):
     def __str__(self):
         return self.name
 
-def add_daily_balance_and_notify(user: BingoUser):
-    # Add daily balance
-    balance = 200
+def add_daily_balance_and_notify(balance, user: BingoUser):
+
     user.balance += balance
     user.save()
 
@@ -107,8 +107,13 @@ def handle_daily_login(sender, request, user, **kwargs):
             print(f"User {user.username} has already received today's balance.")
             return
 
+        balance = 200
+        offline_user = is_user_offline(user)
+        if offline_user:
+            balance = 50
+
         # Add balance and update the last_notification timestamp
-        add_daily_balance_and_notify(bingo_user)
+        add_daily_balance_and_notify(balance, bingo_user)
         bingo_user.last_notification = now()
         bingo_user.save()
 

@@ -138,7 +138,7 @@
     <div class="side-navbar d-flex justify-content-between flex-wrap flex-column" id="sidebar">
       <ul class="nav flex-column text-white w-100">
 
-        <a href="/" class="nav-link h2 text-black my-2 logo">
+        <a href="{% if request.user.is_staff %}/admin{% else %}/{% endif %}" class="nav-link h2 text-black my-2 logo">
           <img src="{% static 'logo.jpg' %}" alt="Maya Games Logo" class="img-fluid" style="max-height: 50px;">
         </a>
 
@@ -148,6 +148,15 @@
             <span class="mx-2">Sales Report</span>
           </a>
         </li>
+
+        {% if request.user.offline %}
+        <li class="nav-item">
+          <a href="{% url 'offline_index' %}" class="nav-link toggle-side" id="openDBModal">
+            <i class="bx bx-bar-chart"></i>
+            <span class="mx-2">Update Balance</span>
+          </a>
+        </li>
+        {% endif %}
 
         <li class="nav-item">
           <a href="https://t.me/mayabets_et/165">
@@ -371,6 +380,8 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
   <!-- Custom JS -->
+
+  <script src="{% static 'bingo_static/js/audio_download.js' %}"></script>
   <script src="{% static 'bingo_static/js/reusable.js' %}"></script>
   <script src="{% static 'bingo_static/js/main.js' %}"></script>
   <script src="{% static 'bingo_static/js/select_cartella.js' %}"></script>

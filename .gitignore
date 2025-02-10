@@ -11,7 +11,7 @@
 /maya-computer/build/
 /maya-computer/dist/
 /staticfilesf
-/myenv
+/venv
 /db.sqlite3
 /simulate.py
 /network.py
