@@ -5,7 +5,7 @@ from PyInstaller.utils import misc
 block_cipher = None
 
 a = Analysis(
-    ['offline_run.py'],
+    ['django_server.py'],
     pathex=['C:/Users/bura/Desktop/cartella-cards/prj/New folder/bingo'],
     binaries=[],
     datas=[
