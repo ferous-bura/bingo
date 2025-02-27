@@ -39,9 +39,9 @@ class DeviceInfoMiddleware(MiddlewareMixin):
         is_browser = any(agent in user_agent for agent in browser_user_agents)
 
         # Block non-browser requests
-        if not is_browser:
-            # logger.warning(f"Non-browser request blocked. User-Agent: {user_agent}")
-            return HttpResponseForbidden("Access denied. Only browser requests are allowed.")
+        # if not is_browser:
+        #     # logger.warning(f"Non-browser request blocked. User-Agent: {user_agent}")
+        #     return HttpResponseForbidden("Access denied. Only browser requests are allowed.")
 
         # Get device and IP details
         ip_address = request.META.get('REMOTE_ADDR', '')

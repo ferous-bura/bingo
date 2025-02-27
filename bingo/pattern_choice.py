@@ -17,6 +17,7 @@ GAME_PATTERN_CHOICES = [
     ("any_2_diagonal", "2 Diagonal"),
     ("four_middle", "4 Single Middle"),
     ("inner_outer", "4 Inner, 4 Outer"),
+    ("four_together", "Any four together"),
     # ("any_1_corner", "የትኛውም 1 Corner Square"),
     # ("any_2_corner", "የትኛውም 2 Corner Squares"),
     # ("any_3_corner", "የትኛውም 3 Corner Squares"),

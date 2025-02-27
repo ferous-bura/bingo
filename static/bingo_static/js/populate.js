@@ -62,6 +62,25 @@ const patterns = {
         [0, 4, 20, 24] // All four corners
     ],
 
+    // four together Pattern
+    four_together: [
+        [1, 2, 6, 7],
+        [2, 3, 7, 8],
+        [3, 4, 8, 9],
+        [4, 5, 9, 10],
+        [6, 7, 11, 12],
+        [7, 8, 12, 13],
+        [8, 9, 13, 14],
+        [9, 10, 14, 15],
+        [11, 12, 16, 17],
+        [12, 13, 17, 18],
+        [13, 14, 18, 19],
+        [14, 15, 19, 20],
+        [16, 17, 21, 22],
+        [17, 18, 22, 23],
+        [18, 19, 23, 24],
+        [19, 20, 24, 25]
+    ],
     // Middle Square Pattern
     middle_square: [
         [6, 7, 8, 11, 12, 13, 16, 17, 18] // Middle 3x3 square
@@ -125,24 +144,25 @@ $(document).ready(function () {
 
     // Define patterns
     const patterns = {
-        default: [], // Will be dynamically generated
-        any_two: [], // Will be dynamically generated
-        any_three: [], // Will be dynamically generated
-        any_four: [], // Will be dynamically generated
+        default: [], 
+        any_two: [], 
+        any_three: [], 
+        any_four: [], 
         full_house: Array.from({ length: 25 }, (_, i) => i + 1),
-        one_line: [], // Will be dynamically generated
-        two_line: [], // Will be dynamically generated
-        three_line: [], // Will be dynamically generated
-        four_line: [], // Will be dynamically generated
+        one_line: [], 
+        two_line: [], 
+        three_line: [], 
+        four_line: [], 
         corners: [1, 5, 21, 25], // No change
-        any_vertical: [], // Will be dynamically generated
-        any_horizontal: [], // Will be dynamically generated
-        any_diagonal: [], // Will be dynamically generated
-        any_2_vertical: [], // Will be dynamically generated
-        any_2_horizontal: [], // Will be dynamically generated
-        any_2_diagonal: [], // Will be dynamically generated
+        any_vertical: [], 
+        any_horizontal: [], 
+        any_diagonal: [], 
+        any_2_vertical: [], 
+        any_2_horizontal: [], 
+        any_2_diagonal: [], 
         four_middle: [7, 9, 17, 19], // No change
         inner_outer: [1, 5, 7, 9, 17, 19, 21, 25], // No change
+        four_together: [], 
     };
 
     // Helper function to get a random line (excluding diagonals if specified)

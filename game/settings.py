@@ -5,7 +5,7 @@ from django.contrib.messages import constants as message_constants
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z($eo%#4!s5g**n53%8e1x$6unk&8(t8y9t+l+k+z)ikq1cn-l'
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = [
     # 'www.mayabet.com.et', 
     # 'mayabet.com.et', 
@@ -13,7 +13,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     'bingolottery.onrender.com',
     'lotterybingo.pythonanywhere.com',
-    # '192.168.128.187'
+    '192.168.125.187',
     'mayabet.com.et/'
     ]
 
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'bingo',
     'core',
     # 'debug_toolbar', #comment me
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 SITE_ID = 1
@@ -154,8 +156,15 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '10/minute',
         'user': '100/minute'
-    }
+    },
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
+
 
 LOGGING = {
     'version': 1,

@@ -5,6 +5,8 @@ from .views.auth import CustomPasswordChangeView, logout_view, login_view
 from .views.report import fetch_reports
 from .views.check_winner import check_winner, lock
 from .views.manage_bingo import refund_bingo, close_game
+from .api.views import api_login
+from .api.user_data import UserProfileView
 
 urlpatterns = [
     path('', main, name='bingo'),
@@ -18,4 +20,6 @@ urlpatterns = [
     path('change-password/', CustomPasswordChangeView.as_view(), name='change_password'),
     path("lock/", lock, name="lock"),
     path('mark-notification-as-read/<int:notification_id>/', mark_notification_as_read, name='mark_notification_as_read'),
+    path("api/login/", api_login, name="login"),
+    path('api/user-data/', UserProfileView.as_view(), name='data'),
 ]

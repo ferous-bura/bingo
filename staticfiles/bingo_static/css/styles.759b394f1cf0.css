@@ -1,0 +1,262 @@
+.bingo {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+/* Active Number */
+.active {
+  background-color: #28a745;
+  /* Green for active numbers */
+  color: white;
+  animation: zoomInOutRotate 2s ease-in-out;
+}
+
+/* Animated Number */
+.animated {
+  background-color: #ffc107;
+  /* Yellow for animated numbers */
+  color: white;
+  animation: zoomInOutRotate 2s ease-in-out;
+}
+
+/* Default Number */
+.default {
+  background-color: #f8f9fa;
+  color: black;
+}
+
+
+/* Animation */
+@keyframes zoomInOutRotate {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    transform: scale(1.2) rotate(180deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Header Styles */
+.header {
+  background-color: #b3b3b3;
+  color: white;
+  padding: 10px 20px !important;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  height: 10vh;
+}
+
+.header .brand-name {
+  margin: 0;
+}
+
+.header .header-icons button {
+  margin-left: 10px;
+}
+
+.bingo-grid {
+  height: 70vh;
+}
+
+/* Game Area Styles */
+.game-area {
+  /* padding: 20px; */
+  border-radius: 10px;
+}
+
+.current-number {
+  font-size: 3rem;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.control-panel button {
+  margin: 0 30px;
+}
+
+/* Winnings Section Styles */
+.winnings-section h4 {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.winnings-section h2 {
+  font-size: 2.5rem;
+  /* color: #28a745; */
+}
+
+/* Style for the number-box */
+.table> :not(caption)>*>* {
+  /* background-color: transparent !important; */
+  border: 6px solid white !important;
+}
+
+/* Make the table borderless */
+.table-borderless {
+  border: none;
+  /* Remove the borders */
+}
+
+/* Style for the first letters (B, I, N, G, O) */
+.bingo-letter {
+  color: red;
+  /* Change this to your desired color */
+}
+
+.container,
+.container-fluid,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl,
+.container-xxl {
+  padding: 0;
+  background-color: white !important;
+}
+
+/* Remove inner controls for input[type=number] in most browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  /* Firefox */
+}
+
+.px-5 {
+  padding-right: 0rem !important;
+  padding-left: 4rem !important;
+}
+
+/* Slider Container Styling */
+#slider {
+  width: 90%;
+  margin: 10px;
+  height: 12px;
+  /* Slider height */
+  background-color: #ddd;
+  /* Light gray background */
+  border-radius: 15px;
+  /* Rounded edges */
+  position: relative;
+  /* Positioning for the thumb */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* Subtle shadow */
+}
+
+/* Slider Thumb Styling */
+#slider::before {
+  content: '';
+  width: 12px;
+  /* Thumb width */
+  height: 12px;
+  /* Thumb height */
+  background-color: #0074D9;
+  /* Blue color for the thumb */
+  border-radius: 50%;
+  /* Circular shape */
+  position: absolute;
+  top: 50%;
+  left: 0;
+  /* Start position */
+  transform: translate(-50%, -50%);
+  /* Center the thumb */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* Subtle shadow for thumb */
+}
+
+/* Active Slider Thumb Styling */
+#slider.active::before {
+  background-color: #0056A5;
+  /* Darker blue for active state */
+}
+
+
+.reportHeader {
+  font-size: 1.5rem;
+  color: white;
+}
+
+
+
+#toggleFullscreen {
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+#toggleFullscreen:hover {
+  background-color: rgb(179, 179, 179);
+}
+
+#fullscreenIcon {
+  color: #555;
+}
+
+#fullscreenIcon:hover {
+  color: #000;
+}
+i {
+  font-size: 20px;
+}
+
+/* nav styles for user */
+nav {
+  /* color: white; */
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav .user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+nav .user-info span {
+  font-size: 14px;
+}
+
+nav .logout {
+  text-decoration: none;
+  color: #d63031;
+  background-color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+nav .logout:hover {
+  background-color: #d63031;
+  color: white;
+}

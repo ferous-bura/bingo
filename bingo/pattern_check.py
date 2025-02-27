@@ -68,6 +68,7 @@ def check_bingo(transaction, submitted_cartella, call_number, game_pattern):
 
             'four_middle':is_middle_four,
             'inner_outer':is_inner_and_outer,
+            'any_four_together':any_four_together,
 
             # 'any_1_corner':is_any_1_corner,
             # 'any_2_corner':is_any_2_corner,
@@ -370,6 +371,17 @@ def is_middle_four(cartella, result):
         return False
 
 def is_inner_and_outer(cartella, result):
+    """Check if both the inner 4 numbers around the middle and the 4 corners are in the result."""
+    try:
+        corners = [cartella[0], cartella[4], cartella[20], cartella[24]]
+        inner_four = [cartella[6], cartella[8], cartella[16], cartella[18]]
+        print(f"Checking Inner and Outer for cartella: corners={corners}, inner_four={inner_four}, result: {result}")
+        return all(num in result for num in corners + inner_four)
+    except Exception as e:
+        print(f"Error in is_inner_and_outer: {e}")
+        return False
+
+def any_four_together(cartella, result):
     """Check if both the inner 4 numbers around the middle and the 4 corners are in the result."""
     try:
         corners = [cartella[0], cartella[4], cartella[20], cartella[24]]
