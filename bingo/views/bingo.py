@@ -62,9 +62,9 @@ def get_main_context(request):
     context['notifications'] = notifications[:3]
     context['unread_notifications_count'] = unread_notifications.count()
     context['show_balance'] = bingo_user.show_balance
+    context['clap_allowed'] = bingo_user.clap
     # print(f'context  {context}')
     return context
-
 
 def get_game_pattern_list():
     """Retrieve game patterns as a dictionary."""

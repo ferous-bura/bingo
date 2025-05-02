@@ -34,7 +34,7 @@ $(document).ready(function () {
     const genders = ['f', 'm']; // Female and Male folders
     const audioBasePath = '/static/bingo_static/audio/amharic/';
     const specialAudioPath = '/static/bingo_static/audio/special/';
-    const clap_allowed = document.getElementById('clapAllowed').textContent || 'false';
+    const clap_allowed = document.getElementById('clapAllowed').textContent || 'False';
 
     let previousCall = parseInt(localStorage.getItem('previousCall'), 10) || 0;
     let gamePattern = localStorage.getItem('gamePattern') || 'default';
@@ -1193,7 +1193,7 @@ $(document).ready(function () {
             if (result.isWinner) {
                 $("#endGameBtn").prop("disabled", false); // Enable End Game button
                 setTimeout(() => playSpecialAudio("male_winner.mp3"), 1000);
-                if (clap_allowed) {
+                if (clap_allowed === "True") {
                     setTimeout(() => playSpecialAudio("clap.mp3"), 1000);
                 }
             } else {

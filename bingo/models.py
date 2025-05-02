@@ -15,6 +15,7 @@ class BingoUser(models.Model):
     cut_percentage = models.PositiveIntegerField(default=25)
     last_notification = models.DateTimeField(null=True, blank=True)
     show_balance = models.BooleanField(default=True)
+    clap = models.BooleanField(default=False)
 
     def __str__(self):
         return self.owner.username
