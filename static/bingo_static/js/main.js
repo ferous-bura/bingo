@@ -1,7 +1,7 @@
 
 $(document).ready(function () {
     let isChimeMuted = false; // State to track chime toggle
-
+    // https://www.youtube.com/watch?v=0us2UbWFTCI
     // Get the 'chime' value from localStorage
     let chime = localStorage.getItem('chime');
 
@@ -28,6 +28,13 @@ $(document).ready(function () {
     let voiceChoice = localStorage.getItem('voiceChoice') || 'female'; // Default to female
     let totalCalls = parseInt(localStorage.getItem('totalCalls'), 10) || 0;
     let aniTime = 2000; // Default animation interval time
+
+    let isAudioDownloaded = false; // Track if all audios are downloaded
+    const audioFiles = []; // List of audio files to download
+    const genders = ['f', 'm']; // Female and Male folders
+    const audioBasePath = '/static/bingo_static/audio/amharic/';
+    const specialAudioPath = '/static/bingo_static/audio/special/';
+    const clap_allowed = document.getElementById('clapAllowed').textContent || 'false';
 
     let previousCall = parseInt(localStorage.getItem('previousCall'), 10) || 0;
     let gamePattern = localStorage.getItem('gamePattern') || 'default';
@@ -1186,6 +1193,9 @@ $(document).ready(function () {
             if (result.isWinner) {
                 $("#endGameBtn").prop("disabled", false); // Enable End Game button
                 setTimeout(() => playSpecialAudio("male_winner.mp3"), 1000);
+                if (clap_allowed) {
+                    setTimeout(() => playSpecialAudio("clap.mp3"), 1000);
+                }
             } else {
                 $("#endGameBtn").prop("disabled", true); // Enable End Game button
                 setTimeout(() => playSpecialAudio("male_loser.mp3"), 1000);
@@ -1206,6 +1216,48 @@ $(document).ready(function () {
         // Show modal
         $("#bingoResultModal").modal("show");
     }
+    // Populate audioFiles array with all possible audio file names
+    for (let i = 1; i <= 75; i++) {
+        const prefix = i <= 15 ? 'B' : i <= 30 ? 'I' : i <= 45 ? 'N' : i <= 60 ? 'G' : 'O';
+        genders.forEach(gender => {
+            audioFiles.push(`${audioBasePath}${gender}/${prefix}_${i}.mp3`);
+        });
+    }
+    audioFiles.push(`${specialAudioPath}game-over.mp3`, `${specialAudioPath}readyPlay.mp3`, `${specialAudioPath}unknown-cartella.mp3`);
+
+    function downloadAllAudios(callback) {
+        let downloadedCount = 0;
+
+        audioFiles.forEach(file => {
+            const audio = new Audio(file);
+            audio.oncanplaythrough = () => {
+                downloadedCount++;
+                if (downloadedCount === audioFiles.length) {
+                    isAudioDownloaded = true;
+                    console.log('All audio files downloaded.');
+                    if (callback) callback();
+                }
+            };
+            audio.onerror = () => {
+                console.error(`Failed to download audio: ${file}`);
+            };
+        });
+    }
+
+    // Ensure all audios are downloaded before starting the game
+    downloadAllAudios(() => {
+        console.log('Game is ready to start.');
+    });
+
+    // Prevent starting the game until audios are downloaded
+    $("#startGame").on("click", function () {
+        if (!isAudioDownloaded) {
+            alert('Please wait until all audio files are downloaded.');
+            return;
+        }
+        // ...existing start game logic...
+    });
+
     function lockCartella() {
         let cartellaNum = $("#checkCartella").val().trim();
         if (cartellaState.selected.includes(cartellaNum)) {

@@ -39,13 +39,13 @@ def main(request):
         }
         return render(request, 'bingo/error.html', error_context, status=500)
 
+
 def get_main_context(request):
     """Assemble the main context for the template."""
     game_pattern_list = get_game_pattern_list()
     bingo_user = get_bingo_user(request) 
     notifications = Notification.objects.filter(user=bingo_user).order_by('-created_at')
     unread_notifications = notifications.filter(is_read=False)
-
     # print(f'notitication: {notifications}, unread_notifications: {unread_notifications}')
 
     try:
@@ -64,6 +64,7 @@ def get_main_context(request):
     context['show_balance'] = bingo_user.show_balance
     # print(f'context  {context}')
     return context
+
 
 def get_game_pattern_list():
     """Retrieve game patterns as a dictionary."""
