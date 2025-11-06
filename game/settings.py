@@ -11,7 +11,7 @@ ALLOWED_HOSTS = [
     # 'mayabet.com.et', 
     'localhost', 
     '127.0.0.1', 
-    'https://bingomaya-33e7458fd7b6.herokuapp.com',
+    'bingomaya-33e7458fd7b6.herokuapp.com',
     'bingolottery.onrender.com',
     'lotterybingo.pythonanywhere.com',
     '192.168.125.187',
