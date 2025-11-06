@@ -5,13 +5,13 @@ from django.contrib.messages import constants as message_constants
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z($eo%#4!s5g**n53%8e1x$6unk&8(t8y9t+l+k+z)ikq1cn-l'
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = [
     # 'www.mayabet.com.et', 
     # 'mayabet.com.et', 
     'localhost', 
     '127.0.0.1', 
-    'https://bingomaya-33e7458fd7b6.herokuapp.com/',
+    'https://bingomaya-33e7458fd7b6.herokuapp.com',
     'bingolottery.onrender.com',
     'lotterybingo.pythonanywhere.com',
     '192.168.125.187',
@@ -143,6 +143,7 @@ SESSION_COOKIE_AGE = 3 * 24 * 3600
 CSRF_TRUSTED_ORIGINS = [
     'https://bingolottery.onrender.com',
     'https://lotterybingo.pythonanywhere.com',
+    'https://bingomaya-33e7458fd7b6.herokuapp.com',
     'https://mayabet.com.et/',
 ]
 CSRF_COOKIE_SECURE = True
