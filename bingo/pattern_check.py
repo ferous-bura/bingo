@@ -38,7 +38,7 @@ def check_bingo(transaction, submitted_cartella, call_number, game_pattern):
         #     raise ValueError('Branch not found')
 
         # Ensure call number is enough to check
-        if call_number < 5:
+        if call_number < 3:
             print("Failed: call number is not enough for validation")
             return False
 
@@ -110,11 +110,13 @@ def is_default_pattern(cartella, result):
         # Check if any diagonal is fully marked
         one_diagonal_check = any(all(num in result for idx, num in enumerate(diag)) 
                                  for diag in diagonals)
-
         # print(f'one_line_check {one_line_check}')
         # print(f'one_diagonal_check {one_diagonal_check}')
-
-        return one_line_check or one_diagonal_check
+        corners_four = [cartella[0], cartella[4], cartella[20], cartella[24]]  # Middle space not involved here
+        corners_4 = all(num in result for num in corners_four)
+        middle_four = [cartella[6], cartella[8], cartella[16], cartella[18]]
+        middle_4 = all(num in result for num in middle_four)  # Middle itself is already free
+        return one_line_check or one_diagonal_check or corners_4 or middle_4
     except Exception as e:
         print(f"Error in is_default_pattern: {e}")
         return False
@@ -132,8 +134,12 @@ def any_two_pattern(cartella, result):
             [cartella[i * 5 + i] for i in range(5)],  # Top-left to bottom-right
             [cartella[(i + 1) * 4] for i in range(5)]  # Top-right to bottom-left
         ]
+        corners_four = [cartella[0], cartella[4], cartella[20], cartella[24]]  # Middle space not involved here
+        corners_4 = all(num in result for num in corners_four)
+        middle_four = [cartella[6], cartella[8], cartella[16], cartella[18]]
+        middle_4 = all(num in result for num in middle_four)  # Middle itself is already free
 
-        all_shapes = rows + columns + diagonals
+        all_shapes = rows + columns + diagonals + corners_4 + middle_4
         print(f'all shapes {all_shapes}')
 
         passed_lines = []
@@ -168,8 +174,12 @@ def any_three_pattern(cartella, result):
             [cartella[i * 5 + i] for i in range(5)],  # Top-left to bottom-right
             [cartella[(i + 1) * 4] for i in range(5)]  # Top-right to bottom-left
         ]
+        corners_four = [cartella[0], cartella[4], cartella[20], cartella[24]]  # Middle space not involved here
+        corners_4 = all(num in result for num in corners_four)
+        middle_four = [cartella[6], cartella[8], cartella[16], cartella[18]]
+        middle_4 = all(num in result for num in middle_four)  # Middle itself is already free
 
-        all_shapes = rows + columns + diagonals
+        all_shapes = rows + columns + diagonals + corners_4 + middle_4
         print(f'all shapes {all_shapes}')
 
         passed_lines = []
@@ -204,8 +214,12 @@ def any_four_pattern(cartella, result):
             [cartella[i * 5 + i] for i in range(5)],  # Top-left to bottom-right
             [cartella[(i + 1) * 4] for i in range(5)]  # Top-right to bottom-left
         ]
+        corners_four = [cartella[0], cartella[4], cartella[20], cartella[24]]  # Middle space not involved here
+        corners_4 = all(num in result for num in corners_four)
+        middle_four = [cartella[6], cartella[8], cartella[16], cartella[18]]
+        middle_4 = all(num in result for num in middle_four)  # Middle itself is already free
 
-        all_shapes = rows + columns + diagonals
+        all_shapes = rows + columns + diagonals + corners_4 + middle_4
         print(f'all shapes {all_shapes}')
 
         passed_lines = []
